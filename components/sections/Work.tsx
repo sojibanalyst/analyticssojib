@@ -84,9 +84,108 @@ export function Work() {
                 minWidth: 0,
                 display: "flex",
                 flexDirection: "column",
-                gap: "12px",
+                gap: "18px",
               }}
             >
+              {item.metric && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "14px",
+                    }}
+                  >
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "11px",
+                          letterSpacing: "0.1em",
+                          color: "var(--muted)",
+                        }}
+                      >
+                        BEFORE
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "clamp(28px, 3.4vw, 34px)",
+                          fontWeight: 500,
+                          color: "var(--faint)",
+                          letterSpacing: "-0.03em",
+                        }}
+                      >
+                        {item.metric.before}
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        flex: "1 1 110px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "6px",
+                      }}
+                    >
+                      <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: `0 ${100 - item.metric.beforePct}% 0 0`,
+                            background: "var(--faint)",
+                          }}
+                        />
+                      </div>
+                      <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: `0 ${100 - item.metric.afterPct}% 0 0`,
+                            background: "var(--accent)",
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "11px",
+                          letterSpacing: "0.1em",
+                          color: "var(--ink)",
+                        }}
+                      >
+                        AFTER
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "clamp(28px, 3.4vw, 34px)",
+                          fontWeight: 800,
+                          letterSpacing: "-0.03em",
+                        }}
+                      >
+                        {item.metric.after}
+                      </span>
+                    </div>
+                  </div>
+
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "11px",
+                      letterSpacing: "0.08em",
+                      color: "var(--muted)",
+                    }}
+                  >
+                    {item.metric.caption}
+                  </span>
+                </>
+              )}
+
               <span
                 style={{
                   fontFamily: "var(--font-mono)",
@@ -114,6 +213,20 @@ export function Work() {
           </div>
         </article>
       ))}
+
+      <p
+        style={{
+          margin: 0,
+          maxWidth: "72ch",
+          fontFamily: "var(--font-mono)",
+          fontSize: "11.5px",
+          lineHeight: 1.6,
+          letterSpacing: "0.04em",
+          color: "var(--faint)",
+        }}
+      >
+        {work.metricNote}
+      </p>
 
       <div className="table-scroll">
         <table className="defect-table">

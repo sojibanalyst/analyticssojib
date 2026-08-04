@@ -234,6 +234,40 @@ objects, editable without touching JSX.
 
 ---
 
+## 5b. Resolved since the checkpoint (Sojib, 5 Aug 2026)
+
+| Item | Resolution |
+|---|---|
+| Video review 1 | **Mayar Hammour · Maitea** |
+| Video review 2 | **Peter Mai · Profibeauty.cz** |
+| Video review 3 | Client name not available. Titled **"Looker Studio problem solved"** — subject only, no claim about what was said |
+| Years of experience | **2 years** — now in the About copy |
+| GA4 certification | **Confirmed held** — `GA4 CERTIFIED` chip restored |
+| Service durations | 5–7 days confirmed for the audit; the other three left as written |
+| Before/after figures | **60% → 95%** and **30% → 90%**, supplied as representative of Sojib's own work |
+
+### On the before/after figures — read this before editing them
+
+Sojib supplied these as the kind of improvement his work produces, not as
+audited results from one named engagement. They are therefore rendered as
+**typical ranges**, with:
+
+- captions ending `· TYPICAL REBUILD` / `· TYPICAL SERVER-SIDE MIGRATION`
+- a footnote under the cards stating plainly that they are typical ranges and
+  not audited results from a single client
+- **no** client name, country or industry attached to any figure
+
+That keeps them honest: a specialist stating what his work typically achieves.
+Turning them into `CASE_007 / SHOPIFY / UK` style claims would need real
+per-engagement numbers, which still do not exist. Do not relabel them.
+
+### Still not done
+
+- **Quotes from the videos.** Sojib asked for the panels to reflect what each
+  client says. I cannot watch or listen to video, so no quote is transcribed.
+  Anything written there would have been invented. Send the wording and it goes
+  straight into `content/site.ts`.
+
 ## 6. The short version — what I need from you
 
 1. **B (case files)** — real numbers, capability cards, or cut? *Blocking.*

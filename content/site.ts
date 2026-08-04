@@ -31,8 +31,20 @@ export type Capability = {
   title: string;
   body: string;
   tags: string[];
-  /** qualitative outcome tiles — deliberately no numbers, see DESIGN-NOTES §3B */
   outcomes: string[];
+  /**
+   * Representative before/after for this class of fix, per Sojib.
+   * These are TYPICAL ranges for his own work — not audited figures from a
+   * specific named engagement, and the caption must keep saying so.
+   */
+  metric?: {
+    caption: string;
+    before: string;
+    after: string;
+    /** bar fill percentages, 0-100 */
+    beforePct: number;
+    afterPct: number;
+  };
 };
 
 export type Defect = {
@@ -338,6 +350,13 @@ export const work = {
         "REFRESH-SAFE PURCHASES",
         "DOCUMENTED DATALAYER",
       ],
+      metric: {
+        caption: "PURCHASE TRACKING ACCURACY · TYPICAL REBUILD",
+        before: "60%",
+        after: "95%",
+        beforePct: 60,
+        afterPct: 95,
+      },
     },
     {
       code: "CAP_02 / SIGNAL RECOVERY",
@@ -351,8 +370,17 @@ export const work = {
         "BETTER MATCH QUALITY",
         "CONSENT HANDLED PROPERLY",
       ],
+      metric: {
+        caption: "CONVERSIONS CAPTURED · TYPICAL SERVER-SIDE MIGRATION",
+        before: "30%",
+        after: "90%",
+        beforePct: 30,
+        afterPct: 90,
+      },
     },
   ] satisfies Capability[],
+  metricNote:
+    "Before/after figures are typical ranges for this kind of fix, not audited results from one named engagement. I’ll show you the reconciliation on your own data before either of us calls it fixed.",
   tableTitle: "COMMON DEFECTS",
   tableSubtitle: "WHAT I LOOK FOR FIRST IN AN AUDIT",
   defects: [
@@ -421,15 +449,16 @@ export const reviews = {
       id: "-YRJQLpl8rM",
       orientation: "landscape",
       label: "Play client testimonial video 2",
-      name: "Peter",
+      name: "Peter Mai",
+      role: "Profibeauty.cz",
     },
     {
       id: "_uNS2rPx6sI",
       orientation: "portrait",
       label: "Play client testimonial video 3",
-      // Client not named — Sojib does not have the name to hand. Neutral
-      // title only; nothing is claimed about what the client said.
-      title: "Client video review",
+      // Client not named — Sojib does not have the name to hand. The title
+      // describes the subject of the video, per Sojib.
+      title: "Looker Studio problem solved",
     },
   ] as Testimonial[],
 };
@@ -472,11 +501,12 @@ export const process = {
 export const about = {
   eyebrow: "06 / ABOUT",
   title: "I only do measurement.",
-  body: "No websites, no ads management, no growth retainers. Tracking is the whole job — which is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 51 projects.",
+  body: "No websites, no ads management, no growth retainers. Two years on tracking alone — which is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 51 projects.",
   pullquote:
     "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it — so you can check it without taking my word for anything.",
   pullquoteAttribution: "SOJIB H. · DHAKA, BANGLADESH · UTC+6",
   chips: [
+    "GA4 CERTIFIED",
     "TOP RATED ON UPWORK",
     "MEASUREMENT SPECIALIST · NOT A GENERALIST",
     "REMOTE · UTC+6",
