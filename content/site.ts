@@ -413,6 +413,7 @@ export const reviews = {
       id: "-YRJQLpl8rM",
       orientation: "landscape",
       label: "Play client testimonial video 2",
+      name: "Peter",
     },
     {
       id: "_uNS2rPx6sI",
