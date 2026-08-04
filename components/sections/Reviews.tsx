@@ -150,6 +150,9 @@ export function Reviews() {
                 >
                   ★★★★★ VERIFIED CLIENT
                 </span>
+                {/* No quote is invented. With a quote the client's words lead
+                    and the name attributes them; without one the name leads
+                    and the video speaks for itself. */}
                 <p
                   style={{
                     margin: 0,
@@ -159,7 +162,7 @@ export function Reviews() {
                     textWrap: "pretty",
                   }}
                 >
-                  {item.quote ?? `Client video review ${i + 1} of ${N}.`}
+                  {item.quote ?? item.name ?? `Client video review ${i + 1} of ${N}`}
                 </p>
                 <span
                   style={{
@@ -171,9 +174,9 @@ export function Reviews() {
                     paddingTop: "14px",
                   }}
                 >
-                  {item.name
+                  {item.quote
                     ? [item.name, item.role].filter(Boolean).join(" · ")
-                    : reviews.note}
+                    : (item.role ?? reviews.note)}
                 </span>
               </div>
             </div>

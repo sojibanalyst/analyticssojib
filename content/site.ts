@@ -52,7 +52,9 @@ export type Testimonial = {
   label: string;
   /** filled in once Sojib confirms each client agreed to be named */
   name?: string;
+  /** company, or role + company — shown under the name */
   role?: string;
+  /** only set this if the client actually said it; never paraphrase */
   quote?: string;
 };
 
@@ -404,6 +406,8 @@ export const reviews = {
       id: "VUz-Al0nmz8",
       orientation: "portrait",
       label: "Play client testimonial video 1",
+      name: "Mayar Hammour",
+      role: "Maitea",
     },
     {
       id: "-YRJQLpl8rM",
