@@ -1,6 +1,21 @@
 import type { NextConfig } from "next";
+import { site } from "./content/site";
+
+const apex = new URL(site.url).host;
 
 const nextConfig: NextConfig = {
+  // One canonical host. Without this both apex and www answer 200 with
+  // identical content, which is duplicate content for crawlers.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: `www.${apex}` }],
+        destination: `${site.url}/:path*`,
+        permanent: true,
+      },
+    ];
+  },
   // A stray package-lock.json in the home directory makes Next guess the wrong
   // workspace root; pin it to this project.
   turbopack: { root: __dirname },
