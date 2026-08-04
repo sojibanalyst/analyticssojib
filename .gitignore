@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Re-stated last so the negation above still wins: `vercel link` appends its
+# own .env* rule here, which would otherwise re-ignore the committed template.
+!.env.example
