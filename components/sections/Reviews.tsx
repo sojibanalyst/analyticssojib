@@ -162,7 +162,7 @@ export function Reviews() {
                     textWrap: "pretty",
                   }}
                 >
-                  {item.quote ?? item.name ?? `Client video review ${i + 1} of ${N}`}
+                  {item.quote ?? item.name ?? item.title ?? reviews.unnamed}
                 </p>
                 <span
                   style={{

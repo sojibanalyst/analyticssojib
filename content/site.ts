@@ -56,6 +56,11 @@ export type Testimonial = {
   role?: string;
   /** only set this if the client actually said it; never paraphrase */
   quote?: string;
+  /**
+   * Headline for a video with no named client. Describes the video; must not
+   * assert anything the client did not actually say.
+   */
+  title?: string;
 };
 
 export type Faq = { q: string; a: string };
@@ -399,6 +404,9 @@ export const reviews = {
   kicker: "CLIENT VIDEO REVIEWS",
   title: "Clients on the record",
   note: "Recorded by clients on Upwork engagements.",
+  /** Headline for a slide whose client has not been named. Neutral and true —
+   *  never a fabricated name or an index label that reads like a TODO. */
+  unnamed: "Client review",
   // `name`, `role` and `quote` stay unset until Sojib confirms each client
   // agreed to be named — the components degrade gracefully without them.
   items: [
@@ -419,6 +427,9 @@ export const reviews = {
       id: "_uNS2rPx6sI",
       orientation: "portrait",
       label: "Play client testimonial video 3",
+      // Client not named — Sojib does not have the name to hand. Neutral
+      // title only; nothing is claimed about what the client said.
+      title: "Client video review",
     },
   ] as Testimonial[],
 };
