@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { reviews, upworkUrl } from "@/content/site";
 import { LiteYouTube } from "@/components/LiteYouTube";
+import { WrittenReviews } from "@/components/sections/WrittenReviews";
 
 const N = reviews.items.length;
 
@@ -183,6 +184,8 @@ export function Reviews() {
           ))}
         </div>
       </div>
+
+      <WrittenReviews />
 
       <p
         style={{

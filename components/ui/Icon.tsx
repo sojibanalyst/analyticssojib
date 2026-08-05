@@ -1,5 +1,6 @@
 import type { SocialLink, StackItem } from "@/content/site";
 import {
+  ClaudeIcon,
   FacebookIcon,
   GithubIcon,
   GoogleadsIcon,
@@ -10,7 +11,11 @@ import {
   LinkedInIcon,
   LookerIcon,
   MetaIcon,
+  OpenaiIcon,
+  RedditIcon,
   ShopifyIcon,
+  SnapchatIcon,
+  TiktokIcon,
   UpworkIcon,
   XIcon,
 } from "@/components/ui/icons";
@@ -32,6 +37,11 @@ const STACK = {
   googlebigquery: GooglebigqueryIcon,
   looker: LookerIcon,
   shopify: ShopifyIcon,
+  reddit: RedditIcon,
+  tiktok: TiktokIcon,
+  snapchat: SnapchatIcon,
+  claude: ClaudeIcon,
+  openai: OpenaiIcon,
 } as const;
 
 export function SocialIcon({
@@ -47,8 +57,13 @@ export function SocialIcon({
 
 export function StackIcon({ item }: { item: StackItem }) {
   const Cmp = STACK[item.icon];
+  // The three marks the design flips per theme get a class instead of an
+  // inline colour, so the strip can stay a server component.
   return (
-    <span style={{ color: item.fill, display: "block", flex: "0 0 auto" }}>
+    <span
+      className={item.themed ? `stack-mark stack-mark--${item.themed}` : undefined}
+      style={item.themed ? { display: "block", flex: "0 0 auto" } : { color: item.fill, display: "block", flex: "0 0 auto" }}
+    >
       <Cmp size={item.size} />
     </span>
   );

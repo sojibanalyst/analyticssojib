@@ -1,5 +1,57 @@
 import { about } from "@/content/site";
 
+const docStyle: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "10px",
+  alignSelf: "flex-start",
+  boxSizing: "border-box",
+  border: "1px solid var(--border)",
+  borderRadius: "10px",
+  padding: "14px 16px",
+  fontFamily: "var(--font-mono)",
+  fontSize: "12px",
+  letterSpacing: "0.06em",
+  color: "var(--text)",
+};
+
+/**
+ * Renders as a real link once the doc exists. Until Sojib publishes it the
+ * same control renders as plain text marked "(LINK COMING)" — the design keeps
+ * its shape without shipping a link that goes nowhere.
+ */
+function DocButton() {
+  const { label, note, pendingNote, url } = about.doc;
+
+  if (!url) {
+    return (
+      <span style={{ ...docStyle, color: "var(--muted)" }}>
+        <span aria-hidden="true" style={{ color: "var(--ink)" }}>
+          ▤
+        </span>
+        {label}
+        <span style={{ color: "var(--faint)" }}>{pendingNote}</span>
+      </span>
+    );
+  }
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener"
+      className="doc-button"
+      style={docStyle}
+    >
+      <span aria-hidden="true" style={{ color: "var(--ink)" }}>
+        ▤
+      </span>
+      {label}
+      <span style={{ color: "var(--muted)" }}>{note}</span>
+    </a>
+  );
+}
+
 export function About() {
   return (
     <section
@@ -50,6 +102,8 @@ export function About() {
         >
           {about.body}
         </p>
+        <DocButton />
+
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           {about.chips.map((chip) => (
             <span key={chip} className="pill">

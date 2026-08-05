@@ -35,7 +35,20 @@ export function Services() {
               }}
             >
               <span>{item.code}</span>
-              <span style={{ marginLeft: "auto" }}>{item.duration}</span>
+              <span
+                style={{
+                  marginLeft: "auto",
+                  display: "inline-flex",
+                  gap: "14px",
+                  alignItems: "baseline",
+                  flexWrap: "wrap",
+                }}
+              >
+                <span>{item.duration}</span>
+                <span style={{ color: "var(--ink)", fontWeight: 700 }}>
+                  {item.price}
+                </span>
+              </span>
             </div>
 
             <h3

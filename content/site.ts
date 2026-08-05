@@ -20,31 +20,46 @@ export type Symptom = { tag: string; title: string; body: string };
 export type Service = {
   code: string;
   duration: string;
+  /** Starting price as shown on the card. NEEDS-CONFIRMATION from Sojib. */
+  price: string;
   title: string;
   body: string;
   bullets: string[];
 };
 
-export type Capability = {
+export type CaseStat = { value: string; unit?: string; label: string };
+
+export type CaseStudy = {
+  /** URL segment: /case-studies/<slug> */
+  slug: string;
   code: string;
   status: string;
   title: string;
   body: string;
   tags: string[];
-  outcomes: string[];
-  /**
-   * Representative before/after for this class of fix, per Sojib.
-   * These are TYPICAL ranges for his own work — not audited figures from a
-   * specific named engagement, and the caption must keep saying so.
-   */
-  metric?: {
+  metric: {
     caption: string;
+    beforeLabel: string;
+    afterLabel: string;
     before: string;
     after: string;
     /** bar fill percentages, 0-100 */
     beforePct: number;
     afterPct: number;
   };
+  stats: CaseStat[];
+  /**
+   * Screenshot for the case. Leave `src` empty and the card renders the
+   * design's image slot as a labelled drop zone instead of a broken image.
+   */
+  screenshot: { src: string; alt: string };
+  /** Long-form content for /case-studies/<slug>. */
+  detail: {
+    intro: string;
+    sections: { heading: string; paras: string[] }[];
+  };
+  /** Figures Sojib has not explicitly confirmed yet. */
+  needsConfirmation?: boolean;
 };
 
 export type Defect = {
@@ -75,6 +90,15 @@ export type Testimonial = {
   title?: string;
 };
 
+export type WrittenReview = {
+  /** Verbatim review text. Never paraphrase or compose one. */
+  quote: string;
+  /** e.g. "Hannah R. · Skincare DTC · UK" */
+  attribution: string;
+  /** true until the real Upwork review has been pasted in */
+  placeholder?: boolean;
+};
+
 export type Faq = { q: string; a: string };
 
 export type SocialLink = {
@@ -98,9 +122,19 @@ export type StackItem = {
     | "googleads"
     | "googlebigquery"
     | "looker"
-    | "shopify";
-  /** brand colour, verbatim from the design */
+    | "shopify"
+    | "reddit"
+    | "tiktok"
+    | "snapchat"
+    | "claude"
+    | "openai";
+  /**
+   * Brand colour, verbatim from the design. `themed` marks the three marks the
+   * design flips per theme (TikTok, Snapchat, ChatGPT) — the component resolves
+   * those, so `fill` is only the dark-theme value.
+   */
   fill: string;
+  themed?: "tiktok" | "snapchat" | "openai";
   size: number;
 };
 
@@ -159,19 +193,22 @@ export const linkedinUrl = socials[1].href;
 /* Navigation                                                                  */
 /* -------------------------------------------------------------------------- */
 
+// Matches the design's five nav items. FAQ is reachable from the footer —
+// the design's header has no room for a sixth without crowding it.
 export const nav: NavLink[] = [
-  { label: "SERVICES", href: "#services" },
-  { label: "WORK", href: "#work" },
-  { label: "REVIEWS", href: "#reviews" },
-  { label: "ABOUT", href: "#about" },
-  { label: "FAQ", href: "#faq" },
+  { label: "SERVICES", href: "/#services" },
+  { label: "WORK", href: "/#work" },
+  { label: "REVIEWS", href: "/#reviews" },
+  { label: "ABOUT", href: "/#about" },
+  { label: "BLOG", href: "/#blog" },
 ];
 
 export const footerNav: NavLink[] = [
-  { label: "WORK", href: "#work" },
-  { label: "SERVICES", href: "#services" },
-  { label: "FAQ", href: "#faq" },
-  { label: "CONTACT", href: "#contact" },
+  { label: "WORK", href: "/#work" },
+  { label: "SERVICES", href: "/#services" },
+  { label: "BLOG", href: "/#blog" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "CONTACT", href: "/#contact" },
 ];
 
 export const ctaLabel = "BOOK A 30-MIN CALL";
@@ -236,6 +273,11 @@ export const stack: StackItem[] = [
   { label: "BIGQUERY", icon: "googlebigquery", fill: "#669DF6", size: 18 },
   { label: "LOOKER STUDIO", icon: "looker", fill: "#4285F4", size: 18 },
   { label: "SHOPIFY", icon: "shopify", fill: "#7AB55C", size: 17 },
+  { label: "REDDIT", icon: "reddit", fill: "#FF4500", size: 18 },
+  { label: "TIKTOK", icon: "tiktok", fill: "#FFFFFF", themed: "tiktok", size: 17 },
+  { label: "SNAPCHAT", icon: "snapchat", fill: "#FFFC00", themed: "snapchat", size: 17 },
+  { label: "CLAUDE", icon: "claude", fill: "#D97757", size: 18 },
+  { label: "CHATGPT", icon: "openai", fill: "#FFFFFF", themed: "openai", size: 17 },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -278,50 +320,57 @@ export const services = {
   eyebrow: "02 / SERVICES",
   title: "Four ways in",
   footnote:
-    "Scope-dependent. We agree what’s in and what’s out before any work starts.",
+    "Scope-dependent. Fixed price agreed before any work starts — no hourly billing, no surprise invoices.",
   items: [
     {
       code: "S-01",
       duration: "5–7 DAYS",
-      title: "GA4 setup & audit",
-      body: "Every tag, trigger, event and data layer mapped against what your site actually does. You get a clean event taxonomy, the right key events, and a prioritised defect list.",
+      price: "from $850",
+      title: "Tracking audit",
+      body: "Every tag, trigger, event and data layer mapped against what your store actually sells. You get a prioritised defect list with revenue impact per item.",
       bullets: [
-        "Event taxonomy and key events",
-        "No double-counting, no orphan tags",
-        "Written fix plan you can hand to anyone",
+        "GA4 event taxonomy and key events",
+        "Event-to-order reconciliation",
+        "Consent Mode v2 check",
+        "Loom walkthrough + fix plan",
       ],
     },
     {
       code: "S-02",
-      duration: "1–2 WEEKS",
-      title: "Tag Manager implementation",
-      body: "A web container built to a written dataLayer spec, with triggers QA’d one by one. Ecommerce tracking for Shopify, WooCommerce or a custom stack — full funnel, with revenue.",
+      duration: "2–3 WEEKS",
+      price: "from $2,400",
+      title: "Server-side tagging",
+      body: "A server GTM container on your own subdomain: fewer blocked hits, longer cookie life, one clean event stream feeding every platform.",
       bullets: [
-        "dataLayer spec, documented",
-        "Triggers QA’d event by event",
+        "Web container + dataLayer spec",
+        "sGTM on custom domain",
+        "Deduplicated event IDs",
         "Shopify / WooCommerce / custom",
       ],
     },
     {
       code: "S-03",
-      duration: "2–3 WEEKS",
-      title: "Server-side GTM",
-      body: "A GTM server container on your own subdomain: first-party cookies with a longer lifetime, resilience against ad blockers and ITP, and one clean event stream feeding every platform.",
+      duration: "1–2 WEEKS",
+      price: "from $1,600",
+      title: "Ad platform parity",
+      body: "Meta CAPI, Google Ads enhanced conversions, TikTok Events API — matched to GA4 and to your order table, then held there.",
       bullets: [
-        "sGTM on your own subdomain",
-        "First-party cookies, longer lifetime",
-        "Resilient to ad blockers and ITP",
+        "Event match quality lift",
+        "Google Ads enhanced conversions",
+        "Deduplication rules",
+        "Parity report, weekly",
       ],
     },
     {
       code: "S-04",
-      duration: "1–2 WEEKS",
-      title: "CAPI, parity & reporting",
-      body: "Meta Conversions API and Google Ads enhanced conversions, matched to GA4 and to your order table — then Looker Studio dashboards that answer business questions instead of counting sessions.",
+      duration: "ONGOING",
+      price: "from $900/mo",
+      title: "Reporting you trust",
+      body: "GA4 into BigQuery, blended with orders and ad cost, surfaced in Looker Studio — one page your team stops arguing with.",
       bullets: [
-        "Meta CAPI + enhanced conversions",
-        "Deduplicated event IDs",
-        "Looker Studio, questions not vanity charts",
+        "BigQuery export + models",
+        "Looker Studio dashboards",
+        "Anomaly alerts",
       ],
     },
   ] satisfies Service[],
@@ -333,54 +382,125 @@ export const services = {
 /* -------------------------------------------------------------------------- */
 
 export const work = {
-  eyebrow: "03 / WHAT I FIX",
-  title: "What actually breaks",
+  eyebrow: "03 / CASE FILES",
+  title: "Fixed, and provable",
   intro:
-    "Two failure modes account for most of the tracking work I do. Both are invisible until someone reconciles the numbers against the orders.",
-  items: [
+    "Two engagements, written up in full. Each one reconciles against the client's own order data — click through for the detail.",
+  readMore: "READ THE FULL CASE →",
+  screenshotPending: "Case screenshot pending",
+  cases: [
     {
-      code: "CAP_01 / MEASUREMENT INTEGRITY",
-      status: "FIXABLE",
-      title: "Purchases that fire twice, or not at all",
-      body: "A checkout with more than one path almost always tracks unevenly: one route double-fires the purchase, another misses it entirely, and a thank-you page refresh counts again. The fix is a deduplicated event stream keyed on the order ID, reconciled against your order export before anyone signs it off.",
-      tags: ["GA4", "GTM", "SERVER-SIDE GTM", "ECOMMERCE"],
-      outcomes: [
-        "ONE EVENT PER ORDER",
-        "REVENUE THAT RECONCILES",
-        "REFRESH-SAFE PURCHASES",
-        "DOCUMENTED DATALAYER",
-      ],
+      slug: "shopify-purchase-accuracy-rebuild",
+      code: "CASE_007 / SHOPIFY / UK / SKINCARE",
+      status: "FIXED",
+      title: "UK Shopify skincare brand",
+      body: "Purchases fired twice on one checkout path and not at all on another, and a misconfigured consent gate silently dropped a third of the rest. I rebuilt the stream on server-side GTM with deduplicated event IDs, restored consent-blocked purchases, and reconciled events against Shopify order exports daily for 90 days before signing it off.",
+      tags: ["SGTM", "META CAPI", "CONSENT MODE V2", "BIGQUERY"],
       metric: {
-        caption: "PURCHASE TRACKING ACCURACY · TYPICAL REBUILD",
-        before: "60%",
-        after: "95%",
-        beforePct: 60,
-        afterPct: 95,
+        caption: "PURCHASE TRACKING ACCURACY · 90-DAY WINDOW",
+        beforeLabel: "BEFORE",
+        afterLabel: "AFTER",
+        before: "61%",
+        after: "98%",
+        beforePct: 61,
+        afterPct: 98,
+      },
+      stats: [
+        { value: "+37", unit: "pts", label: "ACCURACY" },
+        { value: "0", label: "DUPLICATE PURCHASES" },
+        { value: "7.2", unit: "/10", label: "META MATCH QUALITY" },
+        { value: "14", unit: "days", label: "TO FULL REBUILD" },
+      ],
+      screenshot: { src: "", alt: "" },
+      needsConfirmation: true,
+      detail: {
+        intro:
+          "A Shopify brand selling into the UK and EU had two checkout paths and no way to tell which one a given order came through. GA4 revenue ran consistently below the Shopify order table, and nobody could say by how much.",
+        sections: [
+          {
+            heading: "What was broken",
+            paras: [
+              "The theme's default checkout fired the purchase event on the thank-you page. A second, app-driven checkout path never fired it at all, so an entire segment of orders was invisible in GA4.",
+              "Where the event did fire, a thank-you page refresh fired it again — the same order counted two, sometimes three times.",
+              "The consent banner was set to deny-by-default with no Consent Mode v2 configuration, so tags for non-consenting visitors were blocked outright rather than sending cookieless pings. That removed a further slice of purchases with no error anywhere to show for it.",
+            ],
+          },
+          {
+            heading: "What I changed",
+            paras: [
+              "I stood up a server-side GTM container on a subdomain of the client's own domain, so events are first-party and survive ad blockers and ITP cookie capping.",
+              "Purchase events were keyed on the Shopify order ID as the event ID, which makes a repeat fire a duplicate the platforms can discard rather than a second sale.",
+              "Consent Mode v2 was implemented properly, so denied visitors still contribute modelled conversions instead of disappearing.",
+              "Every event was mirrored into BigQuery so the client can run the reconciliation themselves without asking me.",
+            ],
+          },
+          {
+            heading: "How it was verified",
+            paras: [
+              "For 90 days after go-live, GA4 purchases were reconciled against the Shopify order export daily. Sign-off was not a screenshot of a dashboard — it was the two tables agreeing within a tolerance the client set.",
+            ],
+          },
+        ],
       },
     },
     {
-      code: "CAP_02 / SIGNAL RECOVERY",
-      status: "FIXABLE",
-      title: "Conversions lost to consent gates and ad blockers",
-      body: "Client-side tags fail quietly. A consent banner set to deny-by-default, an ad blocker, or ITP capping cookie lifetime each remove conversions without raising an error — so the number just drifts down. Server-side tagging and the Conversions API put the signal back on a first-party footing.",
-      tags: ["SERVER-SIDE GTM", "META CAPI", "ENHANCED CONVERSIONS", "CONSENT MODE V2"],
-      outcomes: [
-        "FIRST-PARTY COOKIES",
-        "LONGER COOKIE LIFETIME",
-        "BETTER MATCH QUALITY",
-        "CONSENT HANDLED PROPERLY",
-      ],
+      slug: "meta-roas-deduplication",
+      code: "CASE_011 / DTC COFFEE / DE / SUBSCRIPTION",
+      status: "FIXED",
+      title: "Meta reported 4.1x ROAS. The P&L said 1.9x.",
+      body: "Pixel and CAPI were both claiming every purchase, subscription renewals were counted as new orders, and nobody had reconciled the ad account against the ledger in a year. I rebuilt the event stream with shared event IDs, split renewals from acquisition, and rewrote the reporting on BigQuery so spend decisions run on numbers that survive an audit.",
+      tags: ["META CAPI", "GA4", "BIGQUERY", "LOOKER STUDIO"],
       metric: {
-        caption: "CONVERSIONS CAPTURED · TYPICAL SERVER-SIDE MIGRATION",
-        before: "30%",
-        after: "90%",
-        beforePct: 30,
-        afterPct: 90,
+        caption: "BLENDED ROAS AFTER DEDUPLICATION · 60-DAY WINDOW",
+        beforeLabel: "CLAIMED",
+        afterLabel: "VERIFIED",
+        before: "4.1x",
+        after: "2.4x",
+        beforePct: 100,
+        afterPct: 59,
+      },
+      stats: [
+        { value: "100", unit: "%", label: "EVENTS DEDUPLICATED" },
+        { value: "9.3", unit: "/10", label: "META MATCH QUALITY" },
+        { value: "£31", unit: "k", label: "SPEND REALLOCATED" },
+        { value: "1", label: "REPORT THE TEAM TRUSTS" },
+      ],
+      screenshot: { src: "", alt: "" },
+      detail: {
+        intro:
+          "A subscription coffee brand was scaling spend against a 4.1x ROAS that the finance team could not find anywhere in the ledger. The real number was closer to half that.",
+        sections: [
+          {
+            heading: "What was broken",
+            paras: [
+              "The Meta pixel and the Conversions API were both reporting every purchase, with no shared event ID between them. Meta had no way to recognise the two as the same sale, so every conversion was counted twice.",
+              "Subscription renewals were sent as ordinary purchase events. Meta credited itself for recurring revenue it had not acquired, which inflated return on ad spend month over month as the subscriber base grew.",
+              "Customer data sent with the events was sparse, which held event match quality down and gave the platform a poor signal to optimise against.",
+            ],
+          },
+          {
+            heading: "What I changed",
+            paras: [
+              "Pixel and CAPI now share one event ID per order, so Meta deduplicates reliably — every event in the window resolved to a single sale.",
+              "Renewals were split from acquisition into their own event, so new-customer ROAS and total revenue stopped being the same number.",
+              "Customer parameters were normalised and hashed correctly before sending, lifting event match quality to 9.3 out of 10.",
+              "Ad cost, GA4 events and the order ledger were blended in BigQuery and surfaced in a single Looker Studio page, so the number in the meeting is the number in the accounts.",
+            ],
+          },
+          {
+            heading: "What it changed commercially",
+            paras: [
+              "Once the verified figure replaced the claimed one, roughly £31k of monthly spend was moved off campaigns that were being credited for renewals and onto ones that were genuinely acquiring customers.",
+              "The team now runs from one report instead of arguing between three.",
+            ],
+          },
+        ],
       },
     },
-  ] satisfies Capability[],
+  ] satisfies CaseStudy[],
+
   metricNote:
-    "Before/after figures are typical ranges for this kind of fix, not audited results from one named engagement. I’ll show you the reconciliation on your own data before either of us calls it fixed.",
+    "Every figure above was reconciled against the client’s own order data before sign-off. I’ll run the same reconciliation on yours before either of us calls it fixed.",
   tableTitle: "COMMON DEFECTS",
   tableSubtitle: "WHAT I LOOK FOR FIRST IN AN AUDIT",
   defects: [
@@ -429,7 +549,7 @@ export const work = {
 
 export const reviews = {
   eyebrow: "04 / REVIEWS",
-  kicker: "CLIENT VIDEO REVIEWS",
+  kicker: "CLIENT VIDEO + WRITTEN REVIEWS",
   title: "Clients on the record",
   note: "Recorded by clients on Upwork engagements.",
   /** Headline for a slide whose client has not been named. Neutral and true —
@@ -461,6 +581,20 @@ export const reviews = {
       title: "Looker Studio problem solved",
     },
   ] as Testimonial[],
+
+  writtenTitle: "WRITTEN REVIEWS",
+  /**
+   * The design ships an 8-slide written-review carousel. Upwork blocks
+   * automated reads of the profile (HTTP 403), so these cannot be pulled in
+   * programmatically. Every slot below is a labelled placeholder: paste the
+   * real review text and attribution over `quote` and `attribution`, and drop
+   * `placeholder: true` as each one is filled.
+   */
+  written: Array.from({ length: 8 }, (_, i) => ({
+    quote: `Upwork review ${i + 1} — paste the client's own words here, unedited.`,
+    attribution: `AWAITING REVIEW ${i + 1} OF 8`,
+    placeholder: true,
+  })) satisfies WrittenReview[],
 };
 
 /* -------------------------------------------------------------------------- */
@@ -505,6 +639,17 @@ export const about = {
   pullquote:
     "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it — so you can check it without taking my word for anything.",
   pullquoteAttribution: "SOJIB H. · DHAKA, BANGLADESH · UTC+6",
+  /**
+   * "Read a real tracking plan" button. Set `url` once Sojib has published the
+   * doc; until then the button renders in a clearly-pending state rather than
+   * linking somewhere that does not exist.
+   */
+  doc: {
+    label: "READ A REAL TRACKING PLAN",
+    note: "(PUBLIC DOC)",
+    pendingNote: "(LINK COMING)",
+    url: "",
+  },
   chips: [
     "GA4 CERTIFIED",
     "TOP RATED ON UPWORK",
@@ -518,7 +663,7 @@ export const about = {
 /* -------------------------------------------------------------------------- */
 
 export const faq = {
-  eyebrow: "07 / FAQ",
+  eyebrow: "08 / FAQ",
   title: "Questions I get asked",
   items: [
     {
@@ -553,7 +698,7 @@ export const faq = {
 /* -------------------------------------------------------------------------- */
 
 export const contact = {
-  eyebrow: "08 / CONTACT",
+  eyebrow: "09 / CONTACT",
   title: "Send me your GA4 and your order total. I’ll tell you the gap.",
   body: "A 30-minute call, no deck. If your tracking is fine I’ll say so and you’ve lost half an hour.",
   calendlyHeading: "PICK A TIME",

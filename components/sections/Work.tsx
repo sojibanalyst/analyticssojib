@@ -1,21 +1,123 @@
-import { work } from "@/content/site";
+import Image from "next/image";
+import Link from "next/link";
+import { work, type CaseStudy } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-/**
- * Capability cards, not case studies. The design shipped two fabricated client
- * case files with before/after figures; no real ones were supplied, so this
- * keeps the design's card shell and tag row but describes the failure modes
- * and what fixing them yields — no client names, no invented numbers.
- * See DESIGN-NOTES.md §3B.
- */
+function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
+  return (
+    <>
+      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "14px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              letterSpacing: "0.1em",
+              color: "var(--muted)",
+            }}
+          >
+            {metric.beforeLabel}
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "clamp(28px, 3.4vw, 34px)",
+              fontWeight: 500,
+              color: "var(--faint)",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            {metric.before}
+          </span>
+        </div>
+
+        <div style={{ flex: "1 1 110px", display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
+            <div
+              style={{
+                position: "absolute",
+                inset: `0 ${100 - metric.beforePct}% 0 0`,
+                background: "var(--faint)",
+              }}
+            />
+          </div>
+          <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
+            <div
+              style={{
+                position: "absolute",
+                inset: `0 ${100 - metric.afterPct}% 0 0`,
+                background: "var(--accent)",
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              letterSpacing: "0.1em",
+              color: "var(--ink)",
+            }}
+          >
+            {metric.afterLabel}
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "clamp(28px, 3.4vw, 34px)",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            {metric.after}
+          </span>
+        </div>
+      </div>
+
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "11px",
+          letterSpacing: "0.08em",
+          color: "var(--muted)",
+        }}
+      >
+        {metric.caption}
+      </span>
+    </>
+  );
+}
+
+/** The design's image slot: a real screenshot once supplied, a labelled drop
+ *  zone until then — never a broken image. */
+function Screenshot({ item }: { item: CaseStudy }) {
+  if (!item.screenshot.src) {
+    return (
+      <div className="case-shot case-shot--empty" aria-hidden="true">
+        <span className="case-shot__icon">▤</span>
+        <span>{work.screenshotPending}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="case-shot">
+      <Image
+        src={item.screenshot.src}
+        alt={item.screenshot.alt}
+        fill
+        sizes="(max-width: 1279px) 100vw, 1232px"
+        style={{ objectFit: "cover" }}
+      />
+    </div>
+  );
+}
+
 export function Work() {
   return (
     <section id="work" className="section" aria-labelledby="work-title">
-      <SectionHeading
-        eyebrow={work.eyebrow}
-        title={work.title}
-        titleId="work-title"
-      />
+      <SectionHeading eyebrow={work.eyebrow} title={work.title} titleId="work-title" />
 
       <p
         style={{
@@ -30,8 +132,8 @@ export function Work() {
         {work.intro}
       </p>
 
-      {work.items.map((item) => (
-        <article key={item.code} className="case-card">
+      {work.cases.map((item) => (
+        <article key={item.slug} className="case-card">
           <div className="case-card__bar">
             <span>{item.code}</span>
             <span className="status-pill">
@@ -41,14 +143,7 @@ export function Work() {
           </div>
 
           <div className="case-card__body">
-            <div
-              style={{
-                minWidth: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-              }}
-            >
+            <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
               <h3
                 style={{
                   margin: 0,
@@ -79,138 +174,41 @@ export function Work() {
               </div>
             </div>
 
-            <div
-              style={{
-                minWidth: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: "18px",
-              }}
-            >
-              {item.metric && (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      flexWrap: "wrap",
-                      gap: "14px",
-                    }}
-                  >
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "11px",
-                          letterSpacing: "0.1em",
-                          color: "var(--muted)",
-                        }}
-                      >
-                        BEFORE
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "clamp(28px, 3.4vw, 34px)",
-                          fontWeight: 500,
-                          color: "var(--faint)",
-                          letterSpacing: "-0.03em",
-                        }}
-                      >
-                        {item.metric.before}
-                      </span>
-                    </div>
+            <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: "18px" }}>
+              <BeforeAfter metric={item.metric} />
 
-                    <div
+              <div className="grid4">
+                {item.stats.map((stat) => (
+                  <div key={stat.label} className="stat-tile">
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "20px", fontWeight: 800 }}>
+                      {stat.value}
+                      {stat.unit && (
+                        <span style={{ fontSize: "12px", color: "var(--muted)" }}>{stat.unit}</span>
+                      )}
+                    </span>
+                    <span
                       style={{
-                        flex: "1 1 110px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "6px",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "11px",
+                        letterSpacing: "0.08em",
+                        color: "var(--muted)",
                       }}
                     >
-                      <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
-                        <div
-                          style={{
-                            position: "absolute",
-                            inset: `0 ${100 - item.metric.beforePct}% 0 0`,
-                            background: "var(--faint)",
-                          }}
-                        />
-                      </div>
-                      <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
-                        <div
-                          style={{
-                            position: "absolute",
-                            inset: `0 ${100 - item.metric.afterPct}% 0 0`,
-                            background: "var(--accent)",
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "11px",
-                          letterSpacing: "0.1em",
-                          color: "var(--ink)",
-                        }}
-                      >
-                        AFTER
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: "clamp(28px, 3.4vw, 34px)",
-                          fontWeight: 800,
-                          letterSpacing: "-0.03em",
-                        }}
-                      >
-                        {item.metric.after}
-                      </span>
-                    </div>
+                      {stat.label}
+                    </span>
                   </div>
-
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: "11px",
-                      letterSpacing: "0.08em",
-                      color: "var(--muted)",
-                    }}
-                  >
-                    {item.metric.caption}
-                  </span>
-                </>
-              )}
-
-              <span
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "11px",
-                  letterSpacing: "0.08em",
-                  color: "var(--muted)",
-                }}
-              >
-                WHAT YOU END UP WITH
-              </span>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
-                  gap: "12px",
-                }}
-              >
-                {item.outcomes.map((outcome) => (
-                  <span key={outcome} className="tile">
-                    {outcome}
-                  </span>
                 ))}
               </div>
             </div>
           </div>
+
+          <div style={{ padding: "0 clamp(16px, 2vw, 22px) 20px" }}>
+            <Screenshot item={item} />
+          </div>
+
+          <Link href={`/case-studies/${item.slug}`} className="case-card__more">
+            {work.readMore}
+          </Link>
         </article>
       ))}
 

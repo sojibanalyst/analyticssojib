@@ -123,8 +123,8 @@
   align-items: start;
 }
 
-/* Outcome tile — the design's metric tile, without a number in it. */
-.tile {
+/* Metric tile, verbatim from the design's case cards. */
+.stat-tile {
   box-sizing: border-box;
   min-width: 0;
   background: var(--bg);
@@ -132,19 +132,56 @@
   border-radius: 10px;
   padding: 14px 16px;
   display: flex;
-  align-items: center;
-  gap: 9px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--muted);
+  flex-direction: column;
+  gap: 5px;
 }
 
-.tile::before {
-  content: "+";
-  color: var(--ok);
-  font-weight: 700;
-  flex: 0 0 auto;
+/* Case screenshot: real image, or the design's slot as a drop zone. */
+.case-shot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.case-shot--empty {
+  border-style: dashed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+
+.case-shot__icon {
+  font-size: 20px;
+  color: var(--border);
+}
+
+.case-card__more {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 56px;
+  padding: 0 clamp(16px, 2vw, 22px);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  transition: background 150ms ease;
+}
+
+.case-card__more:hover {
+  background: var(--bg);
+  color: var(--ink);
 }
 
 /* Review carousel -------------------------------------------------------- */
@@ -192,6 +229,108 @@
   flex-direction: column;
   gap: 14px;
   justify-content: center;
+}
+
+/* Contact: copy on the left, booking widget on the right ------------------ */
+
+.contact-grid {
+  padding-block: 64px;
+  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 34px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .contact-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+  }
+}
+
+.contact-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contact-booking {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Notes / blog cards ----------------------------------------------------- */
+
+.note-card {
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 168px;
+  transition: border-color 150ms ease;
+}
+
+.note-card:hover {
+  border-color: var(--ink);
+  color: inherit;
+}
+
+/* Written review carousel ------------------------------------------------ */
+/* Card widths come from the design: 3 up, 2 up under 1024, 1 up under 768,
+   with a 14px gutter and scroll snapping. */
+
+.written-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.written-track:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.written-card {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  box-sizing: border-box;
+  margin: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.written-card[data-placeholder="true"] {
+  border-style: dashed;
+}
+
+@media (min-width: 768px) {
+  .written-card {
+    flex: 0 0 calc((100% - 14px) / 2);
+  }
+}
+
+@media (min-width: 1024px) {
+  .written-card {
+    flex: 0 0 calc((100% - 28px) / 3);
+  }
 }
 
 /* Defects table ---------------------------------------------------------- */
@@ -426,6 +565,34 @@ a.pill:hover {
   .icon-btn:hover {
     transform: none;
   }
+}
+
+/* Stack strip ------------------------------------------------------------ */
+/* The design flips exactly three marks per theme: TikTok and ChatGPT invert,
+   Snapchat darkens its yellow and gains an outline so it stays legible on a
+   light surface. Everything else keeps its brand colour in both themes. */
+
+.stack-mark--tiktok,
+.stack-mark--openai {
+  color: #ffffff;
+}
+
+[data-theme="light"] .stack-mark--tiktok,
+[data-theme="light"] .stack-mark--openai {
+  color: #000000;
+}
+
+.stack-mark--snapchat {
+  color: #fffc00;
+}
+
+[data-theme="light"] .stack-mark--snapchat {
+  color: #b8a600;
+}
+
+[data-theme="light"] .stack-mark--snapchat svg {
+  stroke: #3a342c;
+  stroke-width: 0.4;
 }
 
 /* Hero ------------------------------------------------------------------- */

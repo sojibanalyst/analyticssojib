@@ -8,6 +8,7 @@ import { Work } from "@/components/sections/Work";
 import { Reviews } from "@/components/sections/Reviews";
 import { Process } from "@/components/sections/Process";
 import { About } from "@/components/sections/About";
+import { Notes } from "@/components/sections/Notes";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
@@ -29,6 +30,7 @@ export default function Home() {
         <Reviews />
         <Process />
         <About />
+        <Notes />
         <Faq />
         <Contact />
       </main>

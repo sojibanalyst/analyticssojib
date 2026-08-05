@@ -8,16 +8,9 @@ export function Contact() {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      style={{
-        paddingBlock: "64px",
-        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
-        borderBottom: "1px solid var(--border)",
-        background: "var(--surface)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-      }}
+      className="contact-grid"
     >
+      <div className="contact-copy">
       <span className="eyebrow">{contact.eyebrow}</span>
 
       <h2
@@ -76,7 +69,9 @@ export function Contact() {
         </a>
       </div>
 
-      <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "12px" }}>
+      </div>
+
+      <div className="contact-booking">
         <span
           style={{
             fontFamily: "var(--font-mono)",
