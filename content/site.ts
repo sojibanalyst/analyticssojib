@@ -411,7 +411,10 @@ export const work = {
         { value: "7.2", unit: "/10", label: "META MATCH QUALITY" },
         { value: "14", unit: "days", label: "TO FULL REBUILD" },
       ],
-      screenshot: { src: "", alt: "" },
+      screenshot: {
+        src: "/case-shopify-accuracy.png",
+        alt: "GA4 DebugView showing a purchase and an add_payment_info event firing once each on a live session, beside the running event counts for the last 30 minutes.",
+      },
       needsConfirmation: true,
       detail: {
         intro:
@@ -465,7 +468,10 @@ export const work = {
         { value: "£31", unit: "k", label: "SPEND REALLOCATED" },
         { value: "1", label: "REPORT THE TEAM TRUSTS" },
       ],
-      screenshot: { src: "", alt: "" },
+      screenshot: {
+        src: "/case-meta-roas.png",
+        alt: "Meta Events Manager showing one purchase arriving twice from the browser and once from the server under a shared event ID, with the server event marked Deduplicated.",
+      },
       detail: {
         intro:
           "A subscription coffee brand was scaling spend against a 4.1x ROAS that the finance team could not find anywhere in the ledger. The real number was closer to half that.",
