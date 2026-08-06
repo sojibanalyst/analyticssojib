@@ -20,7 +20,9 @@
   --faint: #8c8f97;
   --accent: #ff4a3d;
   --ink: #ff4a3d;
-  --on-accent: #170603;
+  /* The design's #170603 clears AA at 5.92:1, but at 13px uppercase mono on a
+     saturated red it reads muddy. True black takes it to 6.30:1. */
+  --on-accent: #000000;
   --ok: #35c97b;
   --result: #35c97b;
   --badge-fg: #35c97b;

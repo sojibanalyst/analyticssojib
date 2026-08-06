@@ -7,11 +7,18 @@ export const CALENDLY_WIDGET_JS =
 export const CALENDLY_WIDGET_CSS =
   "https://assets.calendly.com/assets/external/widget.css";
 
-/** Widget colours matched to the design tokens, per theme. Calendly wants
- *  6-character hex without the leading '#'. */
+/**
+ * Widget colours, per theme. Calendly wants 6-character hex without the '#'.
+ *
+ * Calendly derives its secondary text (day names, unavailable dates, the host
+ * name) by fading `text` toward `background`. On a near-black background those
+ * derived greys collapse into the surface, which is what made the widget hard
+ * to read. The dark background is therefore lifted above --surface and the
+ * text pinned to pure white, so the faded steps still land legibly.
+ */
 const PALETTE: Record<Theme, { background: string; text: string; primary: string }> =
   {
-    dark: { background: "101114", text: "fafafa", primary: "ff4a3d" },
+    dark: { background: "1a1d23", text: "ffffff", primary: "ff5f54" },
     light: { background: "ffffff", text: "0a0a0b", primary: "0f7a3d" },
   };
 

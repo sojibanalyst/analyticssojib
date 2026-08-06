@@ -253,10 +253,41 @@ a.doc-button:hover {
   align-items: start;
 }
 
+/* Calendly switches from its tall single-column layout to the shorter
+   two-pane one somewhere around 700px of embed width, so the booking column
+   gets the larger share — otherwise the widget is permanently in its tallest
+   form and scrolls inside its own box. */
 @media (min-width: 1024px) {
   .contact-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
     gap: 40px;
+  }
+}
+
+/* Only force the 700px minimum once the page is wide enough that the copy
+   column still has room for the headline — below this the widget keeps its
+   tall layout and .calendly-shell gives it the height to do that cleanly. */
+@media (min-width: 1400px) {
+  .contact-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(700px, 1.2fr);
+  }
+}
+
+/* The embed fills this box. Sized for the layout Calendly uses at each width,
+   with headroom so it never scrolls inside itself. */
+.calendly-shell {
+  min-width: 280px;
+  width: 100%;
+  height: 1080px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+@media (min-width: 1400px) {
+  .calendly-shell {
+    height: 780px;
   }
 }
 
@@ -468,12 +499,14 @@ a.doc-button:hover {
   transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
 }
 
+/* 800 rather than 700, and a touch larger: the extra stroke weight is what
+   makes dark-on-red legible at this size, more than the colour change does. */
 .btn-primary {
   background: var(--accent);
   color: var(--on-accent);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   padding: 15px 22px;
   border: 1px solid var(--accent);
 }
@@ -940,9 +973,9 @@ a.pill:hover {
   min-height: 44px;
   background: var(--accent);
   color: var(--on-accent);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   white-space: nowrap;
   padding: 9px 14px;
   border-radius: 8px;

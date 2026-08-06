@@ -79,18 +79,14 @@ export function CalendlyInline() {
         </>
       )}
 
+      {/* Height lives in CSS: Calendly fills its parent and scrolls inside it,
+          so the box has to be tall enough for the layout Calendly picks at the
+          current width — see .calendly-shell. */}
       <div
         ref={widgetRef}
-        className="calendly-inline-widget"
+        className="calendly-inline-widget calendly-shell"
         data-url={url}
-        style={{
-          minWidth: "280px",
-          height: "700px",
-          border: "1px solid var(--border)",
-          borderRadius: "14px",
-          overflow: "hidden",
-          background: "var(--bg)",
-        }}
+        data-resize="true"
       />
 
       <p
