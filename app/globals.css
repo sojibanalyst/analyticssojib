@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./components.css";
+@import "./tracking-plan.css";
 
 /* ==========================================================================
    Design tokens — extracted verbatim from Claude Design
@@ -38,6 +39,15 @@
   /* hero copy colours + border, from renderVals() in the design's logic */
   --hero-soft: #c9ccd3;
   --hero-edge: rgba(255, 255, 255, 0.34);
+
+  /* code blocks (/tracking-plan). Dark theme sits below --surface so the
+     block reads as inset rather than raised. */
+  --code-bg: #08080a;
+  --code-fg: #e6e8ec;
+  --code-border: #24252a;
+  --code-label: #a7aab2;
+  /* #6f727a measured 4.15:1 on --code-bg — below AA for this 10.5px label. */
+  --code-dim: #8c8f97;
 }
 
 [data-theme="light"] {
@@ -67,6 +77,16 @@
   --hero-photo: #efedea;
   --hero-soft: #3a342c;
   --hero-edge: rgba(0, 0, 0, 0.32);
+
+  /* Light theme keeps a light code surface: an inverted dark block would be
+     the only dark element on the page and would fight the palette.
+     #1f2126 on #f2f2ef measures 13.6:1. */
+  --code-bg: #f2f2ef;
+  --code-fg: #1f2126;
+  --code-border: #c4c5c1;
+  --code-label: #4c4f55;
+  /* #6b6e74 cleared AA by 0.06 — this leaves real margin. */
+  --code-dim: #5f6268;
 }
 
 /* --------------------------------------------------------------------------

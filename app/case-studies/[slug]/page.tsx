@@ -166,9 +166,14 @@ export default async function CaseStudyPage({ params }: Params) {
             {work.metricNote}
           </p>
 
-          <Link href="/#work" className="btn btn-ghost" style={{ alignSelf: "flex-start" }}>
-            ← ALL CASE FILES
-          </Link>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <Link href="/tracking-plan" className="btn btn-primary">
+              READ THE PLAN BEHIND THIS WORK →
+            </Link>
+            <Link href="/#work" className="btn btn-ghost">
+              ← ALL CASE FILES
+            </Link>
+          </div>
         </article>
       </main>
       <Footer />

@@ -646,9 +646,9 @@ export const about = {
    */
   doc: {
     label: "READ A REAL TRACKING PLAN",
-    note: "(PUBLIC DOC)",
+    note: "(SAMPLE)",
     pendingNote: "(LINK COMING)",
-    url: "",
+    url: "/tracking-plan",
   },
   chips: [
     "GA4 CERTIFIED",

@@ -1,0 +1,645 @@
+/* ==========================================================================
+   /tracking-plan — reuses the site's tokens and section rhythm. No new
+   colours, no new fonts. Everything here is layout for a long document.
+   ========================================================================== */
+
+.plan-page {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header ------------------------------------------------------------------ */
+
+.plan-header {
+  padding-block: 56px 40px;
+  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.plan-h1 {
+  margin: 0;
+  max-width: 20ch;
+  font-family: var(--font-sans);
+  font-size: clamp(28px, 5.2vw, 46px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.plan-standfirst {
+  margin: 0;
+  max-width: 72ch;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.plan-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.plan-meta-row__stack {
+  color: var(--faint);
+}
+
+.plan-meta-row__sep {
+  color: var(--border);
+}
+
+.plan-download {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  min-height: 44px;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+
+.plan-download:hover {
+  border-color: var(--ink);
+}
+
+/* Body: contents rail + document ------------------------------------------ */
+
+.plan-body {
+  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
+  padding-block: 40px 64px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .plan-body {
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+
+.plan-nav {
+  display: none;
+  position: sticky;
+  top: 96px;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100svh - 120px);
+  overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .plan-nav {
+    display: flex;
+  }
+}
+
+.plan-nav__title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.plan-nav__list,
+.plan-nav-mobile .plan-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  counter-reset: none;
+}
+
+.plan-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 4px 8px;
+  border-left: 2px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.plan-nav__link:hover {
+  color: var(--text);
+  border-left-color: var(--faint);
+}
+
+.plan-nav__link[aria-current="true"] {
+  color: var(--ink);
+  border-left-color: var(--accent);
+}
+
+.plan-nav__num {
+  color: var(--faint);
+}
+
+.plan-nav__link[aria-current="true"] .plan-nav__num {
+  color: var(--ink);
+}
+
+/* Mobile disclosure */
+.plan-nav-mobile {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 0 14px;
+}
+
+@media (min-width: 1024px) {
+  .plan-nav-mobile {
+    display: none;
+  }
+}
+
+.plan-nav-mobile summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.plan-nav-mobile summary::-webkit-details-marker {
+  display: none;
+}
+
+.plan-nav-mobile summary::after {
+  content: "+";
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.plan-nav-mobile[open] summary::after {
+  content: "−";
+}
+
+.plan-nav-mobile .plan-nav__list {
+  padding-bottom: 12px;
+}
+
+/* Document ---------------------------------------------------------------- */
+
+.plan-doc {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.plan-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  scroll-margin-top: 96px;
+}
+
+.plan-h2 {
+  font-size: clamp(22px, 3.2vw, 30px);
+}
+
+.plan-lead {
+  margin: 0;
+  max-width: 72ch;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+.plan-para {
+  margin: 0;
+  max-width: 72ch;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.plan-subhead {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.plan-note {
+  margin: 0;
+  max-width: 72ch;
+  border-left: 2px solid var(--accent);
+  padding: 2px 0 2px 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.plan-list {
+  margin: 0;
+  padding-left: 0;
+  max-width: 72ch;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plan-list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.plan-list li::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--ok);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.plan-rules {
+  margin: 0;
+  max-width: 72ch;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.plan-rules__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: 2px solid var(--border);
+  padding-left: 18px;
+}
+
+.plan-rules dt {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.plan-rules dd {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Inline code ------------------------------------------------------------- */
+
+.inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* Tables ------------------------------------------------------------------ */
+
+.plan-table-wrap {
+  width: 100%;
+}
+
+.plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-align: left;
+}
+
+.plan-table th {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  color: var(--faint);
+  padding: 0 16px 10px 0;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.plan-table td {
+  padding: 14px 16px 14px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.plan-table td:first-child {
+  color: var(--text);
+}
+
+/* Under 768px the table restacks into one card per row — a definition list
+   in table clothing — rather than scrolling sideways. */
+@media (max-width: 767px) {
+  .plan-table,
+  .plan-table tbody,
+  .plan-table tr,
+  .plan-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .plan-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .plan-table tr {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 14px;
+    margin-bottom: 10px;
+  }
+
+  .plan-table td {
+    border-bottom: 1px solid var(--border);
+    padding: 12px 0;
+  }
+
+  .plan-table tr td:last-child {
+    border-bottom: 0;
+  }
+
+  .plan-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 5px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--faint);
+  }
+}
+
+/* Code blocks — the centrepiece --------------------------------------------
+   Dark surface in both themes would fight the light palette, so light mode
+   gets its own surface. Both are checked for contrast. */
+
+.codeblock {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--code-bg);
+}
+
+.codeblock__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--code-border);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--code-label);
+}
+
+.codeblock__lang {
+  margin-left: 10px;
+  color: var(--code-dim);
+}
+
+.codeblock__copy {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--code-label);
+  background: transparent;
+  border: 1px solid var(--code-border);
+  border-radius: 6px;
+  padding: 7px 11px;
+  min-height: 34px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.codeblock__copy:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.codeblock__pre {
+  margin: 0;
+  padding: 18px 16px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--code-fg);
+  tab-size: 2;
+}
+
+.codeblock__pre code {
+  font-family: inherit;
+  white-space: pre;
+}
+
+/* CTAs -------------------------------------------------------------------- */
+
+.plan-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.plan-cta--end {
+  margin-top: 4px;
+}
+
+.plan-cta-note {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: var(--faint);
+}
+
+.plan-closing {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 40px;
+}
+
+/* Print ------------------------------------------------------------------- */
+
+@page {
+  size: A4;
+  margin: 18mm 14mm;
+}
+
+@media print {
+  :root,
+  [data-theme="dark"],
+  [data-theme="light"] {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --text: #000000;
+    --muted: #1a1a1a;
+    --faint: #444444;
+    --border: #bbbbbb;
+    --accent: #000000;
+    --ink: #000000;
+    --ok: #000000;
+    --code-bg: #ffffff;
+    --code-fg: #000000;
+    --code-border: #bbbbbb;
+    --code-label: #444444;
+    --code-dim: #666666;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Chrome that means nothing on paper */
+  .site-header,
+  .menu-scrim,
+  .mobile-menu,
+  .skip-link,
+  .plan-nav,
+  .plan-nav-mobile,
+  .plan-cta,
+  .plan-cta-note,
+  .plan-download,
+  .codeblock__copy,
+  footer {
+    display: none !important;
+  }
+
+  .plan-body {
+    display: block;
+    padding: 0;
+  }
+
+  .plan-header {
+    padding: 0 0 12mm;
+    border-bottom: 1px solid #bbbbbb;
+  }
+
+  .plan-doc {
+    gap: 10mm;
+  }
+
+  .plan-section {
+    break-inside: avoid-page;
+  }
+
+  .plan-h1 {
+    font-size: 26pt;
+  }
+
+  .plan-h2 {
+    font-size: 15pt;
+  }
+
+  .plan-lead,
+  .plan-para,
+  .plan-list li,
+  .plan-rules dd,
+  .plan-standfirst {
+    font-size: 10.5pt;
+    color: #1a1a1a !important;
+  }
+
+  .codeblock {
+    border: 1px solid #bbbbbb;
+    border-left: 3px solid #000000;
+    break-inside: avoid;
+  }
+
+  .codeblock__pre {
+    font-size: 8.5pt;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .plan-table {
+    font-size: 9pt;
+  }
+
+  .plan-table td,
+  .plan-table th {
+    color: #000000 !important;
+  }
+
+  /* The URL, so a printed copy can be traced back to its source. */
+  .plan-doc::after {
+    content: "analyticssojib.com/tracking-plan";
+    display: block;
+    margin-top: 8mm;
+    padding-top: 4mm;
+    border-top: 1px solid #bbbbbb;
+    font-family: var(--font-mono);
+    font-size: 8pt;
+    letter-spacing: 0.08em;
+    color: #444444;
+  }
+}

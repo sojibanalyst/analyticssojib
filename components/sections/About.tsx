@@ -35,11 +35,14 @@ function DocButton() {
     );
   }
 
+  // Internal routes stay in the tab; an external doc opens in a new one.
+  const external = /^https?:/.test(url);
+
   return (
     <a
       href={url}
-      target="_blank"
-      rel="noopener"
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener" : undefined}
       className="doc-button"
       style={docStyle}
     >

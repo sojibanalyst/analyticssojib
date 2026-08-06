@@ -82,6 +82,15 @@
   }
 }
 
+a.doc-button {
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+a.doc-button:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
 .service-card {
   transition: border-color 150ms ease;
 }
