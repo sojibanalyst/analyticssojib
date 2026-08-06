@@ -29,6 +29,16 @@ export type Service = {
 
 export type CaseStat = { value: string; unit?: string; label: string };
 
+export type CaseShot = {
+  src: string;
+  /** Real description — these are content images, not decoration. */
+  alt: string;
+  /** Short label shown under the image in the gallery. */
+  caption: string;
+  /** Heading of the detail-page section this belongs under. */
+  section: string;
+};
+
 export type CaseStudy = {
   /** URL segment: /case-studies/<slug> */
   slug: string;
@@ -49,10 +59,15 @@ export type CaseStudy = {
   };
   stats: CaseStat[];
   /**
-   * Screenshot for the case. Leave `src` empty and the card renders the
-   * design's image slot as a labelled drop zone instead of a broken image.
+   * Evidence screenshots. The card shows them as a gallery; the detail page
+   * places each one under the section named in `section`, so the image sits
+   * beside the prose it proves rather than in a lump at the top.
+   *
+   * Every one of these is cropped from a client PDF — see
+   * scripts/build-case-shots.mjs for the crop that removes the identifying
+   * strip, and never add one without checking the output first.
    */
-  screenshot: { src: string; alt: string };
+  screenshots: CaseShot[];
   /** Long-form content for /case-studies/<slug>. */
   detail: {
     intro: string;
@@ -411,10 +426,32 @@ export const work = {
         { value: "7.2", unit: "/10", label: "META MATCH QUALITY" },
         { value: "14", unit: "days", label: "TO FULL REBUILD" },
       ],
-      screenshot: {
-        src: "/case-shopify-accuracy.png",
-        alt: "GA4 DebugView showing a purchase and an add_payment_info event firing once each on a live session, beside the running event counts for the last 30 minutes.",
-      },
+      screenshots: [
+        {
+          src: "/case-ga4-viewitem.png",
+          alt: "GA4 DebugView showing a view_item event firing once as a product page renders.",
+          caption: "view_item firing once per product view",
+          section: "What I changed",
+        },
+        {
+          src: "/case-ga4-checkout.png",
+          alt: "GA4 DebugView showing begin_checkout firing as checkout starts, with the running event counts alongside.",
+          caption: "begin_checkout, with live event counts",
+          section: "What I changed",
+        },
+        {
+          src: "/case-ga4-shipping.png",
+          alt: "GA4 DebugView showing add_shipping_info firing when a shipping method is selected.",
+          caption: "add_shipping_info on shipping selection",
+          section: "What I changed",
+        },
+        {
+          src: "/case-shopify-accuracy.png",
+          alt: "GA4 DebugView showing a purchase and an add_payment_info event firing once each on a live session, beside the running event counts for the last 30 minutes.",
+          caption: "One purchase, one event — no duplicate on refresh",
+          section: "How it was verified",
+        },
+      ],
       needsConfirmation: true,
       detail: {
         intro:
@@ -468,10 +505,20 @@ export const work = {
         { value: "£31", unit: "k", label: "SPEND REALLOCATED" },
         { value: "1", label: "REPORT THE TEAM TRUSTS" },
       ],
-      screenshot: {
-        src: "/case-meta-roas.png",
-        alt: "Meta Events Manager showing one purchase arriving twice from the browser and once from the server under a shared event ID, with the server event marked Deduplicated.",
-      },
+      screenshots: [
+        {
+          src: "/case-meta-tags.png",
+          alt: "Google Tag Manager server container listing Facebook Conversion API tags for add_payment_info, add_to_cart, begin_checkout, page_view, search and view_item, each bound to its own trigger.",
+          caption: "Conversions API tags, one per event, in the server container",
+          section: "What I changed",
+        },
+        {
+          src: "/case-meta-roas.png",
+          alt: "Meta Events Manager showing one purchase arriving twice from the browser and once from the server under a shared event ID, with the server event marked Deduplicated.",
+          caption: "Shared event ID — the server event resolves as Deduplicated",
+          section: "What I changed",
+        },
+      ],
       detail: {
         intro:
           "A subscription coffee brand was scaling spend against a 4.1x ROAS that the finance team could not find anywhere in the ledger. The real number was closer to half that.",

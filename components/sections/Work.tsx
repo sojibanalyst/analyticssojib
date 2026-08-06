@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { work, type CaseStudy } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { CaseGallery } from "@/components/sections/CaseGallery";
 
 function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
   return (
@@ -90,10 +90,10 @@ function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
   );
 }
 
-/** The design's image slot: a real screenshot once supplied, a labelled drop
+/** The design's image slot: a gallery once screenshots exist, a labelled drop
  *  zone until then — never a broken image. */
 function Screenshot({ item }: { item: CaseStudy }) {
-  if (!item.screenshot.src) {
+  if (!item.screenshots.length) {
     return (
       <div className="case-shot case-shot--empty" aria-hidden="true">
         <span className="case-shot__icon">▤</span>
@@ -101,17 +101,7 @@ function Screenshot({ item }: { item: CaseStudy }) {
       </div>
     );
   }
-  return (
-    <div className="case-shot">
-      <Image
-        src={item.screenshot.src}
-        alt={item.screenshot.alt}
-        fill
-        sizes="(max-width: 1279px) 100vw, 1232px"
-        style={{ objectFit: "cover" }}
-      />
-    </div>
-  );
+  return <CaseGallery shots={item.screenshots} label={item.title} />;
 }
 
 export function Work() {

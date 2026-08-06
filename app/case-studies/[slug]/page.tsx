@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { site, work } from "@/content/site";
@@ -124,6 +125,8 @@ export default async function CaseStudyPage({ params }: Params) {
               key={sec.heading}
               style={{ display: "flex", flexDirection: "column", gap: "14px", maxWidth: "70ch" }}
             >
+              {/* Screenshots are placed under the section they prove, so the
+                  evidence sits next to the claim rather than in a lump. */}
               <h2
                 style={{
                   margin: 0,
@@ -149,6 +152,25 @@ export default async function CaseStudyPage({ params }: Params) {
                   {para}
                 </p>
               ))}
+
+              {item.screenshots
+                .filter((shot) => shot.section === sec.heading)
+                .map((shot) => (
+                  <figure key={shot.src} className="case-figure">
+                    <div className="case-shot">
+                      <Image
+                        src={shot.src}
+                        alt={shot.alt}
+                        fill
+                        sizes="(max-width: 1279px) 100vw, 900px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                    <figcaption className="case-gallery__caption">
+                      {shot.caption}
+                    </figcaption>
+                  </figure>
+                ))}
             </section>
           ))}
 

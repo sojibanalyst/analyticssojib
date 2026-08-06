@@ -156,6 +156,99 @@ a.doc-button:hover {
   border: 1px solid var(--border);
 }
 
+/* Evidence gallery ------------------------------------------------------- */
+
+.case-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.case-gallery__track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.case-gallery__track:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.case-gallery__item {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.case-gallery__caption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.case-gallery__pager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.case-gallery__dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.case-gallery__dots button {
+  box-sizing: border-box;
+  width: 32px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.case-gallery__dots span {
+  width: 24px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.case-gallery__dots span[data-active] {
+  background: var(--accent);
+}
+
+.case-gallery__count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--muted);
+  min-width: 54px;
+  margin-left: auto;
+}
+
+/* Detail-page figures, placed under the section they prove. */
+.case-figure {
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 100%;
+}
+
 .case-shot--empty {
   border-style: dashed;
   display: flex;
