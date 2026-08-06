@@ -42,6 +42,13 @@
   --hero-soft: #c9ccd3;
   --hero-edge: rgba(255, 255, 255, 0.34);
 
+  /* Calendly panel. The embed is a cross-origin iframe, so its interior is
+     Calendly's own CSS — only background, text and primary can be passed in.
+     This token is the background handed to the widget AND the background of
+     the box around it, so the panel and the embed read as one surface.
+     MUST stay in sync with PALETTE in lib/calendly.ts. */
+  --calendly-surface: #1a1d23;
+
   /* code blocks (/tracking-plan). Dark theme sits below --surface so the
      block reads as inset rather than raised. */
   --code-bg: #08080a;
@@ -79,6 +86,9 @@
   --hero-photo: #efedea;
   --hero-soft: #3a342c;
   --hero-edge: rgba(0, 0, 0, 0.32);
+
+  /* Light theme: --surface exactly, so the panel matches every other card. */
+  --calendly-surface: #ffffff;
 
   /* Light theme keeps a light code surface: an inverted dark block would be
      the only dark element on the page and would fight the palette.

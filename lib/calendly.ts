@@ -10,15 +10,25 @@ export const CALENDLY_WIDGET_CSS =
 /**
  * Widget colours, per theme. Calendly wants 6-character hex without the '#'.
  *
- * Calendly derives its secondary text (day names, unavailable dates, the host
- * name) by fading `text` toward `background`. On a near-black background those
- * derived greys collapse into the surface, which is what made the widget hard
- * to read. The dark background is therefore lifted above --surface and the
- * text pinned to pure white, so the faded steps still land legibly.
+ * These three values are the ONLY thing controllable inside the embed — it is
+ * a cross-origin iframe, so its interior CSS cannot be reached. Everything
+ * else (day-cell styling, borders, the Calendly ribbon) is theirs.
+ *
+ * `background` MUST equal --calendly-surface in globals.css, or a seam appears
+ * between the panel and the embed.
+ *
+ * Why the dark background is lifted rather than being --surface exactly:
+ * Calendly derives its secondary text — host name, day names, unavailable
+ * dates — by fading `text` toward `background`. On the near-black --surface
+ * those faded steps collapsed into the surface and the widget became
+ * unreadable. #1a1d23 gives them somewhere to land while still reading as
+ * part of the palette, and the brand accent still clears AA on it at 5.06:1.
  */
 const PALETTE: Record<Theme, { background: string; text: string; primary: string }> =
   {
-    dark: { background: "1a1d23", text: "ffffff", primary: "ff5f54" },
+    // primary is the exact brand accent — no lightening needed at 5.06:1.
+    dark: { background: "1a1d23", text: "ffffff", primary: "ff4a3d" },
+    // light maps 1:1 onto --surface / --text / --accent.
     light: { background: "ffffff", text: "0a0a0b", primary: "0f7a3d" },
   };
 

@@ -278,7 +278,9 @@ a.doc-button:hover {
   border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
-  background: var(--bg);
+  /* Same value the widget is given, so there is no seam between the box and
+     the embed inside it. */
+  background: var(--calendly-surface);
 }
 
 /* Stacked but wide enough that the full-width embed clears 700px, so Calendly
