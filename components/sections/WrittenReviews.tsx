@@ -88,8 +88,10 @@ export function WrittenReviews() {
           {reviews.writtenTitle}
         </span>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <div className="written-pager">
+          {/* Eight dots plus the counter and arrows do not fit a 360px screen;
+              the dots drop away there and the arrows carry the interaction. */}
+          <div className="written-dots">
             {items.map((_, i) => (
               <button
                 key={i}

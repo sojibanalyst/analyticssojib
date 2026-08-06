@@ -13,20 +13,7 @@ export function Contact() {
       <div className="contact-copy">
       <span className="eyebrow">{contact.eyebrow}</span>
 
-      <h2
-        id="contact-title"
-        style={{
-          margin: 0,
-          maxWidth: "26ch",
-          fontFamily: "var(--font-sans)",
-          fontSize: "clamp(28px, 5.2vw, 46px)",
-          lineHeight: 1.1,
-          fontWeight: 700,
-          letterSpacing: "-0.025em",
-          textTransform: "uppercase",
-          textWrap: "balance",
-        }}
-      >
+      <h2 id="contact-title" className="contact-title">
         {contact.title}
       </h2>
 

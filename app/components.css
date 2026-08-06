@@ -250,26 +250,22 @@ a.doc-button:hover {
   display: grid;
   grid-template-columns: 1fr;
   gap: 34px;
-  align-items: start;
+  /* Stretch, not start: the two columns share one row height so the booking
+     panel and the copy end level with each other. */
+  align-items: stretch;
 }
 
-/* Calendly switches from its tall single-column layout to the shorter
-   two-pane one somewhere around 700px of embed width, so the booking column
-   gets the larger share — otherwise the widget is permanently in its tallest
-   form and scrolls inside its own box. */
-@media (min-width: 1024px) {
+/* Calendly drops from its tall single-column layout to the compact two-pane
+   one at about 700px of embed width. Guaranteeing that width is what keeps
+   the panel short enough to sit level with the copy — otherwise it is stuck
+   at ~1080px and no amount of alignment makes the pair look right. */
+/* 1200px, not 1024: side by side needs 700 for the widget + 320 for the copy
+   + a 40px gap, which does not fit inside 1024 once the gutters are taken
+   off — it forced the whole page to scroll sideways. */
+@media (min-width: 1200px) {
   .contact-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(320px, 1fr) minmax(700px, 1.25fr);
     gap: 40px;
-  }
-}
-
-/* Only force the 700px minimum once the page is wide enough that the copy
-   column still has room for the headline — below this the widget keeps its
-   tall layout and .calendly-shell gives it the height to do that cleanly. */
-@media (min-width: 1400px) {
-  .contact-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(700px, 1.2fr);
   }
 }
 
@@ -278,16 +274,31 @@ a.doc-button:hover {
 .calendly-shell {
   min-width: 280px;
   width: 100%;
-  height: 1080px;
+  height: 1040px;
   border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
   background: var(--bg);
 }
 
-@media (min-width: 1400px) {
+/* Stacked but wide enough that the full-width embed clears 700px, so Calendly
+   uses its shorter two-pane layout. */
+@media (min-width: 820px) {
   .calendly-shell {
-    height: 780px;
+    height: 760px;
+  }
+}
+
+/* Side by side: fill the shared row height, with a floor that fits Calendly's
+   two-pane layout so it never scrolls inside itself. */
+@media (min-width: 1200px) {
+  .contact-booking {
+    height: 100%;
+  }
+
+  .calendly-shell {
+    height: 100%;
+    min-height: 700px;
   }
 }
 
@@ -298,11 +309,39 @@ a.doc-button:hover {
   gap: 20px;
 }
 
+/* Once the columns are side by side the copy spreads to fill the shared
+   height, so the bottom edges line up instead of leaving a ragged gap. */
+@media (min-width: 1200px) {
+  .contact-copy {
+    justify-content: space-between;
+  }
+}
+
 .contact-booking {
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* The heading sits in a narrower column than a full-width hero would, so it
+   steps down a size to keep a sensible measure. */
+.contact-title {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--font-sans);
+  font-size: clamp(28px, 5.2vw, 46px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+@media (min-width: 1200px) {
+  .contact-title {
+    font-size: clamp(26px, 2.9vw, 36px);
+  }
 }
 
 /* Notes / blog cards ----------------------------------------------------- */
@@ -328,6 +367,25 @@ a.doc-button:hover {
 /* Written review carousel ------------------------------------------------ */
 /* Card widths come from the design: 3 up, 2 up under 1024, 1 up under 768,
    with a 14px gutter and scroll snapping. */
+
+.written-pager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.written-dots {
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (min-width: 640px) {
+  .written-dots {
+    display: flex;
+  }
+}
 
 .written-track {
   display: flex;
