@@ -208,9 +208,12 @@ export const linkedinUrl = socials[1].href;
 /* Navigation                                                                  */
 /* -------------------------------------------------------------------------- */
 
-// Matches the design's five nav items. FAQ is reachable from the footer —
-// the design's header has no room for a sixth without crowding it.
+// The design had five items and a non-clickable wordmark, which left the
+// sub-pages (/tracking-plan, /blog/*, /case-studies/*) with no way back to the
+// home page from the header. HOME is explicit and the wordmark links too.
+// FAQ stays in the footer to keep the row from crowding.
 export const nav: NavLink[] = [
+  { label: "HOME", href: "/" },
   { label: "SERVICES", href: "/#services" },
   { label: "WORK", href: "/#work" },
   { label: "REVIEWS", href: "/#reviews" },

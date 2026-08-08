@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ctaLabel, nav, site } from "@/content/site";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
@@ -7,6 +9,7 @@ import { toggleTheme, useTheme } from "@/lib/theme";
 
 export function Header() {
   const theme = useTheme();
+  const onHome = usePathname() === "/";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const burgerRef = useRef<HTMLButtonElement>(null);
@@ -89,17 +92,25 @@ export function Header() {
   return (
     <>
       <header className="site-header" data-scrolled={scrolled}>
-        <span className="wordmark">
+        {/* The wordmark is the conventional way home, so it is a link, not
+            the design's plain span. */}
+        <Link href="/" className="wordmark" aria-label={`${site.name} — home`}>
           {site.wordmark.first}
-          <span style={{ color: "var(--ink)" }}>{site.wordmark.accent}</span>
+          <span style={{ color: "var(--ink)" }} aria-hidden="true">
+            {site.wordmark.accent}
+          </span>
           {site.wordmark.last}
-        </span>
+        </Link>
 
         <nav className="header-nav" aria-label="Main">
           {nav.map((item) => (
-            <a key={item.href} href={item.href}>
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={item.href === "/" && onHome ? "page" : undefined}
+            >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -151,14 +162,15 @@ export function Header() {
             className="mobile-menu"
           >
             {nav.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 onClick={closeMenu}
                 className="menu-link"
+                aria-current={item.href === "/" && onHome ? "page" : undefined}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
 
             <CalendlyPopupButton className="menu-cta" placement="mobile-menu">

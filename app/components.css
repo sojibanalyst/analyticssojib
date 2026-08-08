@@ -935,6 +935,19 @@ a.pill:hover {
   letter-spacing: 0.06em;
   white-space: nowrap;
   color: inherit;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+a.wordmark:hover {
+  color: var(--ink);
+}
+
+/* The current page is marked rather than only coloured, so it does not rely
+   on colour alone. */
+.header-nav a[aria-current="page"] {
+  color: var(--ink);
 }
 
 .header-nav {
