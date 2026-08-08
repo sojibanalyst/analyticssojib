@@ -8,8 +8,8 @@ const STORAGE_KEY = "sf-theme";
 const EVENT = "sf-theme-change";
 
 export function getTheme(): Theme {
-  if (typeof document === "undefined") return "dark";
-  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
+  if (typeof document === "undefined") return "light";
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
 
 export function setTheme(theme: Theme): void {
@@ -23,7 +23,7 @@ export function setTheme(theme: Theme): void {
 }
 
 export function toggleTheme(): void {
-  setTheme(getTheme() === "dark" ? "light" : "dark");
+  setTheme(getTheme() === "light" ? "dark" : "light");
 }
 
 function subscribe(onChange: () => void) {
@@ -32,10 +32,10 @@ function subscribe(onChange: () => void) {
 }
 
 /**
- * The server always renders the design's default (dark), so the server
- * snapshot is "dark" and the client corrects on mount. The pre-paint script in
- * layout.tsx has already set the attribute, so nothing visibly flashes.
+ * The server always renders the default (light), so the server snapshot is
+ * "light" and the client corrects on mount. The pre-paint script in layout.tsx
+ * has already set the attribute, so nothing visibly flashes.
  */
 export function useTheme(): Theme {
-  return useSyncExternalStore(subscribe, getTheme, () => "dark" as const);
+  return useSyncExternalStore(subscribe, getTheme, () => "light" as const);
 }

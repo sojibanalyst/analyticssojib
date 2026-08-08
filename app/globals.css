@@ -6,11 +6,55 @@
    Design tokens — extracted verbatim from Claude Design
    "Home - Signal Floor.dc.html" (project b8db6e0d-144d-4f0e-a9c0-586e313dccf1)
 
-   The design ships DARK as the default theme and switches to light via
-   [data-theme="light"] on the root element. Do not re-order: light must win.
+   The design shipped DARK as its default. This site inverts that: LIGHT is the
+   base theme and dark is opted into via [data-theme="dark"] on the root
+   element. The token values themselves are unchanged.
+
+   Do not re-order these two blocks. :root and [data-theme="dark"] have equal
+   specificity, so the dark block must stay second or it can never win.
    ========================================================================== */
 
 :root,
+[data-theme="light"] {
+  --bg: #f4f4f2;
+  --surface: #ffffff;
+  --border: #c4c5c1;
+  --text: #0a0a0b;
+  --muted: #545860;
+  --faint: #4c4f55;
+  --accent: #0f7a3d;
+  --ink: #0f7a3d;
+  --on-accent: #ffffff;
+  --ok: #0f7a3d;
+  --result: #0a0a0b;
+  --badge-fg: #4c4f55;
+  --badge-dot: #6e727a;
+  --badge-border: #a9aba6;
+  --logo: #6b6e74;
+  --chip-op: 0.28;
+  --warn: #6e4200;
+  --hero-rgb: 239, 237, 234;
+  --hero-veil: rgba(239, 237, 234, 0);
+  --hero-filter: contrast(1.04) saturate(0.94);
+  --hero-text: #17140f;
+  --hero-sub: #45403a;
+  --hero-line: #bdb8b0;
+  --hero-photo: #efedea;
+  --hero-soft: #3a342c;
+  --hero-edge: rgba(0, 0, 0, 0.32);
+
+
+  /* Light theme keeps a light code surface: an inverted dark block would be
+     the only dark element on the page and would fight the palette.
+     #1f2126 on #f2f2ef measures 13.6:1. */
+  --code-bg: #f2f2ef;
+  --code-fg: #1f2126;
+  --code-border: #c4c5c1;
+  --code-label: #4c4f55;
+  /* #6b6e74 cleared AA by 0.06 — this leaves real margin. */
+  --code-dim: #5f6268;
+}
+
 [data-theme="dark"] {
   --bg: #0a0a0b;
   --surface: #101114;
@@ -42,12 +86,6 @@
   --hero-soft: #c9ccd3;
   --hero-edge: rgba(255, 255, 255, 0.34);
 
-  /* Calendly panel. The embed is a cross-origin iframe, so its interior is
-     Calendly's own CSS — only background, text and primary can be passed in.
-     This token is the background handed to the widget AND the background of
-     the box around it, so the panel and the embed read as one surface.
-     MUST stay in sync with PALETTE in lib/calendly.ts. */
-  --calendly-surface: #1a1d23;
 
   /* code blocks (/tracking-plan). Dark theme sits below --surface so the
      block reads as inset rather than raised. */
@@ -57,48 +95,6 @@
   --code-label: #a7aab2;
   /* #6f727a measured 4.15:1 on --code-bg — below AA for this 10.5px label. */
   --code-dim: #8c8f97;
-}
-
-[data-theme="light"] {
-  --bg: #f4f4f2;
-  --surface: #ffffff;
-  --border: #c4c5c1;
-  --text: #0a0a0b;
-  --muted: #545860;
-  --faint: #4c4f55;
-  --accent: #0f7a3d;
-  --ink: #0f7a3d;
-  --on-accent: #ffffff;
-  --ok: #0f7a3d;
-  --result: #0a0a0b;
-  --badge-fg: #4c4f55;
-  --badge-dot: #6e727a;
-  --badge-border: #a9aba6;
-  --logo: #6b6e74;
-  --chip-op: 0.28;
-  --warn: #6e4200;
-  --hero-rgb: 239, 237, 234;
-  --hero-veil: rgba(239, 237, 234, 0);
-  --hero-filter: contrast(1.04) saturate(0.94);
-  --hero-text: #17140f;
-  --hero-sub: #45403a;
-  --hero-line: #bdb8b0;
-  --hero-photo: #efedea;
-  --hero-soft: #3a342c;
-  --hero-edge: rgba(0, 0, 0, 0.32);
-
-  /* Light theme: --surface exactly, so the panel matches every other card. */
-  --calendly-surface: #ffffff;
-
-  /* Light theme keeps a light code surface: an inverted dark block would be
-     the only dark element on the page and would fight the palette.
-     #1f2126 on #f2f2ef measures 13.6:1. */
-  --code-bg: #f2f2ef;
-  --code-fg: #1f2126;
-  --code-border: #c4c5c1;
-  --code-label: #4c4f55;
-  /* #6b6e74 cleared AA by 0.06 — this leaves real margin. */
-  --code-dim: #5f6268;
 }
 
 /* --------------------------------------------------------------------------

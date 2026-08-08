@@ -333,97 +333,14 @@ a.doc-button:hover {
   justify-content: center;
 }
 
-/* Contact: copy on the left, booking widget on the right ------------------ */
+/* Contact --------------------------------------------------------------- */
+/* The inline Calendly embed was removed, so the two-column grid, the shared
+   row height and the .calendly-shell box all went with it. Only the heading
+   size remains: it still reads better a step down from the hero scale. */
 
-.contact-grid {
-  padding-block: 64px;
-  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 34px;
-  /* Stretch, not start: the two columns share one row height so the booking
-     panel and the copy end level with each other. */
-  align-items: stretch;
-}
-
-/* Calendly drops from its tall single-column layout to the compact two-pane
-   one at about 700px of embed width. Guaranteeing that width is what keeps
-   the panel short enough to sit level with the copy — otherwise it is stuck
-   at ~1080px and no amount of alignment makes the pair look right. */
-/* 1200px, not 1024: side by side needs 700 for the widget + 320 for the copy
-   + a 40px gap, which does not fit inside 1024 once the gutters are taken
-   off — it forced the whole page to scroll sideways. */
-@media (min-width: 1200px) {
-  .contact-grid {
-    grid-template-columns: minmax(320px, 1fr) minmax(700px, 1.25fr);
-    gap: 40px;
-  }
-}
-
-/* The embed fills this box. Sized for the layout Calendly uses at each width,
-   with headroom so it never scrolls inside itself. */
-.calendly-shell {
-  min-width: 280px;
-  width: 100%;
-  height: 1040px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  /* Same value the widget is given, so there is no seam between the box and
-     the embed inside it. */
-  background: var(--calendly-surface);
-}
-
-/* Stacked but wide enough that the full-width embed clears 700px, so Calendly
-   uses its shorter two-pane layout. */
-@media (min-width: 820px) {
-  .calendly-shell {
-    height: 760px;
-  }
-}
-
-/* Side by side: fill the shared row height, with a floor that fits Calendly's
-   two-pane layout so it never scrolls inside itself. */
-@media (min-width: 1200px) {
-  .contact-booking {
-    height: 100%;
-  }
-
-  .calendly-shell {
-    height: 100%;
-    min-height: 700px;
-  }
-}
-
-.contact-copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Once the columns are side by side the copy spreads to fill the shared
-   height, so the bottom edges line up instead of leaving a ragged gap. */
-@media (min-width: 1200px) {
-  .contact-copy {
-    justify-content: space-between;
-  }
-}
-
-.contact-booking {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* The heading sits in a narrower column than a full-width hero would, so it
-   steps down a size to keep a sensible measure. */
 .contact-title {
   margin: 0;
-  max-width: 22ch;
+  max-width: 26ch;
   font-family: var(--font-sans);
   font-size: clamp(28px, 5.2vw, 46px);
   line-height: 1.1;
@@ -431,12 +348,6 @@ a.doc-button:hover {
   letter-spacing: -0.025em;
   text-transform: uppercase;
   text-wrap: balance;
-}
-
-@media (min-width: 1200px) {
-  .contact-title {
-    font-size: clamp(26px, 2.9vw, 36px);
-  }
 }
 
 /* Notes / blog cards ----------------------------------------------------- */
@@ -769,25 +680,29 @@ a.pill:hover {
 
 .stack-mark--tiktok,
 .stack-mark--openai {
-  color: #ffffff;
-}
-
-[data-theme="light"] .stack-mark--tiktok,
-[data-theme="light"] .stack-mark--openai {
   color: #000000;
 }
 
-.stack-mark--snapchat {
-  color: #fffc00;
+[data-theme="dark"] .stack-mark--tiktok,
+[data-theme="dark"] .stack-mark--openai {
+  color: #ffffff;
 }
 
-[data-theme="light"] .stack-mark--snapchat {
+.stack-mark--snapchat {
   color: #b8a600;
 }
 
-[data-theme="light"] .stack-mark--snapchat svg {
+.stack-mark--snapchat svg {
   stroke: #3a342c;
   stroke-width: 0.4;
+}
+
+[data-theme="dark"] .stack-mark--snapchat {
+  color: #fffc00;
+}
+
+[data-theme="dark"] .stack-mark--snapchat svg {
+  stroke: none;
 }
 
 /* Hero ------------------------------------------------------------------- */
@@ -1003,14 +918,14 @@ a.pill:hover {
    and keeps the last one, so declaring -webkit- last silently drops the
    standard property and the blur disappears in Chrome. */
 .site-header[data-scrolled="true"] {
-  background: rgba(10, 10, 11, 0.72);
+  background: rgba(244, 244, 242, 0.78);
   -webkit-backdrop-filter: saturate(150%) blur(14px);
   backdrop-filter: saturate(150%) blur(14px);
   border-bottom-color: var(--border);
 }
 
-[data-theme="light"] .site-header[data-scrolled="true"] {
-  background: rgba(244, 244, 242, 0.78);
+[data-theme="dark"] .site-header[data-scrolled="true"] {
+  background: rgba(10, 10, 11, 0.72);
 }
 
 .wordmark {

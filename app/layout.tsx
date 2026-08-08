@@ -73,17 +73,17 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
     { media: "(prefers-color-scheme: light)", color: "#f4f4f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
   ],
-  colorScheme: "dark light",
+  colorScheme: "light dark",
 };
 
 /**
- * Applied before paint so a stored theme never flashes. The design ships dark
- * as the default, so anything other than an explicit "light" resolves to dark.
+ * Applied before paint so a stored theme never flashes. Light is the default,
+ * so anything other than an explicit "dark" resolves to light.
  */
-const themeBootstrap = `(function(){try{var t=localStorage.getItem("sf-theme");document.documentElement.dataset.theme=t==="light"?"light":"dark";}catch(e){document.documentElement.dataset.theme="dark";}})();`;
+const themeBootstrap = `(function(){try{var t=localStorage.getItem("sf-theme");document.documentElement.dataset.theme=t==="dark"?"dark":"light";}catch(e){document.documentElement.dataset.theme="light";}})();`;
 
 export default function RootLayout({
   children,
@@ -94,7 +94,7 @@ export default function RootLayout({
     // whole font-family declaration invalid.
     <html
       lang="en"
-      data-theme="dark"
+      data-theme="light"
       className={`${jetbrainsMono.variable} ${archivo.variable}`}
       suppressHydrationWarning
     >

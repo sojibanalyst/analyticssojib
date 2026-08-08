@@ -754,8 +754,13 @@ export const contact = {
   eyebrow: "09 / CONTACT",
   title: "Send me your GA4 and your order total. I’ll tell you the gap.",
   body: "A 30-minute call, no deck. If your tracking is fine I’ll say so and you’ve lost half an hour.",
-  calendlyHeading: "PICK A TIME",
-  fallback: "Booking widget not loading? Open the scheduling page directly.",
+  /**
+   * The inline Calendly embed was removed: its interior is Calendly's own CSS
+   * in a cross-origin iframe, so it could never be made to sit properly inside
+   * the design. The popup is Calendly's full-size overlay and looks native.
+   * This line is the no-JavaScript path to the same booking page.
+   */
+  altBooking: "Prefer to see the calendar first?",
 };
 
 export const footer = {

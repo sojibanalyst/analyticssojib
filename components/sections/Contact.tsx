@@ -1,16 +1,23 @@
 import { contact, linkedinUrl, proof, site, upworkUrl } from "@/content/site";
-import { CalendlyInline } from "@/components/CalendlyInline";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
 import { SocialIcon } from "@/components/ui/Icon";
+import { CALENDLY_URL } from "@/lib/calendly";
 
 export function Contact() {
   return (
     <section
       id="contact"
       aria-labelledby="contact-title"
-      className="contact-grid"
+      style={{
+        paddingBlock: "64px",
+        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
+        borderBottom: "1px solid var(--border)",
+        background: "var(--surface)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+      }}
     >
-      <div className="contact-copy">
       <span className="eyebrow">{contact.eyebrow}</span>
 
       <h2 id="contact-title" className="contact-title">
@@ -56,21 +63,22 @@ export function Contact() {
         </a>
       </div>
 
-      </div>
-
-      <div className="contact-booking">
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "11px",
-            letterSpacing: "0.14em",
-            color: "var(--muted)",
-          }}
-        >
-          {contact.calendlyHeading}
-        </span>
-        <CalendlyInline />
-      </div>
+      {/* Works with JavaScript off, and for anyone who would rather see the
+          calendar page than open an overlay. */}
+      <p
+        style={{
+          margin: 0,
+          fontFamily: "var(--font-mono)",
+          fontSize: "11.5px",
+          letterSpacing: "0.06em",
+          color: "var(--faint)",
+        }}
+      >
+        {contact.altBooking}{" "}
+        <a href={CALENDLY_URL} target="_blank" rel="noopener">
+          calendly.com/sojibh2001/30min
+        </a>
+      </p>
     </section>
   );
 }

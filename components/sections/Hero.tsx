@@ -6,34 +6,35 @@ import { SocialIcon } from "@/components/ui/Icon";
 export function Hero() {
   return (
     <section className="hero" aria-labelledby="hero-title">
-      {/* Both photos ship; CSS shows the one matching the theme. The dark
-          variant is the priority image because dark is the default. */}
+      {/* Both photos ship; CSS shows the one matching the theme. The light
+          variant is the priority image because light is the default, so it is
+          the one that decides LCP. */}
       <Image
-        src="/hero-dark.jpg"
+        src="/hero-light.jpg"
         alt={hero.imageAlt}
-        width={1440}
-        height={810}
+        width={1200}
+        height={675}
         priority
         fetchPriority="high"
         quality={62}
         sizes="100vw"
-        className="hero-img hero-img--dark"
+        className="hero-img hero-img--light"
       />
       {/* Hidden at opacity 0 until the theme flips. It sits inside the initial
           viewport, so the browser still fetches it on the first layout pass —
           the toggle stays instant — but at low priority, so it does not
           compete with the LCP image over a slow connection. */}
       <Image
-        src="/hero-light.jpg"
+        src="/hero-dark.jpg"
         alt=""
         aria-hidden="true"
-        width={1200}
-        height={675}
+        width={1440}
+        height={810}
         loading="lazy"
         fetchPriority="low"
         quality={62}
         sizes="100vw"
-        className="hero-img hero-img--light"
+        className="hero-img hero-img--dark"
       />
 
       <div aria-hidden="true" className="hero-wash" />
