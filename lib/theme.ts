@@ -4,7 +4,13 @@ import { useSyncExternalStore } from "react";
 
 export type Theme = "dark" | "light";
 
-const STORAGE_KEY = "sf-theme";
+/**
+ * Bumped from "sf-theme" when light became the default. Anyone who had
+ * toggled under the old dark-default build still had "dark" saved, so the new
+ * default would never have reached them — a new key retires those values once
+ * and lands everyone on light.
+ */
+const STORAGE_KEY = "sf-theme-2";
 const EVENT = "sf-theme-change";
 
 export function getTheme(): Theme {

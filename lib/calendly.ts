@@ -26,8 +26,8 @@ export const CALENDLY_WIDGET_CSS =
  */
 const PALETTE: Record<Theme, { background: string; text: string; primary: string }> =
   {
-    // primary is the exact brand accent — no lightening needed at 5.06:1.
-    dark: { background: "1a1d23", text: "ffffff", primary: "ff4a3d" },
+    // primary is the exact brand accent for each theme.
+    dark: { background: "1a1d23", text: "ffffff", primary: "35c97b" },
     // light maps 1:1 onto --surface / --text / --accent.
     light: { background: "ffffff", text: "0a0a0b", primary: "0f7a3d" },
   };

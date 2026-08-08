@@ -62,10 +62,12 @@
   --text: #fafafa;
   --muted: #a7aab2;
   --faint: #8c8f97;
-  --accent: #ff4a3d;
-  --ink: #ff4a3d;
-  /* The design's #170603 clears AA at 5.92:1, but at 13px uppercase mono on a
-     saturated red it reads muddy. True black takes it to 6.30:1. */
+  /* Green accent in both themes — the design's red is retired. #35c97b is
+     already the palette's --ok, so this is a colour the system had, not a new
+     one. It measures 9.23:1 on --bg and 8.80:1 on --surface, well above the
+     red's 5.94:1, and black on it reaches 9.79:1 for button labels. */
+  --accent: #35c97b;
+  --ink: #35c97b;
   --on-accent: #000000;
   --ok: #35c97b;
   --result: #35c97b;

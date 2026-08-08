@@ -14,8 +14,8 @@ const BORDER = "#24252A";
 const TEXT = "#FAFAFA";
 const MUTED = "#A7AAB2";
 const FAINT = "#8C8F97";
-const ACCENT = "#FF4A3D";
-const ON_ACCENT = "#170603";
+const ACCENT = "#35C97B";
+const ON_ACCENT = "#000000";
 
 export default async function OpengraphImage() {
   const font = (name: string) => readFile(join(process.cwd(), "app", name));

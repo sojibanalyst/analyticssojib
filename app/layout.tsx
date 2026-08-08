@@ -83,7 +83,7 @@ export const viewport: Viewport = {
  * Applied before paint so a stored theme never flashes. Light is the default,
  * so anything other than an explicit "dark" resolves to light.
  */
-const themeBootstrap = `(function(){try{var t=localStorage.getItem("sf-theme");document.documentElement.dataset.theme=t==="dark"?"dark":"light";}catch(e){document.documentElement.dataset.theme="light";}})();`;
+const themeBootstrap = `(function(){try{var t=localStorage.getItem("sf-theme-2");document.documentElement.dataset.theme=t==="dark"?"dark":"light";}catch(e){document.documentElement.dataset.theme="light";}})();`;
 
 export default function RootLayout({
   children,
