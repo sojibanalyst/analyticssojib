@@ -6,8 +6,6 @@ import {
   readingTimeMinutes,
   trackingPlanMeta as meta,
 } from "@/content/tracking-plan";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/sections/Footer";
 import { PlanNav } from "@/components/tracking-plan/PlanNav";
 import { BlockRenderer, Rich } from "@/components/tracking-plan/Blocks";
 import { PrintButton } from "@/components/tracking-plan/PrintButton";
@@ -62,11 +60,6 @@ const techArticleJsonLd = {
 export default function TrackingPlanPage() {
   return (
     <>
-      <a href="#main" className="skip-link">
-        SKIP TO CONTENT
-      </a>
-      <Header />
-
       <main id="main" className="plan-page">
         <header className="plan-header">
           <span className="eyebrow">{meta.eyebrow}</span>
@@ -136,8 +129,6 @@ export default function TrackingPlanPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
 
       <script
         type="application/ld+json"

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./components.css";
 @import "./tracking-plan.css";
+@import "./admin.css";
 
 /* ==========================================================================
    Design tokens — extracted verbatim from Claude Design
@@ -53,6 +54,32 @@
   --code-label: #4c4f55;
   /* #6b6e74 cleared AA by 0.06 — this leaves real margin. */
   --code-dim: #5f6268;
+
+  /* --- admin console additions (light) -------------------------------------
+     From "Sojib Admin Console.dc.html". Its --bg-page/--bg-surface/--ink/
+     --accent/--accent-fg already equal this site's --bg/--surface/--text/
+     --accent/--on-accent, so those are NOT redefined here — app/admin.css
+     aliases the design's names onto the existing tokens. Only what the site
+     genuinely lacks is added below.
+
+     Status colours are prefixed --status-* on purpose: the site already has a
+     --warn (#6e4200 light) used by the symptom cards, and the admin's warn is
+     a different value. Two meanings cannot share one name. */
+  --sunk: #efefec;
+  --border-input: rgba(0, 0, 0, 0.32);
+
+  --status-success: #0f7a3d;
+  --status-success-tint: rgba(15, 122, 61, 0.09);
+  --status-warn: #8a5200;
+  --status-warn-tint: rgba(138, 82, 0, 0.1);
+  --status-danger: #b01b12;
+  --status-danger-tint: rgba(176, 27, 18, 0.09);
+  --status-info: #4a5563;
+  --status-info-tint: rgba(74, 85, 99, 0.09);
+
+  --code-key: #7a3e9d;
+  --code-str: #0f7a3d;
+  --code-num: #8a5200;
 }
 
 [data-theme="dark"] {
@@ -97,6 +124,23 @@
   --code-label: #a7aab2;
   /* #6f727a measured 4.15:1 on --code-bg — below AA for this 10.5px label. */
   --code-dim: #8c8f97;
+
+  /* --- admin console additions (dark) — see the light block for rationale */
+  --sunk: #161719;
+  --border-input: #3a3c43;
+
+  --status-success: #35c97b;
+  --status-success-tint: rgba(53, 201, 123, 0.13);
+  --status-warn: #f2b44c;
+  --status-warn-tint: rgba(242, 180, 76, 0.13);
+  --status-danger: #ff6b60;
+  --status-danger-tint: rgba(255, 107, 96, 0.13);
+  --status-info: #9aa4b5;
+  --status-info-tint: rgba(154, 164, 181, 0.13);
+
+  --code-key: #c99be8;
+  --code-str: #35c97b;
+  --code-num: #f2b44c;
 }
 
 /* --------------------------------------------------------------------------

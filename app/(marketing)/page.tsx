@@ -1,4 +1,3 @@
-import { Header } from "@/components/Header";
 import { Hero } from "@/components/sections/Hero";
 import { StatBand } from "@/components/sections/StatBand";
 import { StackStrip } from "@/components/sections/StackStrip";
@@ -11,15 +10,10 @@ import { About } from "@/components/sections/About";
 import { Notes } from "@/components/sections/Notes";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
-import { Footer } from "@/components/sections/Footer";
 
 export default function Home() {
   return (
     <>
-      <a href="#main" className="skip-link">
-        SKIP TO CONTENT
-      </a>
-      <Header />
       <main id="main">
         <Hero />
         <StatBand />
@@ -34,7 +28,6 @@ export default function Home() {
         <Faq />
         <Contact />
       </main>
-      <Footer />
     </>
   );
 }

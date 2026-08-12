@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
         destination: `${site.url}/:path*`,
         permanent: true,
       },
+      // /services was linked externally and in the footer but never existed.
+      // Handled here rather than as a route handler so it resolves at the edge
+      // without invoking a function.
+      { source: "/services", destination: "/#services", permanent: true },
     ];
   },
   // A stray package-lock.json in the home directory makes Next guess the wrong

@@ -3,8 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { site, work } from "@/content/site";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/sections/Footer";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -45,10 +43,6 @@ export default async function CaseStudyPage({ params }: Params) {
 
   return (
     <>
-      <a href="#main" className="skip-link">
-        SKIP TO CONTENT
-      </a>
-      <Header />
       <main id="main">
         <article className="section" aria-labelledby="case-title">
           <div className="section-head">
@@ -198,7 +192,6 @@ export default async function CaseStudyPage({ params }: Params) {
           </div>
         </article>
       </main>
-      <Footer />
     </>
   );
 }

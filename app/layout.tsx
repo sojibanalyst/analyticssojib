@@ -1,28 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { fontVariables } from "./fonts";
 import { site } from "@/content/site";
 import {
   GoogleTagManager,
   GoogleTagManagerNoScript,
 } from "@/components/GoogleTagManager";
-import { ldJson, personJsonLd, professionalServiceJsonLd } from "@/lib/jsonld";
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
-
-// Archivo carries headings only, and every heading in the design is 700.
-// Loading the other three weights would ship ~90 KB nobody renders.
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["700"],
-  variable: "--font-archivo",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -95,20 +78,12 @@ export default function RootLayout({
     <html
       lang="en"
       data-theme="light"
-      className={`${jetbrainsMono.variable} ${archivo.variable}`}
+      className={fontVariables}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <GoogleTagManager />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: ldJson(personJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: ldJson(professionalServiceJsonLd) }}
-        />
       </head>
       <body>
         <GoogleTagManagerNoScript />
