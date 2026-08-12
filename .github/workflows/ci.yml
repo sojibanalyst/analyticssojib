@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# One run per branch. A new push cancels the previous run rather than queueing
+# behind it.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      # Public values. They are in the client bundle by design, so keeping them
+      # in secrets would buy nothing — but they must be present or `next build`
+      # fails when it prerenders anything that constructs a Supabase client.
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_ci_placeholder' }}
+      # Deliberately NOT provided. The secret-scan step must run against a build
+      # that never had the service role key available, so a leak cannot be
+      # explained away as "CI had it in the environment".
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # The one that matters. Fails if a server-only secret reached
+      # .next/static — see scripts/check-no-secrets.mjs for what it looks for.
+      - name: No secrets in the client bundle
+        run: npm run check:secrets
+
+      # Route parity: not one public URL may change, and /admin must not render
+      # to a signed-out visitor. Runs against the production build, not dev.
+      #
+      # Signed out is the only state this can exercise, and it is the important
+      # one: getUser() makes no network call without a session cookie, so the
+      # placeholder Supabase URL above is enough.
+      - name: Routes
+        run: |
+          npx next start --port 3000 &
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null http://localhost:3000/ && break
+            sleep 1
+          done
+          npm run check:routes

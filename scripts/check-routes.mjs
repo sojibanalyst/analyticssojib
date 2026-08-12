@@ -26,6 +26,12 @@ const ROUTES = [
   ["/manifest.webmanifest", 200],
   ["/services", 308],
   ["/this-route-does-not-exist", 404],
+
+  // The console. Signed out is the only state this script can test, and it is
+  // the one that matters: /admin must never render to a stranger.
+  ["/admin", 307],
+  ["/admin/settings", 307],
+  ["/admin/login", 200, "Email"],
 ];
 
 let failed = 0;
