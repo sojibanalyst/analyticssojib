@@ -27,9 +27,12 @@ jobs:
       # explained away as "CI had it in the environment".
 
     steps:
-      - uses: actions/checkout@v4
+      # v5, not v4: the v4 actions target Node 20, which GitHub deprecated on
+      # its runners. v4 still runs today, forced onto Node 24, with a warning
+      # on every job.
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
