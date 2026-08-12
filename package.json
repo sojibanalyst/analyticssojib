@@ -9,6 +9,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "import:content": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file=.env.local scripts/import-content.mjs",
+    "snapshot": "node scripts/snapshot-pages.mjs",
+    "diff:pages": "node scripts/diff-pages.mjs",
     "check:secrets": "node scripts/check-no-secrets.mjs",
     "check:routes": "node scripts/check-routes.mjs"
   },

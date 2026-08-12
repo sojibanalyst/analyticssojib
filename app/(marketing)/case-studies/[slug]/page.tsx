@@ -3,18 +3,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { site, work } from "@/content/site";
+import { getCaseStudies, getCaseStudy } from "@/lib/content";
 
 type Params = { params: Promise<{ slug: string }> };
 
-const getCase = (slug: string) => work.cases.find((c) => c.slug === slug);
+export const revalidate = 3600;
 
-export function generateStaticParams() {
-  return work.cases.map((c) => ({ slug: c.slug }));
+export async function generateStaticParams() {
+  return (await getCaseStudies()).map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const item = getCase(slug);
+  const item = await getCaseStudy(slug);
   if (!item) return { title: "Case study not found" };
 
   const url = `${site.url}/case-studies/${item.slug}`;
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function CaseStudyPage({ params }: Params) {
   const { slug } = await params;
-  const item = getCase(slug);
+  const item = await getCaseStudy(slug);
   if (!item) notFound();
 
   return (

@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { blog, getPost, posts } from "@/content/posts";
+import { blog } from "@/content/posts";
 import { site } from "@/content/site";
+import { getPost, getPosts } from "@/lib/content";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return posts.map((p) => ({ slug: p.slug }));
+export const revalidate = 3600;
+
+// Every post, draft included — drafts have always rendered at their URL and
+// carried a noindex, and that stays true. Changing it would remove a URL.
+export async function generateStaticParams() {
+  return (await getPosts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!post) return { title: "Post not found" };
 
   const url = `${site.url}/blog/${post.slug}`;
@@ -38,7 +43,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function BlogPost({ params }: Params) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!post) notFound();
 
   return (

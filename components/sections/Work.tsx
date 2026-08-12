@@ -104,7 +104,7 @@ function Screenshot({ item }: { item: CaseStudy }) {
   return <CaseGallery shots={item.screenshots} label={item.title} />;
 }
 
-export function Work() {
+export function Work({ cases }: { cases: CaseStudy[] }) {
   return (
     <section id="work" className="section" aria-labelledby="work-title">
       <SectionHeading eyebrow={work.eyebrow} title={work.title} titleId="work-title" />
@@ -122,7 +122,7 @@ export function Work() {
         {work.intro}
       </p>
 
-      {work.cases.map((item) => (
+      {cases.map((item) => (
         <article key={item.slug} className="case-card">
           <div className="case-card__bar">
             <span>{item.code}</span>

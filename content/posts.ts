@@ -1,15 +1,17 @@
 /**
  * Blog posts.
  *
- * Zero-dependency on purpose: posts are typed objects, so publishing means
- * editing this one file and pushing — no CMS, no database, no markdown
- * toolchain. If you'd rather write in Markdown/MDX, say so and I'll swap this
- * for file-based posts (that needs new dependencies, which your brief said to
- * ask about first).
+ * SINCE P2 THE `posts` ARRAY BELOW IS NOT READ BY THE SITE. Posts live in
+ * Supabase and the pages read them through lib/content. This array is the
+ * input to scripts/import-content.mjs, which is what put them there — editing
+ * it changes nothing until that script is re-run with --force.
  *
- * To publish: write the `body` paragraphs and set `draft: false`.
- * Draft posts still render at their URL but are marked as unfinished, kept out
- * of the sitemap, and set to noindex.
+ * `blog` (the section's own labels and notices) IS still live and read from
+ * here.
+ *
+ * Unchanged either way: an unfinished post still renders at its URL, marked
+ * DRAFT, kept out of the sitemap and set to noindex. In the database that is
+ * `is_draft`; `status` decides whether the URL exists at all.
  */
 
 export type Post = {
@@ -63,11 +65,10 @@ export const posts: Post[] = [
   },
 ];
 
-export const publishedPosts = posts.filter((p) => !p.draft);
-
-export function getPost(slug: string): Post | undefined {
-  return posts.find((p) => p.slug === slug);
-}
+// `publishedPosts` and `getPost` used to live here. They are gone rather than
+// left unused: lib/content exports functions with the same names, and two
+// `getPost`s in one codebase — one reading the database, one reading this file
+// — is a bug waiting for an autocomplete to pick the wrong import.
 
 export const blog = {
   eyebrow: "07 / NOTES",

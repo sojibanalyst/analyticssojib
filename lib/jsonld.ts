@@ -1,4 +1,4 @@
-import { about, faq, site, socials } from "@/content/site";
+import { about, site, socials, type Faq } from "@/content/site";
 
 const sameAs = socials.map((s) => s.href);
 
@@ -52,16 +52,23 @@ export const professionalServiceJsonLd = {
   knowsAbout: about.chips,
 };
 
-export const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "@id": `${site.url}/#faq`,
-  mainEntity: faq.items.map((item) => ({
-    "@type": "Question",
-    name: item.q,
-    acceptedAnswer: { "@type": "Answer", text: item.a },
-  })),
-};
+/**
+ * A function now, not a constant: the questions come from the database, so
+ * they are not known when this module is evaluated. The shape it emits is
+ * unchanged.
+ */
+export function faqJsonLd(items: Faq[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${site.url}/#faq`,
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
+}
 
 /** Serialise for <script type="application/ld+json">, escaping `<` safely. */
 export function ldJson(data: unknown): string {

@@ -1,4 +1,4 @@
-import { faq } from "@/content/site";
+import { faq, type Faq as FaqItem } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { faqJsonLd, ldJson } from "@/lib/jsonld";
 
@@ -7,7 +7,7 @@ import { faqJsonLd, ldJson } from "@/lib/jsonld";
  * the section shell, the eyebrow + h2 pair, and the card's surface/border/14px
  * radius. <details>/<summary> keeps it keyboard-operable with no JavaScript.
  */
-export function Faq() {
+export function Faq({ items }: { items: FaqItem[] }) {
   return (
     <section
       id="faq"
@@ -17,7 +17,7 @@ export function Faq() {
       <SectionHeading eyebrow={faq.eyebrow} title={faq.title} titleId="faq-title" />
 
       <div>
-        {faq.items.map((item) => (
+        {items.map((item) => (
           <details key={item.q} className="faq-item">
             <summary>{item.q}</summary>
             <p>{item.a}</p>
@@ -27,7 +27,7 @@ export function Faq() {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: ldJson(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: ldJson(faqJsonLd(items)) }}
       />
     </section>
   );

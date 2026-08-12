@@ -1,13 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { reviews, upworkUrl } from "@/content/site";
+import {
+  reviews,
+  upworkUrl,
+  type Testimonial,
+  type WrittenReview,
+} from "@/content/site";
 import { LiteYouTube } from "@/components/LiteYouTube";
 import { WrittenReviews } from "@/components/sections/WrittenReviews";
 
-const N = reviews.items.length;
-
-export function Reviews() {
+export function Reviews({
+  items,
+  written,
+}: {
+  items: Testimonial[];
+  written: WrittenReview[];
+}) {
+  const N = items.length;
   const [index, setIndex] = useState(0);
   const go = (n: number) => setIndex(((n % N) + N) % N);
 
@@ -52,7 +62,7 @@ export function Reviews() {
 
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            {reviews.items.map((item, i) => (
+            {items.map((item, i) => (
               <button
                 key={item.id}
                 type="button"
@@ -126,7 +136,7 @@ export function Reviews() {
           className="review-track"
           style={{ transform: `translateX(-${index * 100}%)` }}
         >
-          {reviews.items.map((item, i) => (
+          {items.map((item, i) => (
             /* `inert` (not just aria-hidden) so the offscreen slides drop out
                of the tab order too — aria-hidden alone leaves focusable
                descendants reachable by keyboard. */
@@ -185,7 +195,7 @@ export function Reviews() {
         </div>
       </div>
 
-      <WrittenReviews />
+      <WrittenReviews items={written} />
 
       <p
         style={{

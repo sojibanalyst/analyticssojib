@@ -37,8 +37,20 @@ runs in CI.
 - **One font setup.** `app/fonts.ts`. The variables belong on `<html>`, because
   Tailwind's `@theme` resolves them at `:root`.
 - **Public pages stay static.** No `force-dynamic` on a public route, and no
-  per-request database call to render one. Check the build output: everything
-  under `(marketing)` must print `○` or `●`, never `ƒ`.
+  per-request database call to render one. Content is read at BUILD time
+  through `lib/content`, which uses a plain client with cached GETs — never
+  the cookie-bound one, which would make the page dynamic. Check the build
+  output: everything under `(marketing)` must print `○` or `●`, never `ƒ`.
+- **Prove the pages did not change.** Any refactor that touches rendering runs
+  the snapshot/diff harness before and after:
+
+  ```
+  npm run snapshot -- http://localhost:3100 .snapshots/before
+  npm run diff:pages .snapshots/before .snapshots/after
+  ```
+
+  It compares the markup with scripts and build hashes stripped out. A diff is
+  a real change; explain it or undo it.
 - **Secrets never enter the repo.** `.env.example` carries names and comments
   only. `SUPABASE_SERVICE_ROLE_KEY` is never prefixed `NEXT_PUBLIC_` and never
   imported into a client component; `npm run check:secrets` fails the build if
@@ -66,6 +78,16 @@ Never invent client names, logos, case-study numbers, testimonials or
 credentials. If a slot needs content that has not been supplied, use a clearly
 labelled placeholder and say so in the PR.
 
+Case studies, reviews, FAQs and posts live in **Supabase**, read through
+`lib/content`. The matching arrays in `content/*.ts` are the input to
+`scripts/import-content.mjs` and are no longer read by the site — editing one
+changes nothing. Everything else in `content/site.ts` (hero, stats, stack,
+services, process, about, contact, footer) is still live and still edited
+there.
+
+`posts.status` is visibility; `posts.is_draft` is whether the writing is
+finished. An unfinished post keeps its URL and carries a noindex.
+
 ## Commands
 
 ```
@@ -76,4 +98,7 @@ npm run lint           eslint
 npm run check:secrets  scan .next/static for server-only secrets (after build)
 npm run check:routes   route parity against a running server
 npm run seed           idempotent seed, reads .env.local
+npm run import:content content/*.ts → Supabase; --sql prints it instead
+npm run snapshot       <baseUrl> <outDir> — snapshot every public page
+npm run diff:pages     <beforeDir> <afterDir> — prove nothing changed
 ```

@@ -44,3 +44,6 @@ next-env.d.ts
 # Re-stated last so the negation above still wins: `vercel link` appends its
 # own .env* rule here, which would otherwise re-ignore the committed template.
 !.env.example
+
+# HTML snapshots used by scripts/diff-pages.mjs — build artefacts, not source
+.snapshots/

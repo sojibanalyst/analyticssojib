@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { blog, posts } from "@/content/posts";
+import { blog, type Post } from "@/content/posts";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-export function Notes() {
+export function Notes({ posts }: { posts: Post[] }) {
   return (
     <section id="blog" className="section" aria-labelledby="blog-title">
       <SectionHeading eyebrow={blog.eyebrow} title={blog.title} titleId="blog-title" />
