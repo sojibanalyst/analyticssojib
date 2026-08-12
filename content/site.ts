@@ -1,6 +1,23 @@
 /**
- * Single source of truth for every string, stat, link and testimonial on the
- * site. Components read from here — edit copy in this file, never in JSX.
+ * Site copy: every string, stat, link and testimonial. Edit copy here, never
+ * in JSX.
+ *
+ * SINCE P2, FOUR OF THESE ARE NO LONGER READ BY THE SITE:
+ *
+ *   work.cases       reviews.items      reviews.written      faq.items
+ *
+ * Those live in Supabase now, and the pages read them through lib/content.
+ * The arrays below are kept as the input to scripts/import-content.mjs, which
+ * is what put them there — editing one changes nothing until that script is
+ * re-run with --force. To change published content, use the console.
+ *
+ * Everything else in this file — identity, hero, stats, stack, symptoms,
+ * services, process, about, contact, footer — is still live, still read from
+ * here, and is deliberately not in the database: it is the shape of the page,
+ * not its content.
+ *
+ * The TYPES stay here either way. They describe the site's content model and
+ * are not owned by the database.
  *
  * Anything marked NEEDS-CONFIRMATION is my construction, not a fact Sojib
  * supplied. See the "Placeholders" section of the final report.

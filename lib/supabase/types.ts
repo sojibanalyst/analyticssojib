@@ -374,6 +374,7 @@ export type Database = {
           published: boolean
           question: string
           sort_order: number
+          source_key: string | null
           updated_at: string
         }
         Insert: {
@@ -383,6 +384,7 @@ export type Database = {
           published?: boolean
           question: string
           sort_order?: number
+          source_key?: string | null
           updated_at?: string
         }
         Update: {
@@ -392,6 +394,7 @@ export type Database = {
           published?: boolean
           question?: string
           sort_order?: number
+          source_key?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -602,6 +605,7 @@ export type Database = {
           canonical_url: string | null
           created_at: string
           id: string
+          is_draft: boolean
           og_image_path: string | null
           published_at: string | null
           reading_time: string
@@ -618,6 +622,7 @@ export type Database = {
           canonical_url?: string | null
           created_at?: string
           id?: string
+          is_draft?: boolean
           og_image_path?: string | null
           published_at?: string | null
           reading_time: string
@@ -634,6 +639,7 @@ export type Database = {
           canonical_url?: string | null
           created_at?: string
           id?: string
+          is_draft?: boolean
           og_image_path?: string | null
           published_at?: string | null
           reading_time?: string
@@ -649,17 +655,21 @@ export type Database = {
       }
       reviews: {
         Row: {
+          a11y_label: string | null
           aspect_ratio: Database["public"]["Enums"]["aspect_ratio"] | null
+          attribution: string | null
           client_name: string | null
           company: string | null
           created_at: string
           id: string
+          is_placeholder: boolean
           published: boolean
           pull_quote: string | null
           quote: string | null
           rating: number | null
           sort_order: number
           source: string | null
+          source_key: string | null
           thumbnail_url: string | null
           type: Database["public"]["Enums"]["review_type"]
           updated_at: string
@@ -667,17 +677,21 @@ export type Database = {
           youtube_url: string | null
         }
         Insert: {
+          a11y_label?: string | null
           aspect_ratio?: Database["public"]["Enums"]["aspect_ratio"] | null
+          attribution?: string | null
           client_name?: string | null
           company?: string | null
           created_at?: string
           id?: string
+          is_placeholder?: boolean
           published?: boolean
           pull_quote?: string | null
           quote?: string | null
           rating?: number | null
           sort_order?: number
           source?: string | null
+          source_key?: string | null
           thumbnail_url?: string | null
           type: Database["public"]["Enums"]["review_type"]
           updated_at?: string
@@ -685,17 +699,21 @@ export type Database = {
           youtube_url?: string | null
         }
         Update: {
+          a11y_label?: string | null
           aspect_ratio?: Database["public"]["Enums"]["aspect_ratio"] | null
+          attribution?: string | null
           client_name?: string | null
           company?: string | null
           created_at?: string
           id?: string
+          is_placeholder?: boolean
           published?: boolean
           pull_quote?: string | null
           quote?: string | null
           rating?: number | null
           sort_order?: number
           source?: string | null
+          source_key?: string | null
           thumbnail_url?: string | null
           type?: Database["public"]["Enums"]["review_type"]
           updated_at?: string

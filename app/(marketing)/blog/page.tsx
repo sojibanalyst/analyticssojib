@@ -1,29 +1,41 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { blog, posts, publishedPosts } from "@/content/posts";
+import { blog } from "@/content/posts";
 import { site } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getPosts } from "@/lib/content";
 
 const url = `${site.url}/blog`;
 
-export const metadata: Metadata = {
-  title: "Writing",
-  description:
-    "Notes on GA4, Google Tag Manager, server-side tagging, Meta CAPI and Consent Mode v2 — written from the reconciliation work, not from a keyword list.",
-  alternates: { canonical: url },
-  openGraph: {
-    type: "website",
-    url,
-    title: `Writing — ${site.name}`,
-    description:
-      "Notes on GA4, Google Tag Manager, server-side tagging, Meta CAPI and Consent Mode v2.",
-  },
-  // Nothing is published yet, so the index has no content to offer a crawler.
-  // This flips itself once the first post ships.
-  robots: publishedPosts.length === 0 ? { index: false, follow: true } : undefined,
-};
+export const revalidate = 3600;
 
-export default function BlogIndex() {
+// generateMetadata rather than a constant, because whether this page is
+// indexable depends on how many posts are published — which now comes from
+// the database. The output is identical.
+export async function generateMetadata(): Promise<Metadata> {
+  const published = (await getPosts()).filter((post) => !post.draft);
+
+  return {
+    title: "Writing",
+    description:
+      "Notes on GA4, Google Tag Manager, server-side tagging, Meta CAPI and Consent Mode v2 — written from the reconciliation work, not from a keyword list.",
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      url,
+      title: `Writing — ${site.name}`,
+      description:
+        "Notes on GA4, Google Tag Manager, server-side tagging, Meta CAPI and Consent Mode v2.",
+    },
+    // Nothing is published yet, so the index has no content to offer a
+    // crawler. This flips itself once the first post ships.
+    robots: published.length === 0 ? { index: false, follow: true } : undefined,
+  };
+}
+
+export default async function BlogIndex() {
+  const posts = await getPosts();
+
   return (
     <main id="main">
       <section className="section" aria-labelledby="blog-index-title">

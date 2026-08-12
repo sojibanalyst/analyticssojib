@@ -1,10 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { reviews } from "@/content/site";
-
-const items = reviews.written;
-const N = items.length;
+import { reviews, type WrittenReview } from "@/content/site";
 
 /**
  * The design's written-review carousel: a scroll-snapped track with dots, an
@@ -14,7 +11,8 @@ const N = items.length;
  * The pager is driven from the track's own scroll position rather than from
  * React state alone, so dragging, arrow keys and the buttons all stay in sync.
  */
-export function WrittenReviews() {
+export function WrittenReviews({ items }: { items: WrittenReview[] }) {
+  const N = items.length;
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const lockRef = useRef(false);

@@ -17,14 +17,19 @@ jobs:
     timeout-minutes: 15
 
     env:
-      # Public values. They are in the client bundle by design, so keeping them
-      # in secrets would buy nothing — but they must be present or `next build`
-      # fails when it prerenders anything that constructs a Supabase client.
-      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_ci_placeholder' }}
+      # Repository *variables*, not secrets — these two are in the client
+      # bundle by design, so hiding them would buy nothing.
+      #
+      # No fallback placeholder: since P2 the marketing pages read their
+      # content from Supabase at build time, so a build without these produces
+      # a site with no case studies rather than an error. Better for CI to
+      # fail on a missing variable than to go green on an empty site.
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       # Deliberately NOT provided. The secret-scan step must run against a build
       # that never had the service role key available, so a leak cannot be
-      # explained away as "CI had it in the environment".
+      # explained away as "CI had it in the environment". The publishable key
+      # above only ever sees rows the public can already read.
 
     steps:
       # v5, not v4: the v4 actions target Node 20, which GitHub deprecated on
