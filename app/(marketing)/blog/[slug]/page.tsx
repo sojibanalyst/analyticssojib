@@ -3,8 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blog, getPost, posts } from "@/content/posts";
 import { site } from "@/content/site";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/sections/Footer";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -45,10 +43,6 @@ export default async function BlogPost({ params }: Params) {
 
   return (
     <>
-      <a href="#main" className="skip-link">
-        SKIP TO CONTENT
-      </a>
-      <Header />
       <main id="main">
         <article
           className="section"
@@ -133,12 +127,11 @@ export default async function BlogPost({ params }: Params) {
             </p>
           )}
 
-          <Link href="/#blog" className="btn btn-ghost" style={{ alignSelf: "flex-start" }}>
+          <Link href="/blog" className="btn btn-ghost" style={{ alignSelf: "flex-start" }}>
             ← ALL NOTES
           </Link>
         </article>
       </main>
-      <Footer />
     </>
   );
 }
