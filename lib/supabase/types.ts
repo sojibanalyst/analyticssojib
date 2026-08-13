@@ -845,6 +845,17 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      submit_lead: {
+        Args: {
+          p_name: string
+          p_email: string
+          p_company?: string
+          p_platform?: string
+          p_answers?: Json
+          p_session_id?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       aspect_ratio: "portrait" | "landscape"

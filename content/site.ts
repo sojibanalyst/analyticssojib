@@ -796,6 +796,26 @@ export const footer = {
  * collected and why, in one sentence, without the word "experience". Both
  * choices are stated plainly because refusing has to be as easy as accepting.
  */
+/**
+ * The enquiry form. Only name and email are required — every extra required
+ * field is another reason for someone to close the tab instead.
+ */
+export const leadForm = {
+  title: "Or send it in writing",
+  body: "Tell me what is wrong and I will reply with what I think it is, before either of us books anything.",
+  name: "NAME",
+  email: "EMAIL",
+  company: "COMPANY (OPTIONAL)",
+  platform: "PLATFORM (OPTIONAL)",
+  platformDefault: "Select one",
+  problem: "WHAT IS THE PROBLEM? (OPTIONAL)",
+  submit: "SEND IT",
+  sending: "SENDING…",
+  doneTitle: "Got it.",
+  privacy:
+    "Goes to me, nobody else. No list, no sequence, no newsletter you did not ask for.",
+};
+
 export const consent = {
   title: "Analytics on this site",
   body: "I measure how people find and use this site — pages, referrer, campaign — to see what works. Decline and nothing is stored against you. This site sells measurement, so it says exactly what it does.",
