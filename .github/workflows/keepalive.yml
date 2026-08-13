@@ -1,0 +1,71 @@
+name: Keep Supabase awake
+
+# Supabase pauses a free-tier project after ~7 days with no database activity.
+# Paused means asleep, not deleted — the data is intact and one Restore click
+# brings it back — but while it sleeps the collector cannot write, so visits
+# that happen in that window are lost for good.
+#
+# This runs every third day and reads one row. That is enough activity to
+# reset the idle timer, and it costs nothing.
+#
+# It is a backstop, not the main defence: any real visitor to the site causes
+# a database read when the hourly page cache expires. This covers the weeks
+# when nobody comes.
+
+on:
+  schedule:
+    # 06:00 UTC — midday in Dhaka, so a failure notice lands during the day.
+    - cron: "0 6 */3 * *"
+  # So it can be proved to work without waiting three days.
+  workflow_dispatch:
+
+# Only one at a time, and never queue: a missed ping is not worth catching up.
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Read one published FAQ
+        env:
+          URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "Supabase repository variables are not set — nothing to ping."
+            exit 1
+          fi
+
+          # The publishable key and a table anon is allowed to read. This
+          # deliberately proves the *public* path works, not just that the
+          # host answers: if RLS or the key ever broke, the site would be
+          # serving stale content and this would go red first.
+          code=$(curl -s -o /tmp/out.json -w "%{http_code}" \
+            "$URL/rest/v1/faqs?select=id&limit=1" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY")
+
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "Supabase did not answer as expected. It may be paused —"
+            echo "open the dashboard and press Restore."
+            cat /tmp/out.json
+            exit 1
+          fi
+
+          echo "Database is awake."
+
+      - name: Warm the marketing pages
+        # A request after the hourly cache expires makes Next re-read Supabase,
+        # which is the same activity a real visitor causes. Failure here is not
+        # fatal — the row read above is what keeps the project alive.
+        continue-on-error: true
+        run: |
+          for path in / /blog /tracking-plan; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://analyticssojib.com$path")
+            echo "$code  $path"
+          done
