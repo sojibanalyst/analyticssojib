@@ -123,6 +123,18 @@ test("no source anywhere is direct, not missing", () => {
   assert.equal(a.medium, "none");
 });
 
+test("direct is flagged, so a later pageview cannot erase a campaign", () => {
+  // The regression this guards: `source` is never null, so a truthiness check
+  // treated the direct fallback as a real observation and overwrote the
+  // session's last touch on the second pageview of the visit.
+  assert.equal(attributionFrom("/", null).isDirect, true);
+  assert.equal(attributionFrom("/?utm_source=news", null).isDirect, false);
+  assert.equal(attributionFrom("/?gclid=abc", null).isDirect, false);
+  assert.equal(attributionFrom("/", "https://example.com/").isDirect, false);
+  // A referrer that will not parse is not evidence of anything.
+  assert.equal(attributionFrom("/", "not-a-url").isDirect, true);
+});
+
 test("a malformed referrer does not invent a source", () => {
   const a = attributionFrom("/", "not-a-url");
   assert.equal(a.source, "direct");
