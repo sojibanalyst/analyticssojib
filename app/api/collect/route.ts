@@ -103,10 +103,16 @@ export async function POST(request: NextRequest) {
         consent: envelope.consent,
       };
 
-      // Only overwrite last-touch when this visit actually carries a source.
-      // A visitor who lands from Google and then reloads has not become
-      // "direct", and recording that would erase the campaign that found them.
-      if (attribution.source) {
+      // Only overwrite last-touch when this request actually said where the
+      // visitor came from. A visitor who lands from Google and then loads a
+      // second page has not become "direct", and recording that would erase
+      // the campaign that found them.
+      //
+      // Testing `attribution.source` here does NOT work — it is never null,
+      // because "direct" is the fallback. That was the bug: production showed
+      // a session whose first touch was a campaign and whose last touch had
+      // been overwritten to direct by the very next pageview.
+      if (!attribution.isDirect) {
         update.last_touch_source = attribution.source;
         update.last_touch_medium = attribution.medium;
         update.last_touch_campaign = attribution.campaign;

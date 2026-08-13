@@ -111,6 +111,16 @@ export type Attribution = {
   fbclid: string | null;
   ttclid: string | null;
   msclkid: string | null;
+  /**
+   * True when nothing in this request said where the visitor came from, so
+   * `source` is the "direct" fallback rather than an observation.
+   *
+   * The caller needs this and cannot infer it: `source` is never null, so
+   * `if (attribution.source)` is always true. Testing that instead let a
+   * plain second pageview overwrite a session's last touch with "direct" —
+   * which is exactly the campaign erasure this field exists to prevent.
+   */
+  isDirect: boolean;
 };
 
 const EMPTY: Attribution = {
@@ -123,6 +133,7 @@ const EMPTY: Attribution = {
   fbclid: null,
   ttclid: null,
   msclkid: null,
+  isDirect: false,
 };
 
 /** Referrer hosts that are search rather than a plain link. */
@@ -193,10 +204,12 @@ export function attributionFrom(
   }
 
   // No UTM, no click id, no referrer. "direct" is a real answer, and leaving
-  // it null would make every direct visit look like missing data.
+  // it null would make every direct visit look like missing data — but it is
+  // an absence of evidence, not evidence, so it is flagged as such.
   if (!result.source) {
     result.source = "direct";
     result.medium = "none";
+    result.isDirect = true;
   }
 
   return result;
