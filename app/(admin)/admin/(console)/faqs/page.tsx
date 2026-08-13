@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
+import { DeleteButton } from "@/components/admin/DeleteButton";
 import { createClient } from "@/lib/supabase/server";
-import { updateFaq } from "../content-actions";
+import { createFaq, deleteFaq, updateFaq } from "../content-actions";
 
 export const metadata: Metadata = {
   title: "FAQs",
@@ -26,6 +27,23 @@ export default async function FaqsPage() {
           markup is generated from this list, so the two can never disagree.
         </p>
       </div>
+
+      <section className="admin-card">
+        <h2>Add a question</h2>
+        <form action={createFaq} className="admin-form">
+          <div className="admin-field">
+            <label htmlFor="new-question">Question</label>
+            <input id="new-question" name="question" required />
+          </div>
+          <div className="admin-field">
+            <label htmlFor="new-answer">Answer</label>
+            <textarea id="new-answer" name="answer" rows={4} required />
+          </div>
+          <button type="submit" className="admin-button" style={{ alignSelf: "flex-start" }}>
+            Add
+          </button>
+        </form>
+      </section>
 
       {error ? (
         <section className="admin-card">
@@ -63,6 +81,8 @@ export default async function FaqsPage() {
                 </button>
               </div>
             </form>
+
+            <DeleteButton action={deleteFaq} id={faq.id} label="Delete question" />
           </section>
         ))
       )}

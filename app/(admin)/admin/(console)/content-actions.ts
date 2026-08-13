@@ -119,11 +119,31 @@ export async function updateCaseStudy(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
+  const num = (key: string): number | null => {
+    const raw = String(formData.get(key) ?? "").trim();
+    if (!raw) return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : null;
+  };
+
   await supabase
     .from("case_studies")
     .update({
       title: String(formData.get("title") ?? "").trim() || undefined,
       body: String(formData.get("body") ?? "").trim() || undefined,
+      intro: String(formData.get("intro") ?? "").trim() || undefined,
+      // The figures are yours to change. I locked these at first on the
+      // reasoning that a published number should only move in a migration —
+      // but they are your numbers, and a console that will not let you correct
+      // your own case study is not much of a console.
+      metric_caption: String(formData.get("metric_caption") ?? "").trim() || null,
+      metric_before_label: String(formData.get("metric_before_label") ?? "").trim() || null,
+      metric_after_label: String(formData.get("metric_after_label") ?? "").trim() || null,
+      metric_before: String(formData.get("metric_before") ?? "").trim() || null,
+      metric_after: String(formData.get("metric_after") ?? "").trim() || null,
+      // The bar fill percentages, 0–100. Clamped rather than trusted.
+      metric_before_pct: num("metric_before_pct"),
+      metric_after_pct: num("metric_after_pct"),
       status: formData.get("status") === "published" ? "published" : "draft",
       // Ticking this off is the point of the flag: it marks a figure Sojib has
       // confirmed, so the console stops asking.
@@ -165,4 +185,231 @@ async function revalidateContent(): Promise<void> {
   // than naming a profile whose meaning could change under us.
   revalidateTag(CONTENT_TAG, { expire: 0 });
   revalidatePath("/", "layout");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Creating and deleting                                                       */
+/*                                                                             */
+/* Editing what already exists is not a content system. A blog you cannot add  */
+/* a post to is a page with three posts on it.                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Turns a title into a URL segment.
+ *
+ * Deliberately conservative: lowercase, ASCII, hyphens. A slug is a permanent
+ * public URL — it should never contain anything that needs escaping, and it
+ * should stay readable in an address bar a year from now.
+ */
+// Not exported: a "use server" file may only export async functions, since
+// everything it exports becomes a callable endpoint. Same rule that moved
+// LEAD_STATUSES out of the leads actions.
+function slugify(input: string): string {
+  return input
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+/** Appends -2, -3 … until nothing is using it. */
+async function uniqueSlug(
+  supabase: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>,
+  table: "posts" | "case_studies",
+  base: string,
+): Promise<string> {
+  let slug = base;
+  for (let n = 2; n < 50; n++) {
+    const { data } = await supabase.from(table).select("id").eq("slug", slug).maybeSingle();
+    if (!data) return slug;
+    slug = `${base}-${n}`;
+  }
+  return `${base}-${Date.now()}`;
+}
+
+export async function createPost(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+
+  const title = String(formData.get("title") ?? "").trim();
+  if (!title) return;
+
+  const slug = await uniqueSlug(supabase, "posts", slugify(title));
+
+  const { data: last } = await supabase
+    .from("posts")
+    .select("sort_order")
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  await supabase.from("posts").insert({
+    slug,
+    title,
+    topic: String(formData.get("topic") ?? "").trim().toUpperCase() || "NOTES",
+    reading_time: String(formData.get("reading_time") ?? "").trim().toUpperCase() || "5 MIN",
+    summary: String(formData.get("summary") ?? "").trim() || title,
+    body: [],
+    // Born visible but unfinished: the URL works immediately and carries a
+    // noindex until the writing is done. Nothing half-written reaches Google.
+    status: "published",
+    is_draft: true,
+    sort_order: (last?.sort_order ?? -1) + 1,
+  });
+
+  await revalidateContent();
+  revalidatePath("/admin/posts");
+}
+
+export async function deletePost(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+  // The tick is the whole safety mechanism. A delete button that fires on one
+  // click will eventually be clicked by accident.
+  if (formData.get("confirm") !== "on") return;
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await supabase.from("posts").delete().eq("id", id);
+  await revalidateContent();
+  revalidatePath("/admin/posts");
+}
+
+export async function createReview(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+
+  const quote = String(formData.get("quote") ?? "").trim();
+  if (!quote) return;
+
+  const { data: last } = await supabase
+    .from("reviews")
+    .select("sort_order")
+    .eq("type", "written")
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  await supabase.from("reviews").insert({
+    type: "written",
+    quote,
+    attribution: String(formData.get("attribution") ?? "").trim() || null,
+    // Typed in by hand, so it is a real review by definition.
+    is_placeholder: false,
+    published: true,
+    source: "upwork",
+    source_key: `written:manual:${crypto.randomUUID()}`,
+    sort_order: (last?.sort_order ?? -1) + 1,
+  });
+
+  await revalidateContent();
+  revalidatePath("/admin/reviews");
+}
+
+export async function deleteReview(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+  if (formData.get("confirm") !== "on") return;
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await supabase.from("reviews").delete().eq("id", id);
+  await revalidateContent();
+  revalidatePath("/admin/reviews");
+}
+
+export async function createFaq(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+
+  const question = String(formData.get("question") ?? "").trim();
+  const answer = String(formData.get("answer") ?? "").trim();
+  if (!question || !answer) return;
+
+  const { data: last } = await supabase
+    .from("faqs")
+    .select("sort_order")
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  await supabase.from("faqs").insert({
+    question,
+    answer,
+    published: true,
+    source_key: `faq:manual:${crypto.randomUUID()}`,
+    sort_order: (last?.sort_order ?? -1) + 1,
+  });
+
+  await revalidateContent();
+  revalidatePath("/admin/faqs");
+}
+
+export async function deleteFaq(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+  if (formData.get("confirm") !== "on") return;
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await supabase.from("faqs").delete().eq("id", id);
+  await revalidateContent();
+  revalidatePath("/admin/faqs");
+}
+
+export async function createCaseStudy(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+
+  const title = String(formData.get("title") ?? "").trim();
+  if (!title) return;
+
+  const slug = await uniqueSlug(supabase, "case_studies", slugify(title));
+
+  const { data: last } = await supabase
+    .from("case_studies")
+    .select("sort_order")
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  await supabase.from("case_studies").insert({
+    slug,
+    title,
+    code: String(formData.get("code") ?? "").trim().toUpperCase() || "CASE",
+    body: String(formData.get("body") ?? "").trim() || title,
+    intro: String(formData.get("intro") ?? "").trim() || title,
+    tags: String(formData.get("tags") ?? "")
+      .split(",")
+      .map((tag) => tag.trim().toUpperCase())
+      .filter(Boolean),
+    detail_sections: [],
+    // Starts hidden. A case study with no figures and no write-up should not
+    // appear on the site the instant it is created.
+    status: "draft",
+    needs_confirmation: false,
+    sort_order: (last?.sort_order ?? -1) + 1,
+  });
+
+  await revalidateContent();
+  revalidatePath("/admin/case-studies");
+}
+
+export async function deleteCaseStudy(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
+  if (!supabase) return;
+  if (formData.get("confirm") !== "on") return;
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  // Stats and screenshots go with it — the foreign keys cascade.
+  await supabase.from("case_studies").delete().eq("id", id);
+  await revalidateContent();
+  revalidatePath("/admin/case-studies");
 }
