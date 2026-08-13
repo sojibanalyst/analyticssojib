@@ -14,9 +14,10 @@
  *    Seeding them here would create a second source of truth for pages that
  *    are already live.
  *
- *  - It does not seed event_map. This site does not fire a single event yet
- *    (lib/gtm.ts has no call sites), so any event list written now would be
- *    invented rather than observed. P3 fills it in as the collector is wired.
+ *  - It seeds event_map with exactly the events the code fires, and nothing
+ *    else. Every entry below has a call site in this repo; the moment one
+ *    does not, the Event map screen will show it as documented-but-never-seen,
+ *    which is worse than not documenting it.
  *
  *  - It does not write a secret anywhere. Destinations are created disabled
  *    with empty config; ids and tokens are entered later, and access tokens
@@ -50,6 +51,44 @@ const DESTINATIONS = [
   { key: "sgtm", label: "Server-side GTM" },
 ];
 
+/**
+ * The tracking plan, as code. Each of these has a real call site:
+ *   page_view        components/Tracker.tsx
+ *   book_call_click  components/CalendlyPopupButton.tsx
+ *   consent_update   lib/consent.ts
+ *
+ * `dedup_key` is event_id everywhere, because that is the whole mechanism:
+ * one id generated in the browser, reused by the server, so the two paths
+ * resolve to one conversion instead of two.
+ */
+const EVENT_MAP = [
+  {
+    event_name: "page_view",
+    trigger_description: "A public page is rendered, and on soft navigation between them.",
+    parameters: { page_path: "string" },
+    destinations: ["ga4"],
+    dedup_key: "event_id",
+    status: "live",
+  },
+  {
+    event_name: "book_call_click",
+    trigger_description:
+      "Any Calendly button is clicked, including modified clicks that open a new tab.",
+    parameters: { placement: "hero | header | contact" },
+    destinations: ["ga4", "meta_capi", "google_ads"],
+    dedup_key: "event_id",
+    status: "live",
+  },
+  {
+    event_name: "consent_update",
+    trigger_description: "The visitor allows or declines in the consent banner.",
+    parameters: { consent_state: "object" },
+    destinations: [],
+    dedup_key: "event_id",
+    status: "live",
+  },
+];
+
 async function main() {
   const admins = await supabase
     .from("admin_emails")
@@ -65,6 +104,12 @@ async function main() {
     );
   if (destinations.error) throw destinations.error;
   console.log(`  ok   destinations (${DESTINATIONS.length})`);
+
+  const eventMap = await supabase
+    .from("event_map")
+    .upsert(EVENT_MAP, { onConflict: "event_name" });
+  if (eventMap.error) throw eventMap.error;
+  console.log(`  ok   event_map (${EVENT_MAP.length})`);
 
   // Values that are already public on the marketing site, copied from
   // content/site.ts. The GTM container id comes from the environment instead,

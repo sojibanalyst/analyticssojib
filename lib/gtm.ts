@@ -14,6 +14,11 @@ export type GtmEventParams = Record<
 declare global {
   interface Window {
     dataLayer?: unknown[];
+    /**
+     * Defined by the consent bootstrap in app/layout.tsx, before GTM loads.
+     * Only consent calls go through it — ordinary events use pushEvent below.
+     */
+    gtag?: (...args: unknown[]) => void;
   }
 }
 

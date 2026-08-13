@@ -3,11 +3,12 @@
 import { useCallback, useState } from "react";
 import { buildCalendlyUrl, loadCalendly, readUtms, CALENDLY_URL } from "@/lib/calendly";
 import { useTheme } from "@/lib/theme";
+import { track } from "@/lib/track";
 
 type Props = {
   children: React.ReactNode;
   className?: string;
-  /** Where this button sits — kept for the tracking plan wiring later. */
+  /** Which button on the page this is — hero, header, contact. */
   placement?: string;
 };
 
@@ -23,6 +24,12 @@ export function CalendlyPopupButton({ children, className, placement }: Props) {
 
   const onClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
+      // The intent is the same whether the popup opens or the link is followed
+      // in a new tab, so this fires before the modifier check rather than
+      // after it. Counting only the clicks that happen to open a popup would
+      // undercount the thing the whole site is for.
+      track("book_call_click", { placement: placement ?? "unknown" });
+
       // Let modified clicks (new tab, etc.) behave normally.
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
@@ -39,7 +46,7 @@ export function CalendlyPopupButton({ children, className, placement }: Props) {
         })
         .finally(() => setLoading(false));
     },
-    [theme],
+    [theme, placement],
   );
 
   return (

@@ -32,6 +32,10 @@ const ROUTES = [
   ["/admin", 307],
   ["/admin/settings", 307],
   ["/admin/login", 200, "Email"],
+
+  // The collector accepts POST only. A GET returning 405 is the check that it
+  // exists and has not quietly become a page.
+  ["/api/collect", 405],
 ];
 
 let failed = 0;
