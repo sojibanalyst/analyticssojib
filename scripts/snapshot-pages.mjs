@@ -24,6 +24,7 @@
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const base = process.argv[2] || "http://localhost:3100";
 const outDir = process.argv[3];
@@ -85,7 +86,12 @@ export function normalise(html) {
  * old snapshot after this file changes, for instance — without the import
  * firing off a run of its own.
  */
-export const isMain = import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`;
+// pathToFileURL, not string concatenation: on Windows argv[1] is
+// `C:\Users\…`, which hand-built into `file://C:/Users/…` never matches
+// import.meta.url's `file:///C:/Users/…`. Getting that wrong made this script
+// silently do nothing when run directly.
+export const isMain =
+  import.meta.url === pathToFileURL(process.argv[1] ?? "").href;
 
 async function main() {
   // Inside main(), not at module scope: renormalise.mjs imports `normalise`
