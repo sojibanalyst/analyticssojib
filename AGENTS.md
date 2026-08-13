@@ -72,6 +72,19 @@ runs in CI.
 - Auth checks use `getUser()`, never `getSession()`: the session cookie is
   forgeable, and only `getUser()` revalidates it.
 
+## Tracking
+
+- **One event, one `event_id`.** Generated once in `lib/track.ts`, pushed to
+  the dataLayer and posted to `/api/collect` with the same value. Generate it
+  twice and deduplication is gone with no error to show for it.
+- Consent Mode v2 defaults are declared in `app/layout.tsx` **above**
+  `<GoogleTagManager />`. Order is load-bearing; a next/script cannot be used
+  there because those are ordered by strategy, not position.
+- Declining must stay exactly as easy as accepting — same size, same weight,
+  same row. Anything else is not consent.
+- The collector answers 204 to everything, including rubbish. It never reports
+  its own validation failures to the page.
+
 ## Content
 
 Never invent client names, logos, case-study numbers, testimonials or
@@ -96,6 +109,7 @@ npm run build          next build
 npm run typecheck      tsc --noEmit
 npm run lint           eslint
 npm run check:secrets  scan .next/static for server-only secrets (after build)
+npm run test           node --test over lib/**/*.test.ts
 npm run check:routes   route parity against a running server
 npm run seed           idempotent seed, reads .env.local
 npm run import:content content/*.ts → Supabase; --sql prints it instead

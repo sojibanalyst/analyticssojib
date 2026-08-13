@@ -68,6 +68,33 @@ export const viewport: Viewport = {
  */
 const themeBootstrap = `(function(){try{var t=localStorage.getItem("sf-theme-2");document.documentElement.dataset.theme=t==="dark"?"dark":"light";}catch(e){document.documentElement.dataset.theme="light";}})();`;
 
+/**
+ * Consent Mode v2, declared before GTM loads.
+ *
+ * Order is the entire point. `consent default` has to reach the dataLayer
+ * before the container script, or tags fire once with no consent state and the
+ * declaration arrives too late to matter. That is why this is a plain inline
+ * script in <head> and not a next/script — those are ordered by strategy, not
+ * by position.
+ *
+ * Everything starts denied except security_storage. If the visitor has already
+ * answered, their stored answer is replayed as an `update` immediately, so a
+ * returning visitor is not tracked cookielessly for the first half second of
+ * every page.
+ *
+ * wait_for_update gives that replay a window to land before tags decide.
+ */
+const consentBootstrap = `(function(){
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+window.gtag=gtag;
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',wait_for_update:500});
+try{
+var m=document.cookie.match(/(?:^|; )sf_consent_1=([^;]*)/);
+if(m){var s=JSON.parse(decodeURIComponent(m[1]));s.security_storage='granted';gtag('consent','update',s);}
+}catch(e){}
+})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -83,6 +110,8 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+        {/* Must stay above <GoogleTagManager />. See consentBootstrap. */}
+        <script dangerouslySetInnerHTML={{ __html: consentBootstrap }} />
         <GoogleTagManager />
       </head>
       <body>
