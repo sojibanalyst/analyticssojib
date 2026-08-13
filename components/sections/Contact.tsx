@@ -1,5 +1,6 @@
 import { contact, linkedinUrl, proof, site, upworkUrl } from "@/content/site";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
+import { LeadForm } from "@/components/sections/LeadForm";
 import { SocialIcon } from "@/components/ui/Icon";
 import { CALENDLY_URL } from "@/lib/calendly";
 
@@ -79,6 +80,10 @@ export function Contact() {
           calendly.com/sojibh2001/30min
         </a>
       </p>
+
+      {/* Below the call CTA, not above it: booking is still the primary
+          action, and the form is for people who would rather write first. */}
+      <LeadForm />
     </section>
   );
 }

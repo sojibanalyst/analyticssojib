@@ -1294,3 +1294,109 @@ a.wordmark:hover {
     flex: 1;
   }
 }
+
+/* Enquiry form ------------------------------------------------------------- */
+
+.lead-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 640px;
+  margin-top: 8px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+}
+
+.lead-form--done {
+  border-color: var(--accent);
+}
+
+.lead-form__title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.lead-form__note {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.lead-form__note[data-tone="danger"] {
+  color: var(--status-danger);
+}
+
+.lead-form__row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.lead-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.lead-form__field label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.lead-form__field input,
+.lead-form__field select,
+.lead-form__field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-input);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.lead-form__field textarea {
+  resize: vertical;
+}
+
+.lead-form__field input:focus-visible,
+.lead-form__field select:focus-visible,
+.lead-form__field textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.lead-form__submit {
+  align-self: flex-start;
+}
+
+.lead-form__submit:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+/* Honeypot. Moved off-screen rather than display:none, because some bots skip
+   fields that are not rendered — and kept out of the tab order and the
+   accessibility tree so no real person can land in it by accident. */
+.lead-form__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

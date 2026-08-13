@@ -70,8 +70,7 @@ export const navGroups: NavGroup[] = [
         href: "/admin/leads",
         label: "Leads",
         short: "LD",
-        ready: false,
-        phase: "P4",
+        ready: true,
       },
       {
         href: "/admin/offline-conversions",

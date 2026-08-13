@@ -80,6 +80,15 @@ const EVENT_MAP = [
     status: "live",
   },
   {
+    event_name: "generate_lead",
+    trigger_description:
+      "The enquiry form is submitted AND the server confirms the row. Never on click.",
+    parameters: { form: "contact" },
+    destinations: ["ga4", "meta_capi", "google_ads"],
+    dedup_key: "event_id",
+    status: "live",
+  },
+  {
     event_name: "consent_update",
     trigger_description: "The visitor allows or declines in the consent banner.",
     parameters: { consent_state: "object" },
