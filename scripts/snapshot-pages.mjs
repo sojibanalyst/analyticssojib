@@ -28,11 +28,6 @@ import path from "node:path";
 const base = process.argv[2] || "http://localhost:3100";
 const outDir = process.argv[3];
 
-if (!outDir) {
-  console.error("usage: node scripts/snapshot-pages.mjs <baseUrl> <outDir>");
-  process.exit(1);
-}
-
 export const ROUTES = [
   "/",
   "/blog",
@@ -70,13 +65,36 @@ export function normalise(html) {
         /<lastmod>[^<]*<\/lastmod>/g,
         "<lastmod>BUILD_TIME</lastmod>",
       )
+      // Server Action ids are hashes of the action module and are reissued on
+      // every build. Caught in P5, where the only "change" to the homepage was
+      // the id on a form nobody had touched.
+      .replace(/&quot;id&quot;:&quot;[0-9a-f]{20,}&quot;/g, "&quot;id&quot;:&quot;ACTION_ID&quot;")
+      .replace(/name="\$ACTION_ID_[0-9a-f]{20,}"/g, 'name="$ACTION_ID_HASH"')
+      // Generated OG images carry a content hash in the query string, which
+      // moves whenever the image is regenerated even if the page did not
+      // change. Caught by diffing local against production.
+      .replace(/(opengraph-image[^"'\s?]*)\?[0-9a-f]{8,}/g, "$1?HASH")
       .replace(/\s+/g, " ")
       .replace(/>\s+</g, "><")
       .trim()
   );
 }
 
+/**
+ * Guarded so `normalise` can be imported by other scripts — re-normalising an
+ * old snapshot after this file changes, for instance — without the import
+ * firing off a run of its own.
+ */
+export const isMain = import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`;
+
 async function main() {
+  // Inside main(), not at module scope: renormalise.mjs imports `normalise`
+  // from here, and a top-level process.exit would kill it on import.
+  if (!outDir) {
+    console.error("usage: node scripts/snapshot-pages.mjs <baseUrl> <outDir>");
+    process.exit(1);
+  }
+
   await mkdir(outDir, { recursive: true });
   let failed = 0;
 
@@ -98,4 +116,4 @@ async function main() {
   process.exit(failed ? 1 : 0);
 }
 
-main();
+if (isMain) main();
