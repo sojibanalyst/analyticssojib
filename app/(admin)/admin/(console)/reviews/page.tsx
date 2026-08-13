@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
+import { DeleteButton } from "@/components/admin/DeleteButton";
 import { createClient } from "@/lib/supabase/server";
-import { updateReview } from "../content-actions";
+import { createReview, deleteReview, updateReview } from "../content-actions";
 
 export const metadata: Metadata = {
   title: "Reviews",
@@ -42,6 +43,30 @@ export default async function ReviewsPage() {
           </p>
         </section>
       ) : null}
+
+      <section className="admin-card">
+        <h2>Add a review</h2>
+        <form action={createReview} className="admin-form">
+          <div className="admin-field">
+            <label htmlFor="new-quote">Quote — the client&rsquo;s own words, unedited</label>
+            <textarea id="new-quote" name="quote" rows={4} required />
+          </div>
+          <div className="admin-field">
+            <label htmlFor="new-attr">
+              Attribution — e.g. Hannah R. · Skincare DTC · UK
+            </label>
+            <input id="new-attr" name="attribution" />
+          </div>
+          <button type="submit" className="admin-button" style={{ alignSelf: "flex-start" }}>
+            Add review
+          </button>
+          <p className="admin-note">
+            There is no limit. The eight below came from the original design as
+            empty slots — add as many real ones as you have, and delete the
+            slots you never fill.
+          </p>
+        </form>
+      </section>
 
       {error ? (
         <section className="admin-card">
@@ -116,6 +141,8 @@ export default async function ReviewsPage() {
                   </button>
                 </div>
               </form>
+
+              <DeleteButton action={deleteReview} id={row.id} label="Delete review" />
             </section>
           ))}
         </>

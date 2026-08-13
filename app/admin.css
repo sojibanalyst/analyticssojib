@@ -556,3 +556,21 @@
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
+
+/* Destructive actions ------------------------------------------------------ */
+
+.admin-danger {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.admin-button[data-variant="danger"] {
+  border-color: var(--danger);
+  background: transparent;
+  color: var(--danger);
+}
+
+.admin-button[data-variant="danger"]:hover {
+  background: var(--danger-tint);
+}

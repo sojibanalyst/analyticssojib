@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
+import { DeleteButton } from "@/components/admin/DeleteButton";
 import { createClient } from "@/lib/supabase/server";
-import { updatePost } from "../content-actions";
+import { createPost, deletePost, updatePost } from "../content-actions";
 
 export const metadata: Metadata = {
   title: "Posts",
@@ -28,6 +29,38 @@ export default async function PostsPage() {
           three live URLs.
         </p>
       </div>
+
+      <section className="admin-card">
+        <h2>Write a new post</h2>
+        <form action={createPost} className="admin-form">
+          <div className="admin-field">
+            <label htmlFor="new-title">Title</label>
+            <input id="new-title" name="title" required placeholder="What the post is about" />
+          </div>
+
+          <div className="admin-field">
+            <label htmlFor="new-summary">Summary — one sentence, used on the card and in search results</label>
+            <textarea id="new-summary" name="summary" rows={2} />
+          </div>
+
+          <div className="admin-inline-form">
+            <label htmlFor="new-topic">Kicker</label>
+            <input id="new-topic" name="topic" className="admin-select" placeholder="SERVER-SIDE" />
+
+            <label htmlFor="new-reading">Reading time</label>
+            <input id="new-reading" name="reading_time" className="admin-select" placeholder="9 MIN" />
+
+            <button type="submit" className="admin-button">
+              Create
+            </button>
+          </div>
+          <p className="admin-note">
+            The URL is made from the title and never changes afterwards. A new
+            post starts live but marked unfinished, so the page works while you
+            write and stays out of Google until you untick it.
+          </p>
+        </form>
+      </section>
 
       {error ? (
         <section className="admin-card">
@@ -102,6 +135,8 @@ export default async function PostsPage() {
                 </button>
               </div>
             </form>
+
+            <DeleteButton action={deletePost} id={post.id} label="Delete post" />
           </section>
         ))
       )}
