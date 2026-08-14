@@ -102,7 +102,19 @@ export function AdminShell({
 
   return (
     <div className="admin-shell" data-collapsed={collapsed}>
-      <aside className="admin-sidebar" aria-label="Console sections">
+      {/* First focusable element on every console page. Without it a keyboard
+          user tabs through twelve sidebar links before reaching the content,
+          on every navigation. Reuses the marketing site's .skip-link — one
+          definition, one behaviour. */}
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+
+      {/* <nav>, not <aside>. An aside is a complementary landmark, so screen
+          reader users had no navigation landmark to jump to at all — the only
+          <nav> in the console was the mobile panel, which does not exist until
+          it is opened. */}
+      <nav className="admin-sidebar" aria-label="Admin sections">
         <div className="admin-brand">
           <span className="admin-brand-mark" aria-hidden="true">
             SF
@@ -121,7 +133,7 @@ export function AdminShell({
             <span className="admin-navlabel">Collapse</span>
           </button>
         </div>
-      </aside>
+      </nav>
 
       <div className="admin-column">
         <header className="admin-topbar">
@@ -180,7 +192,9 @@ export function AdminShell({
           </nav>
         ) : null}
 
-        <main className="admin-main">{children}</main>
+        <main id="main" className="admin-main">
+          {children}
+        </main>
       </div>
     </div>
   );

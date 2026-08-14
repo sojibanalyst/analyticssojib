@@ -18,9 +18,6 @@ import { ACTION_IDLE, type ActionState } from "@/lib/action-state";
  *     it reaches a screen reader as well as an eye
  *   - the result is the action's own return value, not an assumption that
  *     submitting means succeeding
- *
- * The status line keeps its height when idle (a non-breaking space) so the
- * layout does not jump the first time a message appears.
  */
 export function SavingForm({
   action,
@@ -49,16 +46,37 @@ export function SavingForm({
           pendingLabel={pendingLabel}
           variant={variant}
         />
-        <p
-          className="admin-note admin-formstatus"
-          data-tone={state.status === "error" ? "danger" : state.status === "ok" ? "success" : undefined}
-          role="status"
-          aria-live="polite"
-        >
-          {state.status === "idle" ? " " : state.message}
-        </p>
+        <FormStatus state={state} />
       </div>
     </form>
+  );
+}
+
+/**
+ * The result line.
+ *
+ * It goes quiet while a submit is in flight. Without that, resubmitting leaves
+ * the previous "Saved." on screen beside a button reading "Saving…", which
+ * reads as a result for the save currently running. React holds the old state
+ * until the new action resolves — correct behaviour, but not something to
+ * show.
+ *
+ * A non-breaking space when idle, so the row keeps its height and the layout
+ * does not jump the first time a message appears.
+ */
+function FormStatus({ state }: { state: ActionState }) {
+  const { pending } = useFormStatus();
+  const showing = !pending && state.status !== "idle";
+
+  return (
+    <p
+      className="admin-note admin-formstatus"
+      data-tone={showing ? (state.status === "error" ? "danger" : "success") : undefined}
+      role="status"
+      aria-live="polite"
+    >
+      {showing ? state.message : " "}
+    </p>
   );
 }
 

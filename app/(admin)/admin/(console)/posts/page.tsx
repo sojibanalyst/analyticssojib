@@ -46,12 +46,20 @@ export default async function PostsPage() {
             <textarea id="new-summary" name="summary" rows={2} />
           </div>
 
-          <div className="admin-inline-form">
-            <label htmlFor="new-topic">Kicker</label>
-            <input id="new-topic" name="topic" className="admin-select" placeholder="SERVER-SIDE" />
+          {/* .admin-grid, not a new class — it already does auto-fit columns
+              with a 180px minimum, which is exactly two side by side here and
+              one apiece on a phone. These two were the only lowercase inline
+              labels left in the console; everything else is .admin-field. */}
+          <div className="admin-grid">
+            <div className="admin-field">
+              <label htmlFor="new-topic">Kicker</label>
+              <input id="new-topic" name="topic" placeholder="SERVER-SIDE" />
+            </div>
 
-            <label htmlFor="new-reading">Reading time</label>
-            <input id="new-reading" name="reading_time" className="admin-select" placeholder="9 MIN" />
+            <div className="admin-field">
+              <label htmlFor="new-reading">Reading time</label>
+              <input id="new-reading" name="reading_time" placeholder="9 MIN" />
+            </div>
           </div>
 
           <p className="admin-note">

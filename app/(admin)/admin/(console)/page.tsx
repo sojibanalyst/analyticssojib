@@ -91,7 +91,12 @@ export default async function DashboardPage() {
       </div>
 
       <section className="admin-card">
-        <h2>Not built yet</h2>
+        {/* Renamed from "Not built yet", which contradicted its own body once
+            the list emptied. Kept rather than deleted: the card states an
+            invariant — whether anything is outstanding — and deleting it means
+            that the day something IS outstanding there is nowhere for it to
+            appear. A heading that survives both states is the one to have. */}
+        <h2>Build status</h2>
         {/* Every screen is built, so this list is empty — and an empty table
             is a header row over a dangling rule, which reads as broken rather
             than as finished. Render the state, not the furniture. */}
