@@ -15,8 +15,18 @@
    specificity, so the dark block must stay second or it can never win.
    ========================================================================== */
 
+/* Native controls — <select> dropdowns, scrollbars, date pickers — are drawn
+   by the browser, not by us, and they follow color-scheme rather than our
+   tokens. Without it they render light-on-dark in dark mode.
+
+   Set per theme rather than `light dark`, deliberately: `light dark` makes
+   the browser follow the OPERATING SYSTEM, so a visitor on a light OS who
+   switches this site to dark would still get a white dropdown. These follow
+   the theme actually chosen. */
 :root,
 [data-theme="light"] {
+  color-scheme: light;
+
   --bg: #f4f4f2;
   --surface: #ffffff;
   --border: #c4c5c1;
@@ -83,6 +93,8 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
+
   --bg: #0a0a0b;
   --surface: #101114;
   --border: #24252a;

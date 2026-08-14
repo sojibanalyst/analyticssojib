@@ -4,6 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { isAllowedEmail } from "@/lib/auth";
 import { CONTENT_TAG } from "@/lib/content/client";
 import { createClient, getUser } from "@/lib/supabase/server";
+import { DELETE_ERRORS, type DeleteState } from "./delete-state";
 
 /**
  * Editing published content from the console.
@@ -263,19 +264,30 @@ export async function createPost(formData: FormData): Promise<void> {
   revalidatePath("/admin/posts");
 }
 
-export async function deletePost(formData: FormData): Promise<void> {
+export async function deletePost(
+  _prev: DeleteState,
+  formData: FormData,
+): Promise<DeleteState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
-  // The tick is the whole safety mechanism. A delete button that fires on one
-  // click will eventually be clicked by accident.
-  if (formData.get("confirm") !== "on") return;
+  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+
+  // The tick is the safety mechanism. The checkbox is marked required, so
+  // the browser refuses to submit without it; this catches a request that
+  // never went through the form. Returning a reason rather than returning
+  // silently is the difference between a refusal and a broken button.
+  if (formData.get("confirm") !== "on") {
+    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+  }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
 
-  await supabase.from("posts").delete().eq("id", id);
+  const { error } = await supabase.from("posts").delete().eq("id", id);
+  if (error) return { status: "error", message: error.message };
+
   await revalidateContent();
   revalidatePath("/admin/posts");
+  return { status: "deleted", message: "Post deleted." };
 }
 
 export async function createReview(formData: FormData): Promise<void> {
@@ -309,17 +321,30 @@ export async function createReview(formData: FormData): Promise<void> {
   revalidatePath("/admin/reviews");
 }
 
-export async function deleteReview(formData: FormData): Promise<void> {
+export async function deleteReview(
+  _prev: DeleteState,
+  formData: FormData,
+): Promise<DeleteState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
-  if (formData.get("confirm") !== "on") return;
+  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+
+  // The tick is the safety mechanism. The checkbox is marked required, so
+  // the browser refuses to submit without it; this catches a request that
+  // never went through the form. Returning a reason rather than returning
+  // silently is the difference between a refusal and a broken button.
+  if (formData.get("confirm") !== "on") {
+    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+  }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
 
-  await supabase.from("reviews").delete().eq("id", id);
+  const { error } = await supabase.from("reviews").delete().eq("id", id);
+  if (error) return { status: "error", message: error.message };
+
   await revalidateContent();
   revalidatePath("/admin/reviews");
+  return { status: "deleted", message: "Review deleted." };
 }
 
 export async function createFaq(formData: FormData): Promise<void> {
@@ -349,17 +374,30 @@ export async function createFaq(formData: FormData): Promise<void> {
   revalidatePath("/admin/faqs");
 }
 
-export async function deleteFaq(formData: FormData): Promise<void> {
+export async function deleteFaq(
+  _prev: DeleteState,
+  formData: FormData,
+): Promise<DeleteState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
-  if (formData.get("confirm") !== "on") return;
+  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+
+  // The tick is the safety mechanism. The checkbox is marked required, so
+  // the browser refuses to submit without it; this catches a request that
+  // never went through the form. Returning a reason rather than returning
+  // silently is the difference between a refusal and a broken button.
+  if (formData.get("confirm") !== "on") {
+    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+  }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
 
-  await supabase.from("faqs").delete().eq("id", id);
+  const { error } = await supabase.from("faqs").delete().eq("id", id);
+  if (error) return { status: "error", message: error.message };
+
   await revalidateContent();
   revalidatePath("/admin/faqs");
+  return { status: "deleted", message: "Question deleted." };
 }
 
 export async function createCaseStudy(formData: FormData): Promise<void> {
@@ -400,16 +438,29 @@ export async function createCaseStudy(formData: FormData): Promise<void> {
   revalidatePath("/admin/case-studies");
 }
 
-export async function deleteCaseStudy(formData: FormData): Promise<void> {
+export async function deleteCaseStudy(
+  _prev: DeleteState,
+  formData: FormData,
+): Promise<DeleteState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
-  if (formData.get("confirm") !== "on") return;
+  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+
+  // The tick is the safety mechanism. The checkbox is marked required, so
+  // the browser refuses to submit without it; this catches a request that
+  // never went through the form. Returning a reason rather than returning
+  // silently is the difference between a refusal and a broken button.
+  if (formData.get("confirm") !== "on") {
+    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+  }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
 
   // Stats and screenshots go with it — the foreign keys cascade.
-  await supabase.from("case_studies").delete().eq("id", id);
+  const { error } = await supabase.from("case_studies").delete().eq("id", id);
+  if (error) return { status: "error", message: error.message };
+
   await revalidateContent();
   revalidatePath("/admin/case-studies");
+  return { status: "deleted", message: "Case study deleted." };
 }

@@ -459,16 +459,36 @@
   color: var(--ink-muted);
 }
 
-.admin-field input {
+/* input, textarea AND select.
+   This read `.admin-field input` alone, so every textarea in the console
+   rendered with no padding, no border and a transparent background — which is
+   the Quote field on reviews, Summary and Body on posts, Card summary on case
+   studies and Answer on FAQs. The most important field on every form was the
+   one field with no styling. */
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  width: 100%;
   padding: 9px 11px;
   border: 1px solid var(--border-input);
   border-radius: 8px;
   background: var(--bg-sunk);
   color: var(--ink);
+  /* Keeps JetBrains Mono: form controls do not inherit font by default. */
   font: inherit;
 }
 
-.admin-field input:focus-visible {
+.admin-field textarea {
+  /* Enough to see a paragraph without dragging, and draggable when that is
+     not enough. Horizontal resizing is off because it would break the grid. */
+  min-height: 96px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.admin-field input:focus-visible,
+.admin-field textarea:focus-visible,
+.admin-field select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
@@ -555,6 +575,37 @@
 .admin-select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+/* Editing forms ------------------------------------------------------------ */
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* A <label> is inline by default, so the box and its text sat flush against
+   each other — "☑Show on the site". inline-flex plus a gap is what separates
+   them, and align-items keeps the box centred on the first line of a label
+   that wraps. */
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.admin-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  /* flex: none or the box is squashed by a long label. */
+  flex: none;
+  margin: 0;
+  /* Draws the tick in the console's green instead of the browser's blue. */
+  accent-color: var(--accent);
 }
 
 /* Destructive actions ------------------------------------------------------ */

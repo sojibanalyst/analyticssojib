@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { navGroups } from "@/app/(admin)/admin/nav";
 import { toggleCollapsed, useCollapsed } from "@/lib/admin-sidebar";
 import { toggleTheme, useTheme } from "@/lib/theme";
@@ -26,9 +26,27 @@ export function AdminShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const theme = useTheme();
   const collapsed = useCollapsed();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  /**
+   * Prefetch on intent, not on sight.
+   *
+   * Every one of these links points at a dynamic page whose server component
+   * runs a Supabase query. Next's default prefetch fired all twelve as soon as
+   * the sidebar rendered — 36 RSC requests in one session, three of them 503s
+   * — which is twelve database round trips for pages nobody opened.
+   *
+   * Hover and keyboard focus are both wired up: prefetching only on hover
+   * would quietly make the console slower for anyone navigating by tab.
+   * router.prefetch de-duplicates internally, so repeated hovers are free.
+   */
+  const warm = useCallback(
+    (href: string) => () => router.prefetch(href),
+    [router],
+  );
 
   // The visible word has to appear in the accessible name, or the two disagree.
   const themeWord = theme === "dark" ? "LIGHT" : "DARK";
@@ -46,6 +64,11 @@ export function AdminShell({
                 className="admin-navlink"
                 aria-current={pathname === item.href ? "page" : undefined}
                 title={collapsed ? item.label : undefined}
+                // See `warm` above: off by default, on when the visitor shows
+                // intent, so the console does not query twelve tables on load.
+                prefetch={false}
+                onMouseEnter={warm(item.href)}
+                onFocus={warm(item.href)}
                 // Closes the mobile panel on navigation. Doing it here rather
                 // than in an effect on pathname keeps it to one render.
                 onClick={() => setMenuOpen(false)}
