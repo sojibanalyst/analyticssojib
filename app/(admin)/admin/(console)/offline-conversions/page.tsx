@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
+import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
 import { DESTINATION_CLICK_ID } from "@/lib/offline";
 import { buildUpload } from "./actions";
@@ -50,7 +51,7 @@ export default async function OfflineConversionsPage({
 
       <section className="admin-card">
         <h2>Build a batch</h2>
-        <form action={buildUpload} className="admin-inline-form">
+        <SavingForm action={buildUpload} className="admin-inline-form" submitLabel="Dry run" pendingLabel="Building…">
           <label className="sr-only" htmlFor="destination">
             Destination
           </label>
@@ -72,11 +73,7 @@ export default async function OfflineConversionsPage({
             placeholder="Conversion action name"
             defaultValue="Booked call"
           />
-
-          <button type="submit" className="admin-button">
-            Dry run
-          </button>
-        </form>
+        </SavingForm>
         <p className="admin-note">
           Dry run is the only mode. Nothing is sent to any platform — that needs
           API credentials this project does not hold. Export the CSV below and

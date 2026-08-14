@@ -2,9 +2,9 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import type { DeleteState } from "@/app/(admin)/admin/(console)/delete-state";
+import { ACTION_IDLE, type ActionState } from "@/lib/action-state";
 
-const initial: DeleteState = { status: "idle", message: "" };
+
 
 function Submit({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -38,11 +38,11 @@ export function DeleteButton({
   id,
   label,
 }: {
-  action: (prev: DeleteState, formData: FormData) => Promise<DeleteState>;
+  action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   id: string;
   label: string;
 }) {
-  const [state, formAction] = useActionState(action, initial);
+  const [state, formAction] = useActionState(action, ACTION_IDLE);
 
   return (
     <form action={formAction} className="admin-inline-form admin-danger">

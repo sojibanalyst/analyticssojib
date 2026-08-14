@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
 import { createPost, deletePost, updatePost } from "../content-actions";
 
@@ -32,14 +33,16 @@ export default async function PostsPage() {
 
       <section className="admin-card">
         <h2>Write a new post</h2>
-        <form action={createPost} className="admin-form">
+        <SavingForm action={createPost} submitLabel="Create">
           <div className="admin-field">
             <label htmlFor="new-title">Title</label>
             <input id="new-title" name="title" required placeholder="What the post is about" />
           </div>
 
           <div className="admin-field">
-            <label htmlFor="new-summary">Summary — one sentence, used on the card and in search results</label>
+            <label htmlFor="new-summary">
+              Summary — one sentence, used on the card and in search results
+            </label>
             <textarea id="new-summary" name="summary" rows={2} />
           </div>
 
@@ -49,17 +52,14 @@ export default async function PostsPage() {
 
             <label htmlFor="new-reading">Reading time</label>
             <input id="new-reading" name="reading_time" className="admin-select" placeholder="9 MIN" />
-
-            <button type="submit" className="admin-button">
-              Create
-            </button>
           </div>
+
           <p className="admin-note">
             The URL is made from the title and never changes afterwards. A new
             post starts live but marked unfinished, so the page works while you
             write and stays out of Google until you untick it.
           </p>
-        </form>
+        </SavingForm>
       </section>
 
       {error ? (
@@ -77,12 +77,16 @@ export default async function PostsPage() {
           <section className="admin-card" key={post.id}>
             <h2>
               /blog/{post.slug}
-              <span className="admin-pill" data-tone={post.is_draft ? "warn" : "success"} style={{ marginLeft: "10px" }}>
+              <span
+                className="admin-pill"
+                data-tone={post.is_draft ? "warn" : "success"}
+                style={{ marginLeft: "10px" }}
+              >
                 {post.is_draft ? "Unfinished" : "Finished"}
               </span>
             </h2>
 
-            <form action={updatePost} className="admin-form">
+            <SavingForm action={updatePost}>
               <input type="hidden" name="id" value={post.id} />
 
               <div className="admin-field">
@@ -129,12 +133,8 @@ export default async function PostsPage() {
                   <input type="checkbox" name="is_draft" defaultChecked={post.is_draft} />
                   Writing unfinished
                 </label>
-
-                <button type="submit" className="admin-button">
-                  Save
-                </button>
               </div>
-            </form>
+            </SavingForm>
 
             <DeleteButton action={deletePost} id={post.id} label="Delete post" />
           </section>

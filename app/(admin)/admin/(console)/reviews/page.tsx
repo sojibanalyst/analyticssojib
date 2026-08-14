@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
 import { createReview, deleteReview, updateReview } from "../content-actions";
 
@@ -9,12 +10,57 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+type Row = {
+  id: string;
+  quote: string | null;
+  attribution: string | null;
+  is_placeholder: boolean;
+  published: boolean;
+};
+
+/**
+ * The editing form for one written review.
+ *
+ * Shared between the expanded (real) and collapsed (placeholder) cards, so the
+ * two can never drift into offering different fields.
+ */
+function ReviewForm({ row }: { row: Row }) {
+  return (
+    <>
+      <SavingForm action={updateReview}>
+        <input type="hidden" name="id" value={row.id} />
+
+        <div className="admin-field">
+          <label htmlFor={`quote-${row.id}`}>Quote — verbatim</label>
+          <textarea id={`quote-${row.id}`} name="quote" rows={4} defaultValue={row.quote ?? ""} />
+        </div>
+
+        <div className="admin-field">
+          <label htmlFor={`attr-${row.id}`}>
+            Attribution — e.g. Hannah R. · Skincare DTC · UK
+          </label>
+          <input id={`attr-${row.id}`} name="attribution" defaultValue={row.attribution ?? ""} />
+        </div>
+
+        <label className="admin-check">
+          <input type="checkbox" name="published" defaultChecked={row.published} />
+          Show on the site
+        </label>
+      </SavingForm>
+
+      <DeleteButton action={deleteReview} id={row.id} label="Delete review" />
+    </>
+  );
+}
+
 export default async function ReviewsPage() {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("reviews")
-    .select("id, type, quote, attribution, client_name, company, is_placeholder, published, youtube_id, sort_order")
+    .select(
+      "id, type, quote, attribution, client_name, company, is_placeholder, published, youtube_id, sort_order",
+    )
     .order("type", { ascending: true })
     .order("sort_order", { ascending: true });
 
@@ -38,34 +84,29 @@ export default async function ReviewsPage() {
         <section className="admin-card">
           <p className="admin-note" data-tone="danger">
             {placeholders} of {written.length} written review slots are still
-            placeholders. They render on the live site as clearly-labelled
-            empty slots — never as a real quote.
+            placeholders, collapsed below. They render on the live site as
+            clearly-labelled empty slots — never as a real quote.
           </p>
         </section>
       ) : null}
 
       <section className="admin-card">
         <h2>Add a review</h2>
-        <form action={createReview} className="admin-form">
+        <SavingForm action={createReview} submitLabel="Add review">
           <div className="admin-field">
             <label htmlFor="new-quote">Quote — the client&rsquo;s own words, unedited</label>
             <textarea id="new-quote" name="quote" rows={4} required />
           </div>
           <div className="admin-field">
-            <label htmlFor="new-attr">
-              Attribution — e.g. Hannah R. · Skincare DTC · UK
-            </label>
+            <label htmlFor="new-attr">Attribution — e.g. Hannah R. · Skincare DTC · UK</label>
             <input id="new-attr" name="attribution" />
           </div>
-          <button type="submit" className="admin-button" style={{ alignSelf: "flex-start" }}>
-            Add review
-          </button>
           <p className="admin-note">
-            There is no limit. The eight below came from the original design as
-            empty slots — add as many real ones as you have, and delete the
-            slots you never fill.
+            There is no limit. The slots below came from the original design as
+            empty placeholders — add as many real ones as you have, and delete
+            the slots you never fill.
           </p>
-        </form>
+        </SavingForm>
       </section>
 
       {error ? (
@@ -94,57 +135,34 @@ export default async function ReviewsPage() {
             </ul>
           </section>
 
-          {written.map((row, index) => (
-            <section className="admin-card" key={row.id}>
-              <h2>
-                Written review {index + 1}
-                <span
-                  className="admin-pill"
-                  data-tone={row.is_placeholder ? "warn" : "success"}
-                  style={{ marginLeft: "10px" }}
-                >
-                  {row.is_placeholder ? "Placeholder" : "Real"}
-                </span>
-              </h2>
-
-              <form action={updateReview} className="admin-form">
-                <input type="hidden" name="id" value={row.id} />
-
-                <div className="admin-field">
-                  <label htmlFor={`quote-${row.id}`}>Quote — verbatim</label>
-                  <textarea
-                    id={`quote-${row.id}`}
-                    name="quote"
-                    rows={4}
-                    defaultValue={row.quote ?? ""}
-                  />
-                </div>
-
-                <div className="admin-field">
-                  <label htmlFor={`attr-${row.id}`}>
-                    Attribution — e.g. Hannah R. · Skincare DTC · UK
-                  </label>
-                  <input
-                    id={`attr-${row.id}`}
-                    name="attribution"
-                    defaultValue={row.attribution ?? ""}
-                  />
-                </div>
-
-                <div className="admin-inline-form">
-                  <label className="admin-check">
-                    <input type="checkbox" name="published" defaultChecked={row.published} />
-                    Show on the site
-                  </label>
-                  <button type="submit" className="admin-button">
-                    Save
-                  </button>
-                </div>
-              </form>
-
-              <DeleteButton action={deleteReview} id={row.id} label="Delete review" />
-            </section>
-          ))}
+          {written.map((row, index) =>
+            /* A placeholder is eight identical lines of filler. Expanded, the
+               eight of them made this page 3,885px tall — and taller still
+               once textareas got a min-height. Collapsed, they are a list you
+               can scan; real reviews stay open because those are the ones
+               worth reading. */
+            row.is_placeholder ? (
+              <details className="admin-card admin-collapse" key={row.id}>
+                <summary>
+                  <span>Written review {index + 1}</span>
+                  <span className="admin-pill" data-tone="warn">
+                    Placeholder
+                  </span>
+                </summary>
+                <ReviewForm row={row} />
+              </details>
+            ) : (
+              <section className="admin-card" key={row.id}>
+                <h2>
+                  Written review {index + 1}
+                  <span className="admin-pill" data-tone="success" style={{ marginLeft: "10px" }}>
+                    Real
+                  </span>
+                </h2>
+                <ReviewForm row={row} />
+              </section>
+            ),
+          )}
         </>
       )}
     </>

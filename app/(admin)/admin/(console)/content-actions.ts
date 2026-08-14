@@ -4,7 +4,12 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { isAllowedEmail } from "@/lib/auth";
 import { CONTENT_TAG } from "@/lib/content/client";
 import { createClient, getUser } from "@/lib/supabase/server";
-import { DELETE_ERRORS, type DeleteState } from "./delete-state";
+import {
+  ACTION_ERRORS,
+  fail,
+  ok,
+  type ActionState,
+} from "@/lib/action-state";
 
 /**
  * Editing published content from the console.
@@ -27,12 +32,15 @@ async function requireAdmin() {
 }
 
 /** Publish, unpublish, or mark writing finished. */
-export async function updatePost(formData: FormData): Promise<void> {
+export async function updatePost(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) return fail(ACTION_ERRORS.noId);
 
   const status = formData.get("status") === "published" ? "published" : "draft";
   const isDraft = formData.get("is_draft") === "on";
@@ -46,7 +54,7 @@ export async function updatePost(formData: FormData): Promise<void> {
     .map((para) => para.trim().replace(/\s*\n\s*/g, " "))
     .filter(Boolean);
 
-  await supabase
+  const { error } = await supabase
     .from("posts")
     .update({
       title: String(formData.get("title") ?? "").trim() || undefined,
@@ -61,17 +69,25 @@ export async function updatePost(formData: FormData): Promise<void> {
     })
     .eq("id", id);
 
+
+  if (error) return fail(error.message);
+
+
   await revalidateContent();
   revalidatePath("/admin/posts");
+  return ok("Post saved.");
 }
 
 /** Replace a placeholder review with the client's actual words. */
-export async function updateReview(formData: FormData): Promise<void> {
+export async function updateReview(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) return fail(ACTION_ERRORS.noId);
 
   const quote = String(formData.get("quote") ?? "").trim();
   const attribution = String(formData.get("attribution") ?? "").trim();
@@ -81,7 +97,7 @@ export async function updateReview(formData: FormData): Promise<void> {
   // is the only definition that cannot drift from reality.
   const stillPlaceholder = quote.startsWith("Upwork review ") || quote === "";
 
-  await supabase
+  const { error } = await supabase
     .from("reviews")
     .update({
       quote: quote || null,
@@ -91,34 +107,51 @@ export async function updateReview(formData: FormData): Promise<void> {
     })
     .eq("id", id);
 
+
+  if (error) return fail(error.message);
+
+
   await revalidateContent();
   revalidatePath("/admin/reviews");
+  return ok("Review saved.");
 }
 
-export async function updateFaq(formData: FormData): Promise<void> {
+export async function updateFaq(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const id = String(formData.get("id") ?? "");
   const question = String(formData.get("question") ?? "").trim();
   const answer = String(formData.get("answer") ?? "").trim();
-  if (!id || !question || !answer) return;
+  if (!id) return fail(ACTION_ERRORS.noId);
+  if (!question || !answer) return fail(ACTION_ERRORS.missingFields);
 
-  await supabase
+  const { error } = await supabase
     .from("faqs")
     .update({ question, answer, published: formData.get("published") === "on" })
     .eq("id", id);
 
+
+  if (error) return fail(error.message);
+
+
   await revalidateContent();
   revalidatePath("/admin/faqs");
+  return ok("Question saved.");
 }
 
-export async function updateCaseStudy(formData: FormData): Promise<void> {
+export async function updateCaseStudy(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) return fail(ACTION_ERRORS.noId);
 
   const num = (key: string): number | null => {
     const raw = String(formData.get(key) ?? "").trim();
@@ -127,7 +160,7 @@ export async function updateCaseStudy(formData: FormData): Promise<void> {
     return Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : null;
   };
 
-  await supabase
+  const { error } = await supabase
     .from("case_studies")
     .update({
       title: String(formData.get("title") ?? "").trim() || undefined,
@@ -152,15 +185,23 @@ export async function updateCaseStudy(formData: FormData): Promise<void> {
     })
     .eq("id", id);
 
+
+  if (error) return fail(error.message);
+
+
   await revalidateContent();
   revalidatePath("/admin/case-studies");
+  return ok("Case study saved.");
 }
 
-export async function updateSettings(formData: FormData): Promise<void> {
+export async function updateSettings(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
-  await supabase
+  const { error } = await supabase
     .from("settings")
     .update({
       site_name: String(formData.get("site_name") ?? "").trim() || null,
@@ -173,7 +214,10 @@ export async function updateSettings(formData: FormData): Promise<void> {
     })
     .eq("id", true);
 
+  if (error) return fail(error.message);
+
   revalidatePath("/admin/settings");
+  return ok("Settings saved.");
 }
 
 /**
@@ -230,12 +274,15 @@ async function uniqueSlug(
   return `${base}-${Date.now()}`;
 }
 
-export async function createPost(formData: FormData): Promise<void> {
+export async function createPost(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const title = String(formData.get("title") ?? "").trim();
-  if (!title) return;
+  if (!title) return fail(ACTION_ERRORS.missingFields);
 
   const slug = await uniqueSlug(supabase, "posts", slugify(title));
 
@@ -246,7 +293,7 @@ export async function createPost(formData: FormData): Promise<void> {
     .limit(1)
     .maybeSingle();
 
-  await supabase.from("posts").insert({
+  const { error } = await supabase.from("posts").insert({
     slug,
     title,
     topic: String(formData.get("topic") ?? "").trim().toUpperCase() || "NOTES",
@@ -259,43 +306,49 @@ export async function createPost(formData: FormData): Promise<void> {
     is_draft: true,
     sort_order: (last?.sort_order ?? -1) + 1,
   });
+  if (error) return fail(error.message);
+
 
   await revalidateContent();
   revalidatePath("/admin/posts");
+  return ok("Post created.");
 }
 
 export async function deletePost(
-  _prev: DeleteState,
+  _prev: ActionState,
   formData: FormData,
-): Promise<DeleteState> {
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   // The tick is the safety mechanism. The checkbox is marked required, so
   // the browser refuses to submit without it; this catches a request that
   // never went through the form. Returning a reason rather than returning
   // silently is the difference between a refusal and a broken button.
   if (formData.get("confirm") !== "on") {
-    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+    return fail(ACTION_ERRORS.notConfirmed);
   }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
+  if (!id) return fail(ACTION_ERRORS.noId);
 
   const { error } = await supabase.from("posts").delete().eq("id", id);
-  if (error) return { status: "error", message: error.message };
+  if (error) return fail(error.message);
 
   await revalidateContent();
   revalidatePath("/admin/posts");
-  return { status: "deleted", message: "Post deleted." };
+  return ok("Post deleted.");
 }
 
-export async function createReview(formData: FormData): Promise<void> {
+export async function createReview(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const quote = String(formData.get("quote") ?? "").trim();
-  if (!quote) return;
+  if (!quote) return fail(ACTION_ERRORS.missingFields);
 
   const { data: last } = await supabase
     .from("reviews")
@@ -305,7 +358,7 @@ export async function createReview(formData: FormData): Promise<void> {
     .limit(1)
     .maybeSingle();
 
-  await supabase.from("reviews").insert({
+  const { error } = await supabase.from("reviews").insert({
     type: "written",
     quote,
     attribution: String(formData.get("attribution") ?? "").trim() || null,
@@ -316,44 +369,50 @@ export async function createReview(formData: FormData): Promise<void> {
     source_key: `written:manual:${crypto.randomUUID()}`,
     sort_order: (last?.sort_order ?? -1) + 1,
   });
+  if (error) return fail(error.message);
+
 
   await revalidateContent();
   revalidatePath("/admin/reviews");
+  return ok("Review added.");
 }
 
 export async function deleteReview(
-  _prev: DeleteState,
+  _prev: ActionState,
   formData: FormData,
-): Promise<DeleteState> {
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   // The tick is the safety mechanism. The checkbox is marked required, so
   // the browser refuses to submit without it; this catches a request that
   // never went through the form. Returning a reason rather than returning
   // silently is the difference between a refusal and a broken button.
   if (formData.get("confirm") !== "on") {
-    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+    return fail(ACTION_ERRORS.notConfirmed);
   }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
+  if (!id) return fail(ACTION_ERRORS.noId);
 
   const { error } = await supabase.from("reviews").delete().eq("id", id);
-  if (error) return { status: "error", message: error.message };
+  if (error) return fail(error.message);
 
   await revalidateContent();
   revalidatePath("/admin/reviews");
-  return { status: "deleted", message: "Review deleted." };
+  return ok("Review deleted.");
 }
 
-export async function createFaq(formData: FormData): Promise<void> {
+export async function createFaq(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const question = String(formData.get("question") ?? "").trim();
   const answer = String(formData.get("answer") ?? "").trim();
-  if (!question || !answer) return;
+  if (!question || !answer) return fail(ACTION_ERRORS.missingFields);
 
   const { data: last } = await supabase
     .from("faqs")
@@ -362,50 +421,56 @@ export async function createFaq(formData: FormData): Promise<void> {
     .limit(1)
     .maybeSingle();
 
-  await supabase.from("faqs").insert({
+  const { error } = await supabase.from("faqs").insert({
     question,
     answer,
     published: true,
     source_key: `faq:manual:${crypto.randomUUID()}`,
     sort_order: (last?.sort_order ?? -1) + 1,
   });
+  if (error) return fail(error.message);
+
 
   await revalidateContent();
   revalidatePath("/admin/faqs");
+  return ok("Question added.");
 }
 
 export async function deleteFaq(
-  _prev: DeleteState,
+  _prev: ActionState,
   formData: FormData,
-): Promise<DeleteState> {
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   // The tick is the safety mechanism. The checkbox is marked required, so
   // the browser refuses to submit without it; this catches a request that
   // never went through the form. Returning a reason rather than returning
   // silently is the difference between a refusal and a broken button.
   if (formData.get("confirm") !== "on") {
-    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+    return fail(ACTION_ERRORS.notConfirmed);
   }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
+  if (!id) return fail(ACTION_ERRORS.noId);
 
   const { error } = await supabase.from("faqs").delete().eq("id", id);
-  if (error) return { status: "error", message: error.message };
+  if (error) return fail(error.message);
 
   await revalidateContent();
   revalidatePath("/admin/faqs");
-  return { status: "deleted", message: "Question deleted." };
+  return ok("Question deleted.");
 }
 
-export async function createCaseStudy(formData: FormData): Promise<void> {
+export async function createCaseStudy(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return;
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   const title = String(formData.get("title") ?? "").trim();
-  if (!title) return;
+  if (!title) return fail(ACTION_ERRORS.missingFields);
 
   const slug = await uniqueSlug(supabase, "case_studies", slugify(title));
 
@@ -416,7 +481,7 @@ export async function createCaseStudy(formData: FormData): Promise<void> {
     .limit(1)
     .maybeSingle();
 
-  await supabase.from("case_studies").insert({
+  const { error } = await supabase.from("case_studies").insert({
     slug,
     title,
     code: String(formData.get("code") ?? "").trim().toUpperCase() || "CASE",
@@ -433,34 +498,37 @@ export async function createCaseStudy(formData: FormData): Promise<void> {
     needs_confirmation: false,
     sort_order: (last?.sort_order ?? -1) + 1,
   });
+  if (error) return fail(error.message);
+
 
   await revalidateContent();
   revalidatePath("/admin/case-studies");
+  return ok("Case study created.");
 }
 
 export async function deleteCaseStudy(
-  _prev: DeleteState,
+  _prev: ActionState,
   formData: FormData,
-): Promise<DeleteState> {
+): Promise<ActionState> {
   const supabase = await requireAdmin();
-  if (!supabase) return { status: "error", message: DELETE_ERRORS.notAllowed };
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
   // The tick is the safety mechanism. The checkbox is marked required, so
   // the browser refuses to submit without it; this catches a request that
   // never went through the form. Returning a reason rather than returning
   // silently is the difference between a refusal and a broken button.
   if (formData.get("confirm") !== "on") {
-    return { status: "error", message: DELETE_ERRORS.notConfirmed };
+    return fail(ACTION_ERRORS.notConfirmed);
   }
 
   const id = String(formData.get("id") ?? "");
-  if (!id) return { status: "error", message: DELETE_ERRORS.noId };
+  if (!id) return fail(ACTION_ERRORS.noId);
 
   // Stats and screenshots go with it — the foreign keys cascade.
   const { error } = await supabase.from("case_studies").delete().eq("id", id);
-  if (error) return { status: "error", message: error.message };
+  if (error) return fail(error.message);
 
   await revalidateContent();
   revalidatePath("/admin/case-studies");
-  return { status: "deleted", message: "Case study deleted." };
+  return ok("Case study deleted.");
 }

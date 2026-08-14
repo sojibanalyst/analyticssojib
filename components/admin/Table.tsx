@@ -69,8 +69,28 @@ function secondsSince(iso: string): number {
   return Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
 }
 
+/**
+ * The absolute time behind the relative one.
+ *
+ * Formatted in UTC and labelled as such, rather than with toLocaleString().
+ * These are server components: an unqualified locale string would render in
+ * the SERVER's timezone while looking like the reader's, which is worse than
+ * no timestamp when you are reconciling against another system. UTC is at
+ * least unambiguous, and it matches what the database holds.
+ */
+function absolute(iso: string): string {
+  const when = new Date(iso);
+  if (Number.isNaN(when.getTime())) return iso;
+  return (
+    when.toLocaleString("en-GB", {
+      dateStyle: "medium",
+      timeStyle: "medium",
+      timeZone: "UTC",
+    }) + " UTC"
+  );
+}
+
 export function Ago({ iso }: { iso: string }) {
-  const then = new Date(iso);
   const seconds = secondsSince(iso);
 
   const label =
@@ -83,7 +103,7 @@ export function Ago({ iso }: { iso: string }) {
           : `${Math.round(seconds / 86400)}d ago`;
 
   return (
-    <time dateTime={iso} title={then.toISOString()}>
+    <time dateTime={iso} title={absolute(iso)}>
       {label}
     </time>
   );

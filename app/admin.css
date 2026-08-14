@@ -625,3 +625,64 @@
 .admin-button[data-variant="danger"]:hover {
   background: var(--danger-tint);
 }
+
+/* Collapsed cards ---------------------------------------------------------- */
+
+/* Eight placeholder reviews rendered expanded made that page 3,885px tall,
+   and the P0 textarea min-height made it worse. <details> is the whole
+   mechanism — no JavaScript, keyboard-operable, and the browser handles the
+   open/closed state for free. */
+.admin-collapse > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  /* list-style removes the marker in Firefox; ::-webkit-details-marker is
+     what Safari and older Chrome read. Both are needed. */
+  list-style: none;
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.admin-collapse > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A caret we draw ourselves, so it inherits the theme and rotates on open. */
+.admin-collapse > summary::before {
+  content: "▸";
+  color: var(--ink-muted);
+  transition: transform 120ms ease;
+}
+
+.admin-collapse[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.admin-collapse > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Space between the summary and the form it reveals, only when open. */
+.admin-collapse[open] > summary {
+  margin-bottom: 12px;
+}
+
+/* Save feedback ------------------------------------------------------------ */
+
+.admin-formfoot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Holds its line height while idle so the layout does not jump the first
+   time a "Saved" appears. */
+.admin-formstatus {
+  min-height: 1.5em;
+  margin: 0;
+}

@@ -8,6 +8,7 @@ import {
   isOfflineDestination,
   type LeadForUpload,
 } from "@/lib/offline";
+import { ACTION_ERRORS, fail, ok, type ActionState } from "@/lib/action-state";
 
 /**
  * Builds an upload batch.
@@ -21,13 +22,16 @@ import {
  * sent" and forgets the other 28 is how an offline import quietly stops
  * working for a quarter.
  */
-export async function buildUpload(formData: FormData): Promise<void> {
+export async function buildUpload(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const user = await getUser();
-  if (!isAllowedEmail(user?.email)) return;
+  if (!isAllowedEmail(user?.email)) return fail(ACTION_ERRORS.notAllowed);
 
   const destination = String(formData.get("destination") ?? "");
   const conversionAction = String(formData.get("conversion_action") ?? "").trim();
-  if (!isOfflineDestination(destination)) return;
+  if (!isOfflineDestination(destination)) return fail("Pick a destination first.");
 
   const supabase = await createClient();
 
@@ -40,7 +44,7 @@ export async function buildUpload(formData: FormData): Promise<void> {
     .order("created_at", { ascending: false })
     .limit(1000);
 
-  if (error) return;
+  if (error) return fail(error.message);
 
   // Date.now() once, passed in, so every row in a batch is judged against the
   // same instant rather than drifting across a long loop.
@@ -71,7 +75,7 @@ export async function buildUpload(formData: FormData): Promise<void> {
     .select("id")
     .single();
 
-  if (uploadError || !upload) return;
+  if (uploadError || !upload) return fail(uploadError?.message ?? "Could not create the batch.");
 
   if (rows.length) {
     await supabase
@@ -80,4 +84,5 @@ export async function buildUpload(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/admin/offline-conversions");
+  return ok(`Dry run built: ${eligible} of ${rows.length} lead(s) eligible.`);
 }

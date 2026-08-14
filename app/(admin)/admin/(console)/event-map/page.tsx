@@ -10,19 +10,30 @@ export const metadata: Metadata = {
 export default async function EventMapPage() {
   const supabase = await createClient();
 
-  const [map, seen] = await Promise.all([
+  const [map, fired] = await Promise.all([
     supabase
       .from("event_map")
-      .select("id, event_name, trigger_description, parameters, destinations, dedup_key, status, last_fired_at")
+      .select("id, event_name, trigger_description, parameters, destinations, dedup_key, status")
       .order("event_name", { ascending: true }),
-    // What has actually arrived, as opposed to what was planned. The gap
-    // between the two lists is the only interesting thing on this screen.
-    supabase.from("events").select("event_name").limit(1000),
+    // Derived from the events themselves. `event_map.last_fired_at` exists but
+    // was never written by anything, so reading it produced a dash on every
+    // row that read as "never fired" — see migration 20260814000001.
+    supabase.from("event_last_fired").select("event_name, last_fired_at, event_count"),
   ]);
 
-  const observed = new Set((seen.data ?? []).map((row) => row.event_name));
+  // A view's columns are all nullable as far as the generated types are
+  // concerned, so the nulls are filtered out here rather than asserted away.
+  const seen = new Map<string, { lastFired: string | null; count: number }>(
+    (fired.data ?? [])
+      .filter((row): row is typeof row & { event_name: string } => row.event_name !== null)
+      .map((row) => [
+        row.event_name,
+        { lastFired: row.last_fired_at, count: row.event_count ?? 0 },
+      ]),
+  );
+
   const planned = new Set((map.data ?? []).map((row) => row.event_name));
-  const undocumented = [...observed].filter((name) => !planned.has(name)).sort();
+  const undocumented = [...seen.keys()].filter((name) => !planned.has(name)).sort();
 
   return (
     <>
@@ -30,7 +41,7 @@ export default async function EventMapPage() {
         <h1>Event map</h1>
         <p>
           The documented contract: what each event means, what it carries, and
-          where it goes. An event firing that is not on this list is not a
+          where it goes. An event arriving that is not on this list is not a
           feature — it is drift, and it is listed separately below.
         </p>
       </div>
@@ -41,6 +52,10 @@ export default async function EventMapPage() {
           <AdminState tone="error" title="Could not read the event map.">
             {map.error.message}
           </AdminState>
+        ) : fired.error ? (
+          <AdminState tone="error" title="Could not read when events last fired.">
+            {fired.error.message}
+          </AdminState>
         ) : !map.data?.length ? (
           <AdminState title="No events documented yet.">
             Seeded by `npm run seed`. Until then the site is firing events with
@@ -49,11 +64,11 @@ export default async function EventMapPage() {
         ) : (
           <AdminTable
             caption="Documented events"
-            columns={["Event", "Fires when", "Parameters", "Destinations", "Status", "Last fired"]}
+            columns={["Event", "Fires when", "Parameters", "Destinations", "State", "Seen", "Last fired"]}
           >
             {map.data.map((row) => {
               const params = Object.keys((row.parameters ?? {}) as Record<string, unknown>);
-              const live = observed.has(row.event_name);
+              const hit = seen.get(row.event_name);
               return (
                 <tr key={row.id}>
                   <td style={{ color: "var(--ink)" }}>{row.event_name}</td>
@@ -61,14 +76,19 @@ export default async function EventMapPage() {
                   <td>{params.length ? params.join(", ") : "—"}</td>
                   <td>{row.destinations.length ? row.destinations.join(", ") : "—"}</td>
                   <td>
+                    {/* "Receiving" green, "Documented" neutral. The old pair
+                        had it backwards: "Live" — which reads as the healthy
+                        state — was rendered in the warning colour, while
+                        "Firing" was green. Colour and meaning now agree. */}
                     <span
                       className="admin-pill"
-                      data-tone={live ? "success" : row.status === "planned" ? "info" : "warn"}
+                      data-tone={hit ? "success" : "info"}
                     >
-                      {live ? "Firing" : row.status}
+                      {hit ? "Receiving" : "Documented"}
                     </span>
                   </td>
-                  <td>{row.last_fired_at ? <Ago iso={row.last_fired_at} /> : "—"}</td>
+                  <td>{hit ? hit.count.toLocaleString("en-US") : "0"}</td>
+                  <td>{hit?.lastFired ? <Ago iso={hit.lastFired} /> : "Never"}</td>
                 </tr>
               );
             })}
@@ -83,10 +103,11 @@ export default async function EventMapPage() {
             Nothing. Every event arriving at the collector is on the list above.
           </p>
         ) : (
-          <AdminTable caption="Undocumented events" columns={["Event", "Action"]}>
+          <AdminTable caption="Undocumented events" columns={["Event", "Seen", "Action"]}>
             {undocumented.map((name) => (
               <tr key={name}>
                 <td style={{ color: "var(--ink)" }}>{name}</td>
+                <td>{(seen.get(name)?.count ?? 0).toLocaleString("en-US")}</td>
                 <td>
                   <span className="admin-pill" data-tone="warn">
                     Document it or stop firing it

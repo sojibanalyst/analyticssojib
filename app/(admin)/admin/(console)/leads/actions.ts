@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { isAllowedEmail } from "@/lib/auth";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { LEAD_STATUSES, type LeadStatus } from "./statuses";
+import { ACTION_ERRORS, fail, ok, type ActionState } from "@/lib/action-state";
 
 /**
  * Move a lead along the pipeline.
@@ -15,17 +16,23 @@ import { LEAD_STATUSES, type LeadStatus } from "./statuses";
  * session, so a non-admin's request is denied by the database whatever this
  * code does.
  */
-export async function setLeadStatus(formData: FormData): Promise<void> {
+export async function setLeadStatus(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
   const user = await getUser();
-  if (!isAllowedEmail(user?.email)) return;
+  if (!isAllowedEmail(user?.email)) return fail(ACTION_ERRORS.notAllowed);
 
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "") as LeadStatus;
-  if (!id || !LEAD_STATUSES.includes(status)) return;
+  if (!id) return fail(ACTION_ERRORS.noId);
+  if (!LEAD_STATUSES.includes(status)) return fail("That is not a valid status.");
 
   const supabase = await createClient();
-  await supabase.from("leads").update({ status }).eq("id", id);
+  const { error } = await supabase.from("leads").update({ status }).eq("id", id);
+  if (error) return fail(error.message);
 
   revalidatePath("/admin/leads");
   revalidatePath("/admin");
+  return ok(`Marked ${status}.`);
 }
