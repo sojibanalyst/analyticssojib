@@ -1175,8 +1175,13 @@ a.wordmark:hover {
 
 /* Skip link -------------------------------------------------------------- */
 
+/* fixed, not absolute.
+   Absolute resolved against <body>, so `top: 0` meant the top of the
+   DOCUMENT. Tab to it after scrolling and it appeared hundreds of pixels
+   above the viewport — focused, announced, and invisible. Fixed anchors it to
+   the viewport, which is the only position a skip link is useful in. */
 .skip-link {
-  position: absolute;
+  position: fixed;
   left: -9999px;
   top: 0;
   z-index: 100;
@@ -1190,7 +1195,8 @@ a.wordmark:hover {
   border-radius: 0 0 8px 0;
 }
 
-.skip-link:focus {
+.skip-link:focus,
+.skip-link:focus-visible {
   left: 0;
   color: var(--on-accent);
 }

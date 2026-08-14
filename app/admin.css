@@ -33,6 +33,14 @@
   --info: var(--status-info);
   --info-tint: var(--status-info-tint);
 
+  /* Card elevation. In light mode card white (#fff) sits on page #f4f4f2 —
+     four points of separation carried entirely by the border, which reads
+     flat rather than deliberate. A 4% shadow gives the edge somewhere to sit.
+     In dark mode a black shadow on a near-black page is invisible, so it is
+     not applied: the border already does the work there, and a shadow that
+     cannot be seen is a paint cost with no result. */
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
   /* Density. Tabular numerals matter here — every table in the design is
      numbers that need to line up column-wise. */
   font-family: var(--font-mono);
@@ -62,7 +70,9 @@
   gap: 6px;
   padding: 3px 8px;
   border-radius: 999px;
-  font-size: 10.5px;
+  /* Was 10.5px. Uppercase mono at that size is hard work at a glance, and
+     these carry the state of the thing they sit beside. */
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -188,6 +198,8 @@
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
+  /* One property to revert: set --card-shadow: none on .admin to go flat. */
+  box-shadow: var(--card-shadow);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -494,6 +506,13 @@
 }
 
 .admin-button {
+  /* 39px before. 40 is the floor for a mouse; the coarse-pointer block at the
+     end of this file takes it to 44 on touch, where a mis-tap on Delete costs
+     more than a few pixels of density. */
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 9px 14px;
   border: 1px solid var(--accent);
   border-radius: 8px;
@@ -685,4 +704,44 @@
 .admin-formstatus {
   min-height: 1.5em;
   margin: 0;
+}
+
+/* Dark mode gets no card shadow ------------------------------------------- */
+
+/* A black shadow on a near-black page is invisible. The border already does
+   the separating there, so this saves the paint rather than faking depth. */
+[data-theme="dark"] .admin {
+  --card-shadow: none;
+}
+
+/* Touch ------------------------------------------------------------------- */
+
+/* Measured on the console: buttons 39px, the menu burger 33x31, sidebar links
+   34px, checkboxes 16px. Fine with a mouse. On a trackpad or a phone a
+   mis-tap on "Delete review" costs more than the density does, so coarse
+   pointers get the 44px target and a larger box.
+
+   pointer: coarse rather than a width query — a touchscreen laptop at 1440px
+   needs this and a narrow desktop window does not. */
+@media (pointer: coarse) {
+  .admin-button,
+  .admin-burger {
+    min-height: 44px;
+  }
+
+  .admin-navlink,
+  .admin-collapse > summary {
+    min-height: 44px;
+  }
+
+  .admin-check input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .admin-select,
+  .admin-field input,
+  .admin-field select {
+    min-height: 44px;
+  }
 }
