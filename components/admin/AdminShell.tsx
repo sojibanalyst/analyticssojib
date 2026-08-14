@@ -144,7 +144,17 @@ export function AdminShell({
           </div>
 
           <div className="admin-topbar-actions">
-            <Link href="/" className="admin-navlink" data-compact="true">
+            {/* Same reasoning as the sidebar links: off by default, warmed on
+                intent. `/` is static so each prefetch was cheap, but five per
+                page load for a link most sessions never use is still five. */}
+            <Link
+              href="/"
+              className="admin-navlink"
+              data-compact="true"
+              prefetch={false}
+              onMouseEnter={warm("/")}
+              onFocus={warm("/")}
+            >
               View site
             </Link>
             <button

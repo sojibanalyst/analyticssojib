@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
 import { createCaseStudy, deleteCaseStudy, updateCaseStudy } from "../content-actions";
 
@@ -50,7 +51,7 @@ export default async function CaseStudiesPage() {
 
       <section className="admin-card">
         <h2>Add a case study</h2>
-        <form action={createCaseStudy} className="admin-form">
+        <SavingForm action={createCaseStudy} submitLabel="Create">
           <div className="admin-field">
             <label htmlFor="new-cs-title">Title</label>
             <input id="new-cs-title" name="title" required />
@@ -67,14 +68,11 @@ export default async function CaseStudiesPage() {
             <label htmlFor="new-cs-tags">Tags — comma separated</label>
             <input id="new-cs-tags" name="tags" placeholder="SGTM, META CAPI, BIGQUERY" />
           </div>
-          <button type="submit" className="admin-button" style={{ alignSelf: "flex-start" }}>
-            Create
-          </button>
           <p className="admin-note">
             Created hidden. Fill in the figures, then switch it to published —
             a case study with no numbers should not appear the second it exists.
           </p>
-        </form>
+        </SavingForm>
       </section>
 
       {error ? (
@@ -103,7 +101,7 @@ export default async function CaseStudiesPage() {
                 : ""}
             </p>
 
-            <form action={updateCaseStudy} className="admin-form">
+            <SavingForm action={updateCaseStudy}>
               <input type="hidden" name="id" value={item.id} />
 
               <div className="admin-field">
@@ -220,12 +218,8 @@ export default async function CaseStudiesPage() {
                   />
                   Figures still unconfirmed
                 </label>
-
-                <button type="submit" className="admin-button">
-                  Save
-                </button>
               </div>
-            </form>
+            </SavingForm>
 
             <DeleteButton action={deleteCaseStudy} id={item.id} label="Delete case study" />
           </section>

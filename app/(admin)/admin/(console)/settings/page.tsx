@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
+import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
 import { updateSettings } from "../content-actions";
 
@@ -35,7 +36,7 @@ export default async function SettingsPage() {
         </section>
       ) : (
         <section className="admin-card">
-          <form action={updateSettings} className="admin-form">
+          <SavingForm action={updateSettings}>
             <div className="admin-field">
               <label htmlFor="site_name">Site name</label>
               <input id="site_name" name="site_name" defaultValue={data?.site_name ?? ""} />
@@ -75,11 +76,7 @@ export default async function SettingsPage() {
                 defaultValue={data?.default_currency ?? "USD"}
               />
             </div>
-
-            <button type="submit" className="admin-button">
-              Save
-            </button>
-          </form>
+          </SavingForm>
         </section>
       )}
 

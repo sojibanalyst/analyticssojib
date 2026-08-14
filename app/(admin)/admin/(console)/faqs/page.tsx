@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AdminState } from "@/components/admin/Table";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
 import { createFaq, deleteFaq, updateFaq } from "../content-actions";
 
@@ -30,7 +31,7 @@ export default async function FaqsPage() {
 
       <section className="admin-card">
         <h2>Add a question</h2>
-        <form action={createFaq} className="admin-form">
+        <SavingForm action={createFaq} submitLabel="Add">
           <div className="admin-field">
             <label htmlFor="new-question">Question</label>
             <input id="new-question" name="question" required />
@@ -39,10 +40,7 @@ export default async function FaqsPage() {
             <label htmlFor="new-answer">Answer</label>
             <textarea id="new-answer" name="answer" rows={4} required />
           </div>
-          <button type="submit" className="admin-button" style={{ alignSelf: "flex-start" }}>
-            Add
-          </button>
-        </form>
+        </SavingForm>
       </section>
 
       {error ? (
@@ -58,7 +56,7 @@ export default async function FaqsPage() {
       ) : (
         data.map((faq) => (
           <section className="admin-card" key={faq.id}>
-            <form action={updateFaq} className="admin-form">
+            <SavingForm action={updateFaq}>
               <input type="hidden" name="id" value={faq.id} />
 
               <div className="admin-field">
@@ -71,16 +69,11 @@ export default async function FaqsPage() {
                 <textarea id={`a-${faq.id}`} name="answer" rows={5} defaultValue={faq.answer} />
               </div>
 
-              <div className="admin-inline-form">
-                <label className="admin-check">
-                  <input type="checkbox" name="published" defaultChecked={faq.published} />
-                  Published
-                </label>
-                <button type="submit" className="admin-button">
-                  Save
-                </button>
-              </div>
-            </form>
+              <label className="admin-check">
+                <input type="checkbox" name="published" defaultChecked={faq.published} />
+                Published
+              </label>
+            </SavingForm>
 
             <DeleteButton action={deleteFaq} id={faq.id} label="Delete question" />
           </section>

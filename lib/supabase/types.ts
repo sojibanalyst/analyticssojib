@@ -841,7 +841,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      event_last_fired: {
+        Row: {
+          event_name: string | null
+          last_fired_at: string | null
+          event_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }

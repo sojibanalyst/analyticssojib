@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
+import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
 import { setLeadStatus } from "./actions";
 import { LEAD_STATUSES } from "./statuses";
@@ -144,7 +145,14 @@ export default async function LeadsPage({
                   </td>
                   <td style={{ maxWidth: "34ch" }}>{answers.problem ?? "—"}</td>
                   <td>
-                    <form action={setLeadStatus} className="admin-inline-form">
+                    {/* A submit button, not an onChange handler: this works
+                        without JavaScript and never fires a write because a
+                        keyboard user arrowed past an option. */}
+                    <SavingForm
+                      action={setLeadStatus}
+                      className="admin-inline-form"
+                      variant="ghost"
+                    >
                       <input type="hidden" name="id" value={lead.id} />
                       <span className="admin-pill" data-tone={TONE[lead.status]}>
                         {lead.status}
@@ -164,13 +172,7 @@ export default async function LeadsPage({
                           </option>
                         ))}
                       </select>
-                      {/* A submit button, not an onChange handler: this works
-                          without JavaScript and never fires a write because a
-                          keyboard user arrowed past an option. */}
-                      <button type="submit" className="admin-button" data-variant="ghost">
-                        Save
-                      </button>
-                    </form>
+                    </SavingForm>
                   </td>
                 </tr>
               );

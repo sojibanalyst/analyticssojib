@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { navGroups } from "../nav";
+import { AdminState, AdminTable } from "@/components/admin/Table";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -60,9 +61,11 @@ export default async function DashboardPage() {
       <div className="admin-pagehead">
         <h1>Dashboard</h1>
         <p>
-          Schema, auth and RLS are live. Nothing writes to these tables yet — the
-          collector arrives in P3, so every number below is genuinely zero rather
-          than missing.
+          The collector is live and writing. A zero here means nothing happened
+          in that window, not that nothing is being recorded — a failed read
+          says &ldquo;Query failed&rdquo; instead, because a console that
+          reports a broken query as a confident zero is the failure this site
+          exists to argue against.
         </p>
       </div>
 
@@ -89,33 +92,31 @@ export default async function DashboardPage() {
 
       <section className="admin-card">
         <h2>Not built yet</h2>
-        <div className="admin-tablewrap">
-          <table className="admin-table">
-            <caption className="sr-only">
-              Console screens that later phases deliver
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Screen</th>
-                <th scope="col">Section</th>
-                <th scope="col">Phase</th>
+        {/* Every screen is built, so this list is empty — and an empty table
+            is a header row over a dangling rule, which reads as broken rather
+            than as finished. Render the state, not the furniture. */}
+        {stubs.length === 0 ? (
+          <AdminState title="Nothing outstanding.">
+            Every screen in the sidebar is built and reading live data.
+          </AdminState>
+        ) : (
+          <AdminTable
+            caption="Console screens still to be built"
+            columns={["Screen", "Section", "Phase"]}
+          >
+            {stubs.map((stub) => (
+              <tr key={stub.href}>
+                <td>{stub.label}</td>
+                <td>{stub.group}</td>
+                <td>
+                  <span className="admin-pill" data-tone="warn">
+                    {stub.phase}
+                  </span>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {stubs.map((stub) => (
-                <tr key={stub.href}>
-                  <td>{stub.label}</td>
-                  <td>{stub.group}</td>
-                  <td>
-                    <span className="admin-pill" data-tone="warn">
-                      {stub.phase}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </AdminTable>
+        )}
       </section>
     </>
   );
