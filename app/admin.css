@@ -149,6 +149,11 @@
   align-items: center;
   gap: 10px;
   width: 100%;
+  /* Sidebar links already clear this at 34px, so their rhythm is untouched.
+     It is the compact variant below — the DARK toggle, View site, the filter
+     chips — that sat at 28px and needed the floor. The smallest control in
+     the console was the theme toggle. */
+  min-height: 32px;
   padding: 7px 9px;
   border: none;
   border-radius: 8px;
@@ -699,11 +704,54 @@
   flex-wrap: wrap;
 }
 
-/* Holds its line height while idle so the layout does not jump the first
-   time a "Saved" appears. */
+/* Success and failure differ by mark, weight and tint — not by colour alone.
+   Colour-only status fails anyone who cannot separate red from green, and it
+   is gone entirely in a monochrome screenshot. Holds its height when idle so
+   the row does not jump the first time a message appears. */
 .admin-formstatus {
-  min-height: 1.5em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
   margin: 0;
+  padding: 2px 0;
+  border-radius: 999px;
+  color: var(--ink-muted);
+}
+
+.admin-formstatus__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.admin-formstatus[data-state="ok"] {
+  padding: 2px 10px 2px 4px;
+  background: var(--success-tint);
+  color: var(--success);
+  font-weight: 700;
+}
+
+.admin-formstatus[data-state="ok"] .admin-formstatus__mark {
+  background: var(--success);
+  color: var(--bg-surface);
+}
+
+.admin-formstatus[data-state="error"] {
+  padding: 2px 10px 2px 4px;
+  background: var(--danger-tint);
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.admin-formstatus[data-state="error"] .admin-formstatus__mark {
+  background: var(--danger);
+  color: var(--bg-surface);
 }
 
 /* Dark mode gets no card shadow ------------------------------------------- */

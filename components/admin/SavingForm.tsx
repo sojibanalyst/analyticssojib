@@ -67,15 +67,30 @@ export function SavingForm({
 function FormStatus({ state }: { state: ActionState }) {
   const { pending } = useFormStatus();
   const showing = !pending && state.status !== "idle";
+  const failed = state.status === "error";
 
   return (
     <p
-      className="admin-note admin-formstatus"
-      data-tone={showing ? (state.status === "error" ? "danger" : "success") : undefined}
+      className="admin-formstatus"
+      data-state={showing ? (failed ? "error" : "ok") : "idle"}
       role="status"
       aria-live="polite"
     >
-      {showing ? state.message : " "}
+      {showing ? (
+        <>
+          {/* Colour alone is not a distinction: it fails for anyone who
+              cannot separate red from green, and it vanishes in a mono
+              screenshot. The mark and the tinted pill carry it too. The mark
+              is aria-hidden so a screen reader gets the sentence rather than
+              "check mark". */}
+          <span className="admin-formstatus__mark" aria-hidden="true">
+            {failed ? "✕" : "✓"}
+          </span>
+          {state.message}
+        </>
+      ) : (
+        " "
+      )}
     </p>
   );
 }
