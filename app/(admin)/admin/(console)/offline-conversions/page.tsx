@@ -104,11 +104,11 @@ export default async function OfflineConversionsPage({
                     <Ago iso={batch.created_at} />
                   </a>
                 </td>
-                <td style={{ color: "var(--ink)" }}>{batch.destination}</td>
+                <td className="admin-mono" style={{ color: "var(--ink)" }}>{batch.destination}</td>
                 <td>{batch.conversion_action ?? "—"}</td>
-                <td>{batch.row_count}</td>
-                <td>{batch.row_count - batch.rejected_count}</td>
-                <td>{batch.rejected_count}</td>
+                <td className="admin-num">{batch.row_count}</td>
+                <td className="admin-num">{batch.row_count - batch.rejected_count}</td>
+                <td className="admin-num">{batch.rejected_count}</td>
                 <td>
                   <span className="admin-pill" data-tone={batch.dry_run ? "info" : "success"}>
                     {batch.dry_run ? "Dry run" : batch.status}

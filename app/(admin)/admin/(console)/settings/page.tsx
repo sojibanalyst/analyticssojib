@@ -74,7 +74,12 @@ export default async function SettingsPage() {
 
             <div className="admin-field">
               <label htmlFor="calendly_url">Calendly URL</label>
-              <input id="calendly_url" name="calendly_url" defaultValue={data?.calendly_url ?? ""} />
+              <input
+                id="calendly_url"
+                name="calendly_url"
+                className="admin-mono"
+                defaultValue={data?.calendly_url ?? ""}
+              />
             </div>
 
             <div className="admin-field">

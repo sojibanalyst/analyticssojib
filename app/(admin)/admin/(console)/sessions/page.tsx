@@ -63,7 +63,10 @@ export default async function SessionsPage() {
                   <td>
                     <Ago iso={session.last_seen_at} />
                   </td>
-                  <td style={{ color: "var(--ink)" }}>
+                  {/* Mono: source, medium and campaign are read off the URL a
+                      visitor arrived with — machine values, and read down the
+                      column against each other. */}
+                  <td className="admin-mono" style={{ color: "var(--ink)" }}>
                     {session.first_touch_source ?? "—"}
                     {session.first_touch_medium ? ` / ${session.first_touch_medium}` : ""}
                     {session.first_touch_campaign ? (
@@ -72,11 +75,11 @@ export default async function SessionsPage() {
                       </div>
                     ) : null}
                   </td>
-                  <td>
+                  <td className="admin-mono">
                     {session.last_touch_source ?? "—"}
                     {session.last_touch_medium ? ` / ${session.last_touch_medium}` : ""}
                   </td>
-                  <td>{session.landing_page ?? "—"}</td>
+                  <td className="admin-mono">{session.landing_page ?? "—"}</td>
                   <td>
                     {session.device_type}
                     {session.country ? ` · ${session.country}` : ""}

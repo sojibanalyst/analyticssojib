@@ -77,7 +77,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
       >
         <span
           style={{
-            fontFamily: "var(--font-data)",
+            fontFamily: "var(--font-prose)",
             fontSize: "11px",
             letterSpacing: "0.14em",
             color: "var(--muted)",
@@ -125,7 +125,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
           <span
             aria-live="polite"
             style={{
-              fontFamily: "var(--font-data)",
+              fontFamily: "var(--font-prose)",
               fontSize: "11px",
               letterSpacing: "0.08em",
               whiteSpace: "nowrap",
@@ -173,7 +173,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
           <figure key={i} className="written-card" data-placeholder={item.placeholder}>
             <span
               style={{
-                fontFamily: "var(--font-data)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
                 color: item.placeholder ? "var(--faint)" : "var(--result)",
@@ -194,7 +194,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
             </blockquote>
             <figcaption
               style={{
-                fontFamily: "var(--font-data)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "11px",
                 letterSpacing: "0.08em",
                 color: "var(--muted)",

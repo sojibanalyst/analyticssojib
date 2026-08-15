@@ -129,7 +129,9 @@ export default async function LeadsPage({
                     ) : null}
                   </td>
                   <td>{lead.platform ?? "—"}</td>
-                  <td>
+                  {/* Attribution values come off the arriving URL — machine
+                      values, read against each other down the column. */}
+                  <td className="admin-mono">
                     {lead.source ?? "—"}
                     {lead.medium ? ` / ${lead.medium}` : ""}
                     {lead.campaign ? (

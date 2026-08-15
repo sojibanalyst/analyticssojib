@@ -95,7 +95,7 @@ export default async function CaseStudyPage({ params }: Params) {
           <div className="grid4">
             {item.stats.map((stat) => (
               <div key={stat.label} className="stat-tile">
-                <span style={{ fontFamily: "var(--font-data)", fontSize: "20px", fontWeight: 800 }}>
+                <span style={{ fontFamily: "var(--font-prose)", fontSize: "20px", fontWeight: 800 }}>
                   {stat.value}
                   {stat.unit && (
                     <span style={{ fontSize: "12px", color: "var(--muted)" }}>{stat.unit}</span>
@@ -103,7 +103,7 @@ export default async function CaseStudyPage({ params }: Params) {
                 </span>
                 <span
                   style={{
-                    fontFamily: "var(--font-data)",
+                    fontFamily: "var(--font-prose)",
                     fontSize: "11px",
                     letterSpacing: "0.08em",
                     color: "var(--muted)",
@@ -173,7 +173,7 @@ export default async function CaseStudyPage({ params }: Params) {
             style={{
               margin: 0,
               maxWidth: "72ch",
-              fontFamily: "var(--font-data)",
+              fontFamily: "var(--font-prose)",
               fontSize: "11.5px",
               lineHeight: 1.6,
               letterSpacing: "0.04em",

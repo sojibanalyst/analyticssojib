@@ -112,8 +112,10 @@ export default async function EventsPage({
                   <td>
                     <Ago iso={row.occurred_at} />
                   </td>
-                  <td style={{ color: "var(--ink)" }}>{row.event_name}</td>
-                  <td>{row.page_path ?? "—"}</td>
+                  <td className="admin-mono" style={{ color: "var(--ink)" }}>
+                    {row.event_name}
+                  </td>
+                  <td className="admin-mono">{row.page_path ?? "—"}</td>
                   <td>
                     <span className="admin-pill" data-tone={analytics ? "success" : "warn"}>
                       {analytics ? "Granted" : "Denied"}

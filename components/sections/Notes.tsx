@@ -18,7 +18,7 @@ export function Notes({ posts }: { posts: Post[] }) {
           <Link key={post.slug} href={`/blog/${post.slug}`} className="note-card">
             <span
               style={{
-                fontFamily: "var(--font-data)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
                 color: "var(--muted)",
@@ -44,7 +44,7 @@ export function Notes({ posts }: { posts: Post[] }) {
 
             <span
               style={{
-                fontFamily: "var(--font-data)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
                 color: "var(--ink)",

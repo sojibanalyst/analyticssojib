@@ -42,8 +42,9 @@
   --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 
   /* Density. Tabular numerals matter here — every table in the design is
-     numbers that need to line up column-wise. */
-  font-family: var(--font-data);
+     numbers that need to line up column-wise, and Geist carries a tabular set
+     so this holds now that the figures are sans. */
+  font-family: var(--font-prose);
   font-size: 13px;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
@@ -52,54 +53,54 @@
   min-height: 100svh;
 }
 
-/* Split by role ------------------------------------------------------------
+/* Mono is the exception now ------------------------------------------------
 
-   The default above is --font-data, because most of this console is values:
-   event ids, timestamps, counts, paths, pills, labels. Monospace is right for
-   those — a column of ids only lines up if every glyph is the same width.
+   The first pass had this backwards. Prose was an exception list of eight
+   selectors, so 88 of the 111 text elements on /admin/destinations stayed
+   monospace — the sidebar, every label, every pill, every button, every table
+   header, the destination names. Changing the h1 and the subtitle does not
+   stop a console reading like a terminal when everything around them is still
+   a terminal.
 
-   It is wrong for sentences. Equal widths destroy word shape, which is the
-   thing the eye actually reads, so a paragraph in mono has to be decoded
-   rather than taken in. The block below is the exception list: everywhere a
-   person is reading language rather than looking up a value.
+   So the default above is sans, and this is the whole of what stays mono: text
+   a MACHINE produced, that you look up rather than read. Ids, timestamps,
+   counts, event names, slugs, url paths, code, and the inputs that hold an
+   identifier. Everything else — including words that merely look technical,
+   like "GA4 Measurement Protocol" — is written by a person for a person.
 
-   Weight, letter-spacing, transform and colour are untouched. Size moves once,
-   and only to undo a difference between the two faces rather than to make
-   anything bigger — measured, not guessed:
+   .admin-mono is applied in the markup, one class, because whether a table
+   cell holds an id or a sentence is a fact about the DATA in it, and no CSS
+   selector can see that.
 
-     JetBrains Mono  x-height 0.5625 em  →  7.31px at 13px
-     Archivo         x-height 0.5313 em  →  6.91px at 13px
-
-   Same px, 5.9% less letter. Next to a mono table that reads as the prose
-   having shrunk, which is not what a font swap should say. 13 × 0.5625 /
-   0.5313 = 13.76px is the exact match; 14px is the next step on the scale the
-   site already has and overshoots by 1.7%, which is below noticing. Line
-   height is a unitless 1.5 inherited from .admin, so it scales with the size
-   and the rhythm is unchanged.
-
-   Scoped under .admin so these win on specificity rather than on source
-   order — `.admin-field textarea` gets `font: inherit` further down the file,
-   which would otherwise silently take the quote box back to mono. */
-.admin .admin-pagehead p,
-.admin .admin-note,
-.admin .admin-state p,
-.admin .admin-reason,
-.admin .admin-secret__status,
-.admin .admin-formstatus,
-.admin .admin-check,
-.admin .admin-field textarea {
-  font-family: var(--font-prose);
-  font-size: var(--text-base-plus);
-}
-
-/* Values that appear INSIDE a sentence stay values. `event_deliveries` in the
-   middle of a paragraph is a table name you might type, not a word you read,
-   and the switch back is what says so. */
+   Scoped under .admin so it outranks `.admin-field input { font: inherit }`
+   further down the file, which would otherwise take an identifier input —
+   G-XXXXXXX, a pixel id — straight back to sans. */
+.admin .admin-mono,
 .admin code,
 .admin kbd,
 .admin samp {
   font-family: var(--font-data);
 }
+
+/* Counts and stat figures. Sans with tabular figures rather than mono: Geist's
+   tabular set holds the columns just as well, and it keeps a row of numbers in
+   the same voice as the words beside it. Mono digits here made every count
+   look like a log line. */
+.admin-num,
+.admin-metric-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The 14px prose override from the previous pass is GONE, and the pair is why.
+   Archivo's x-height sat 5.9% below JetBrains Mono's, so prose had to be bumped
+   a step to stop it looking shrunken beside a table. Measured on the new pair:
+
+     Geist       x-height 0.5313 em, cap 0.7188 em
+     Geist Mono  x-height 0.5313 em, cap 0.7188 em
+
+   Identical, to four places — which is what buying a matched pair buys. Nothing
+   needs correcting, so everything returns to the console's designed 13px and
+   the density is back to what the design specifies. */
 
 /* The reason under a state pill — "needs Measurement ID + API secret". It had
    no class, only an inline colour, so there was nothing to select. */
@@ -129,7 +130,7 @@
      these carry the state of the thing they sit beside. */
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -194,7 +195,7 @@
 .admin-navgroup {
   padding: 12px 9px 5px;
   font-size: 10px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-muted);
 }
@@ -287,7 +288,7 @@
   border-bottom: 1px solid var(--border);
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--ink-muted);
   white-space: nowrap;
@@ -327,7 +328,7 @@
   padding: 4px 9px 10px;
   color: var(--ink);
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 .admin-brand-mark {
@@ -396,7 +397,7 @@
 
 .admin-navphase {
   font-size: 9.5px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.07em;
   padding: 1px 5px;
   border: 1px solid var(--border);
   border-radius: 5px;
@@ -407,7 +408,7 @@
   padding: 5px 10px;
   border: 1px solid var(--border);
   font-size: 11px;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.045em;
   text-transform: uppercase;
 }
 
@@ -490,16 +491,16 @@
 
 .admin-metric-label {
   font-size: 10px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-muted);
 }
 
 .admin-card h2 {
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink);
 }
@@ -526,7 +527,7 @@
 
 .admin-field label {
   font-size: 10px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-muted);
 }
@@ -580,7 +581,7 @@
   color: var(--accent-fg);
   font: inherit;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
   cursor: pointer;
 }
