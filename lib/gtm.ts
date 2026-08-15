@@ -22,10 +22,18 @@ declare global {
   }
 }
 
-export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? "";
-
-/** True only when a container ID is actually configured. */
-export const gtmEnabled = GTM_ID.length > 0;
+/**
+ * The container id is NOT read here any more.
+ *
+ * It used to be `process.env.NEXT_PUBLIC_GTM_ID`, which Next inlines into the
+ * bundle at build time — so the container could only be changed by
+ * redeploying, whatever a settings form claimed. It now comes from
+ * lib/settings at request time, database first and the env var as a fallback.
+ *
+ * pushEvent below is unaffected: it writes to window.dataLayer, which exists
+ * whether or not a container is loaded, so events queue harmlessly until one
+ * is.
+ */
 
 /**
  * Push an event onto the dataLayer. Safely no-ops during SSR, or when GTM is
