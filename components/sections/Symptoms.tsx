@@ -19,7 +19,7 @@ export function Symptoms() {
           >
             <span
               style={{
-                fontFamily: "var(--font-data)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "11px",
                 fontWeight: 700,
                 letterSpacing: "0.12em",

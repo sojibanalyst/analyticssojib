@@ -71,10 +71,17 @@ export default async function EventMapPage() {
               const hit = seen.get(row.event_name);
               return (
                 <tr key={row.id}>
-                  <td style={{ color: "var(--ink)" }}>{row.event_name}</td>
+                  {/* Event name, parameter keys and destination slugs are the
+                      strings the code matches on. The trigger description is a
+                      sentence someone wrote, so it is not mono. */}
+                  <td className="admin-mono" style={{ color: "var(--ink)" }}>
+                    {row.event_name}
+                  </td>
                   <td>{row.trigger_description ?? "—"}</td>
-                  <td>{params.length ? params.join(", ") : "—"}</td>
-                  <td>{row.destinations.length ? row.destinations.join(", ") : "—"}</td>
+                  <td className="admin-mono">{params.length ? params.join(", ") : "—"}</td>
+                  <td className="admin-mono">
+                    {row.destinations.length ? row.destinations.join(", ") : "—"}
+                  </td>
                   <td>
                     {/* "Receiving" green, "Documented" neutral. The old pair
                         had it backwards: "Live" — which reads as the healthy
@@ -87,7 +94,7 @@ export default async function EventMapPage() {
                       {hit ? "Receiving" : "Documented"}
                     </span>
                   </td>
-                  <td>{hit ? hit.count.toLocaleString("en-US") : "0"}</td>
+                  <td className="admin-num">{hit ? hit.count.toLocaleString("en-US") : "0"}</td>
                   <td>{hit?.lastFired ? <Ago iso={hit.lastFired} /> : "Never"}</td>
                 </tr>
               );
@@ -106,8 +113,12 @@ export default async function EventMapPage() {
           <AdminTable caption="Undocumented events" columns={["Event", "Seen", "Action"]}>
             {undocumented.map((name) => (
               <tr key={name}>
-                <td style={{ color: "var(--ink)" }}>{name}</td>
-                <td>{(seen.get(name)?.count ?? 0).toLocaleString("en-US")}</td>
+                <td className="admin-mono" style={{ color: "var(--ink)" }}>
+                  {name}
+                </td>
+                <td className="admin-num">
+                  {(seen.get(name)?.count ?? 0).toLocaleString("en-US")}
+                </td>
                 <td>
                   <span className="admin-pill" data-tone="warn">
                     Document it or stop firing it

@@ -184,19 +184,24 @@
 
   /* Typography, split by ROLE rather than by face.
 
-     --font-data  values, identifiers and labels: event ids, timestamps,
-                  counts, page paths, pills, table cells, field labels,
-                  navigation, inline code, and any input holding a code.
-     --font-prose things a person reads as language: page titles, the
-                  explanatory paragraph under each one, helper text, empty
-                  states, callouts, and the long-form text typed into a
-                  textarea.
+     --font-prose  THE DEFAULT. Anything a person reads: headings, paragraphs,
+                   helper text, labels, pills, buttons, navigation, table
+                   headers, and the human-readable names inside tables.
+     --font-data   the exception. Only what a machine produced and a person
+                   looks up rather than reads: event and session ids,
+                   timestamps, count columns, event names and destination
+                   slugs, url paths, inline code, and inputs holding an
+                   identifier.
 
-     The names say what the text IS, not which font it uses, so swapping
-     either face is one line here and nothing else in the codebase. Nothing
-     outside this block names a font. */
-  --font-data: var(--font-jetbrains-mono), ui-monospace, monospace;
-  --font-prose: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+     The test for anything unclear: did a person write it, or did a machine
+     emit it? Person → prose.
+
+     Geist and Geist Mono, one foundry, one skeleton — which is why the two
+     can sit in the same table without looking like two fonts. Swapping either
+     face is one line here and nothing else in the codebase; nothing outside
+     this block names a font. */
+  --font-prose: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-data: var(--font-geist-mono), ui-monospace, monospace;
 
   /* type scale, verbatim from the design's inline styles */
   --text-2xs: 10.5px;
@@ -257,12 +262,22 @@ html {
   background: var(--bg);
 }
 
+/* Sans is the default everywhere, on both the site and the console. Monospace
+   is now opt-in, and every place that opts in is a machine value. */
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Code is code in any context, including the middle of a sentence. */
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-data);
 }
 
 /* anchor offset for the fixed header */

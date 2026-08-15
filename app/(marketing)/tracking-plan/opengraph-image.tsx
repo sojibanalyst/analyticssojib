@@ -19,10 +19,10 @@ const ON_ACCENT = "#000000";
 
 export default async function OpengraphImage() {
   const font = (name: string) => readFile(join(process.cwd(), "app", name));
-  const [monoBold, monoMedium, archivoBold] = await Promise.all([
-    font("JetBrainsMono-ExtraBold.woff"),
-    font("JetBrainsMono-Medium.woff"),
-    font("Archivo-Bold.woff"),
+  const [monoBold, monoMedium, geistBold] = await Promise.all([
+    font("GeistMono-ExtraBold.ttf"),
+    font("GeistMono-Medium.ttf"),
+    font("Geist-Bold.ttf"),
   ]);
 
   return new ImageResponse(
@@ -36,7 +36,7 @@ export default async function OpengraphImage() {
           justifyContent: "space-between",
           background: BG,
           padding: "64px 72px",
-          fontFamily: "JetBrains Mono",
+          fontFamily: "Geist Mono",
         }}
       >
         <div
@@ -72,7 +72,7 @@ export default async function OpengraphImage() {
           <div
             style={{
               display: "flex",
-              fontFamily: "Archivo",
+              fontFamily: "Geist",
               fontSize: 96,
               fontWeight: 700,
               lineHeight: 1.02,
@@ -126,9 +126,9 @@ export default async function OpengraphImage() {
     {
       ...size,
       fonts: [
-        { name: "JetBrains Mono", data: monoBold, weight: 800, style: "normal" },
-        { name: "JetBrains Mono", data: monoMedium, weight: 500, style: "normal" },
-        { name: "Archivo", data: archivoBold, weight: 700, style: "normal" },
+        { name: "Geist Mono", data: monoBold, weight: 800, style: "normal" },
+        { name: "Geist Mono", data: monoMedium, weight: 500, style: "normal" },
+        { name: "Geist", data: geistBold, weight: 700, style: "normal" },
       ],
     },
   );

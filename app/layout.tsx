@@ -100,7 +100,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     // The font variables must live on :root — Tailwind's @theme resolves
-    // --font-data/--font-prose there, and a var() that cannot resolve makes the
+    // --font-prose/--font-data there, and a var() that cannot resolve makes the
     // whole font-family declaration invalid.
     <html
       lang="en"

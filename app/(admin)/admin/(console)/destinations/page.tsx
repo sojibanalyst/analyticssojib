@@ -96,8 +96,13 @@ export default async function DestinationsPage() {
               return (
                 <tr key={destination.id}>
                   <td style={{ color: "var(--ink)" }}>
+                    {/* The label is a name a person wrote — "Meta Conversions
+                        API" — and stays sans. The key underneath is the slug
+                        the code matches on, so it does not. */}
                     {destination.label}
-                    <div style={{ color: "var(--ink-muted)" }}>{destination.key}</div>
+                    <div className="admin-mono" style={{ color: "var(--ink-muted)" }}>
+                      {destination.key}
+                    </div>
                   </td>
                   <td>
                     {/* Derived, never stored — same principle as the reviews
@@ -111,9 +116,9 @@ export default async function DestinationsPage() {
                       <div className="admin-reason">needs {missing.join(" + ")}</div>
                     ) : null}
                   </td>
-                  <td>{counts.sent ?? 0}</td>
-                  <td>{counts.skipped ?? 0}</td>
-                  <td>{counts.failed ?? 0}</td>
+                  <td className="admin-num">{counts.sent ?? 0}</td>
+                  <td className="admin-num">{counts.skipped ?? 0}</td>
+                  <td className="admin-num">{counts.failed ?? 0}</td>
                   <td>
                     {destination.last_error ? (
                       <>
@@ -156,8 +161,12 @@ export default async function DestinationsPage() {
               {spec.public ? (
                 <div className="admin-field">
                   <label htmlFor={`${destination.key}-public`}>{spec.public.label}</label>
+                  {/* Every public field in a destination spec is an
+                      identifier — G-XXXXXXX, a pixel id, a customer id, a
+                      container URL — so the input holding it stays mono. */}
                   <input
                     id={`${destination.key}-public`}
+                    className="admin-mono"
                     name={spec.public.key}
                     defaultValue={config[spec.public.key] ?? ""}
                     placeholder={spec.public.placeholder}

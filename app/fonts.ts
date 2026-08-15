@@ -6,37 +6,36 @@
  * next/font declarations of the same family produce two separate font files
  * and two sets of CSS variables. Exporting from here keeps it to one.
  *
+ * Geist and Geist Mono, replacing Archivo and JetBrains Mono. Drawn as a pair
+ * by one foundry, which is the whole point of the swap: the sans and the mono
+ * share a skeleton, so a column of ids beside a paragraph of prose reads as
+ * one system rather than two fonts that happen to share a page. Geist Mono is
+ * also considerably softer than JetBrains Mono, so what stays monospace stops
+ * looking like a terminal.
+ *
+ * Both are loaded as VARIABLE fonts — no `weight` array. Two families, two
+ * files, every weight from 100 to 900. Listing weights would download a static
+ * file per weight and silently round anything unlisted to the nearest one that
+ * shipped, which is how the outgoing Archivo would have rendered every
+ * paragraph bold.
+ *
  * Note these are next/font/google, not next/font/local. The .woff files in
  * app/ are unrelated: they are read from disk by the OG image routes because
  * satori needs raw font bytes, and they are not wired to next/font at all.
  */
-import { Archivo, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 
-export const jetbrainsMono = JetBrains_Mono({
+export const geistSans = Geist({
   subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  variable: "--font-jetbrains-mono",
+  variable: "--font-geist-sans",
   display: "swap",
 });
 
-/**
- * Archivo, as the variable font — every weight from one file.
- *
- * It was pinned to `weight: ["700"]` when it carried nothing but the two
- * uppercase display headings on the marketing site. That stopped being true
- * when it took over the console's prose: a family with only a 700 file does
- * not render body text at 400, it renders it at 700, because the browser
- * picks the nearest weight it has. Every paragraph would have come out bold.
- *
- * Omitting `weight` gives the variable font instead of a static instance, so
- * 400 body, 700 headings and the 800 the pagehead asks for all resolve from a
- * single request — smaller than the three static files it replaces.
- */
-export const archivo = Archivo({
+export const geistMono = Geist_Mono({
   subsets: ["latin"],
-  variable: "--font-archivo",
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
 /** Applied to <html> so the variables resolve at :root, where @theme reads them. */
-export const fontVariables = `${jetbrainsMono.variable} ${archivo.variable}`;
+export const fontVariables = `${geistSans.variable} ${geistMono.variable}`;

@@ -46,7 +46,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 10px 14px;
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--muted);
@@ -64,7 +64,7 @@
 
 .plan-download {
   margin-left: auto;
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -117,7 +117,7 @@
 }
 
 .plan-nav__title {
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--ink);
@@ -142,7 +142,7 @@
   min-height: 34px;
   padding: 4px 8px;
   border-left: 2px solid var(--border);
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--muted);
@@ -188,7 +188,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: 52px;
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--ink);
@@ -252,7 +252,7 @@
 
 .plan-subhead {
   margin: 10px 0 0;
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -296,7 +296,7 @@
   left: 0;
   top: 0;
   color: var(--ok);
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-weight: 700;
 }
 
@@ -353,7 +353,7 @@
 .plan-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 12.5px;
   text-align: left;
 }
@@ -447,7 +447,7 @@
   gap: 12px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--code-border);
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 10.5px;
   letter-spacing: 0.1em;
   color: var(--code-label);
@@ -459,7 +459,7 @@
 }
 
 .codeblock__copy {
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -511,7 +511,7 @@
 .plan-cta-note {
   margin: 0;
   max-width: 60ch;
-  font-family: var(--font-data);
+  font-family: var(--font-prose);
   font-size: 12px;
   line-height: 1.6;
   letter-spacing: 0.04em;
@@ -637,7 +637,7 @@
     margin-top: 8mm;
     padding-top: 4mm;
     border-top: 1px solid #bbbbbb;
-    font-family: var(--font-data);
+    font-family: var(--font-prose);
     font-size: 8pt;
     letter-spacing: 0.08em;
     color: #444444;

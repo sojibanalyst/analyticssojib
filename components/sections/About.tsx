@@ -9,7 +9,7 @@ const docStyle: React.CSSProperties = {
   border: "1px solid var(--border)",
   borderRadius: "10px",
   padding: "14px 16px",
-  fontFamily: "var(--font-data)",
+  fontFamily: "var(--font-prose)",
   fontSize: "12px",
   letterSpacing: "0.06em",
   color: "var(--text)",
@@ -142,7 +142,7 @@ export function About() {
         </p>
         <span
           style={{
-            fontFamily: "var(--font-data)",
+            fontFamily: "var(--font-prose)",
             fontSize: "11px",
             letterSpacing: "0.08em",
             color: "var(--muted)",

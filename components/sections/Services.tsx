@@ -27,7 +27,7 @@ export function Services() {
                 justifyContent: "space-between",
                 alignItems: "baseline",
                 gap: "12px",
-                fontFamily: "var(--font-data)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
                 whiteSpace: "nowrap",
@@ -83,7 +83,7 @@ export function Services() {
                 display: "flex",
                 flexDirection: "column",
                 gap: "6px",
-                fontFamily: "var(--font-data)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "12px",
                 color: "var(--muted)",
                 borderTop: "1px solid var(--border)",
@@ -107,7 +107,7 @@ export function Services() {
       <p
         style={{
           margin: 0,
-          fontFamily: "var(--font-data)",
+          fontFamily: "var(--font-prose)",
           fontSize: "11.5px",
           letterSpacing: "0.06em",
           color: "var(--faint)",

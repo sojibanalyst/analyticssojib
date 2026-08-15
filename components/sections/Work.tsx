@@ -10,7 +10,7 @@ function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <span
             style={{
-              fontFamily: "var(--font-data)",
+              fontFamily: "var(--font-prose)",
               fontSize: "11px",
               letterSpacing: "0.1em",
               color: "var(--muted)",
@@ -20,7 +20,7 @@ function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           </span>
           <span
             style={{
-              fontFamily: "var(--font-data)",
+              fontFamily: "var(--font-prose)",
               fontSize: "clamp(28px, 3.4vw, 34px)",
               fontWeight: 500,
               color: "var(--faint)",
@@ -55,7 +55,7 @@ function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <span
             style={{
-              fontFamily: "var(--font-data)",
+              fontFamily: "var(--font-prose)",
               fontSize: "11px",
               letterSpacing: "0.1em",
               color: "var(--ink)",
@@ -65,7 +65,7 @@ function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           </span>
           <span
             style={{
-              fontFamily: "var(--font-data)",
+              fontFamily: "var(--font-prose)",
               fontSize: "clamp(28px, 3.4vw, 34px)",
               fontWeight: 800,
               letterSpacing: "-0.03em",
@@ -78,7 +78,7 @@ function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
 
       <span
         style={{
-          fontFamily: "var(--font-data)",
+          fontFamily: "var(--font-prose)",
           fontSize: "11px",
           letterSpacing: "0.08em",
           color: "var(--muted)",
@@ -170,7 +170,7 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
               <div className="grid4">
                 {item.stats.map((stat) => (
                   <div key={stat.label} className="stat-tile">
-                    <span style={{ fontFamily: "var(--font-data)", fontSize: "20px", fontWeight: 800 }}>
+                    <span style={{ fontFamily: "var(--font-prose)", fontSize: "20px", fontWeight: 800 }}>
                       {stat.value}
                       {stat.unit && (
                         <span style={{ fontSize: "12px", color: "var(--muted)" }}>{stat.unit}</span>
@@ -178,7 +178,7 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
                     </span>
                     <span
                       style={{
-                        fontFamily: "var(--font-data)",
+                        fontFamily: "var(--font-prose)",
                         fontSize: "11px",
                         letterSpacing: "0.08em",
                         color: "var(--muted)",
@@ -206,7 +206,7 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
         style={{
           margin: 0,
           maxWidth: "72ch",
-          fontFamily: "var(--font-data)",
+          fontFamily: "var(--font-prose)",
           fontSize: "11.5px",
           lineHeight: 1.6,
           letterSpacing: "0.04em",

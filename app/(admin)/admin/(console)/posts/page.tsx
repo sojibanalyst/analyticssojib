@@ -84,7 +84,8 @@ export default async function PostsPage() {
         data.map((post) => (
           <section className="admin-card" key={post.id}>
             <h2>
-              /blog/{post.slug}
+              {/* The heading is the post's URL, so it is a path, not a title. */}
+              <span className="admin-mono">/blog/{post.slug}</span>
               <span
                 className="admin-pill"
                 data-tone={post.is_draft ? "warn" : "success"}

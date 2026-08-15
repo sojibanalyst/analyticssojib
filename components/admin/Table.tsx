@@ -102,8 +102,10 @@ export function Ago({ iso }: { iso: string }) {
           ? `${Math.round(seconds / 3600)}h ago`
           : `${Math.round(seconds / 86400)}d ago`;
 
+  // Mono, in one place rather than at every call site: a timestamp is a machine
+  // value wherever it appears, and these are read down a column.
   return (
-    <time dateTime={iso} title={absolute(iso)}>
+    <time className="admin-mono" dateTime={iso} title={absolute(iso)}>
       {label}
     </time>
   );
