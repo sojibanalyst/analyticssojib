@@ -32,7 +32,7 @@ export function StatBand() {
           >
             <span
               style={{
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "clamp(26px, 3vw, 30px)",
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
@@ -47,7 +47,7 @@ export function StatBand() {
             </span>
             <span
               style={{
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
                 color: "var(--muted)",
@@ -62,7 +62,7 @@ export function StatBand() {
       <p
         style={{
           margin: 0,
-          fontFamily: "var(--font-mono)",
+          fontFamily: "var(--font-data)",
           fontSize: "10.5px",
           letterSpacing: "0.1em",
           color: "var(--faint)",

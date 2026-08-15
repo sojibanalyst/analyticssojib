@@ -9,7 +9,7 @@ const docStyle: React.CSSProperties = {
   border: "1px solid var(--border)",
   borderRadius: "10px",
   padding: "14px 16px",
-  fontFamily: "var(--font-mono)",
+  fontFamily: "var(--font-data)",
   fontSize: "12px",
   letterSpacing: "0.06em",
   color: "var(--text)",
@@ -84,7 +84,7 @@ export function About() {
           id="about-title"
           style={{
             margin: 0,
-            fontFamily: "var(--font-sans)",
+            fontFamily: "var(--font-prose)",
             fontSize: "clamp(24px, 3.6vw, 30px)",
             fontWeight: 700,
             letterSpacing: "-0.02em",
@@ -142,7 +142,7 @@ export function About() {
         </p>
         <span
           style={{
-            fontFamily: "var(--font-mono)",
+            fontFamily: "var(--font-data)",
             fontSize: "11px",
             letterSpacing: "0.08em",
             color: "var(--muted)",

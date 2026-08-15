@@ -44,7 +44,7 @@ export function Contact() {
           gap: "10px",
           alignItems: "center",
           flexWrap: "wrap",
-          fontFamily: "var(--font-mono)",
+          fontFamily: "var(--font-data)",
           marginTop: "4px",
         }}
       >
@@ -69,7 +69,7 @@ export function Contact() {
       <p
         style={{
           margin: 0,
-          fontFamily: "var(--font-mono)",
+          fontFamily: "var(--font-data)",
           fontSize: "11.5px",
           letterSpacing: "0.06em",
           color: "var(--faint)",

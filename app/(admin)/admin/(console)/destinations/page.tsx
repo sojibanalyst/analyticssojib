@@ -108,9 +108,7 @@ export default async function DestinationsPage() {
                       {STATE_LABEL[state]}
                     </span>
                     {missing.length ? (
-                      <div style={{ color: "var(--ink-muted)" }}>
-                        needs {missing.join(" + ")}
-                      </div>
+                      <div className="admin-reason">needs {missing.join(" + ")}</div>
                     ) : null}
                   </td>
                   <td>{counts.sent ?? 0}</td>

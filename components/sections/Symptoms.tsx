@@ -19,7 +19,7 @@ export function Symptoms() {
           >
             <span
               style={{
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "11px",
                 fontWeight: 700,
                 letterSpacing: "0.12em",
@@ -30,7 +30,7 @@ export function Symptoms() {
             </span>
             <span
               style={{
-                fontFamily: "var(--font-sans)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "16.5px",
                 fontWeight: 700,
                 letterSpacing: "-0.01em",

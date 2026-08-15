@@ -182,10 +182,21 @@
   --color-hero-sub: var(--hero-sub);
   --color-hero-line: var(--hero-line);
 
-  /* typography — JetBrains Mono is the primary face (161 uses in the
-     design), Archivo carries long-form prose (18 uses) */
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  /* Typography, split by ROLE rather than by face.
+
+     --font-data  values, identifiers and labels: event ids, timestamps,
+                  counts, page paths, pills, table cells, field labels,
+                  navigation, inline code, and any input holding a code.
+     --font-prose things a person reads as language: page titles, the
+                  explanatory paragraph under each one, helper text, empty
+                  states, callouts, and the long-form text typed into a
+                  textarea.
+
+     The names say what the text IS, not which font it uses, so swapping
+     either face is one line here and nothing else in the codebase. Nothing
+     outside this block names a font. */
+  --font-data: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-prose: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 
   /* type scale, verbatim from the design's inline styles */
   --text-2xs: 10.5px;
@@ -250,7 +261,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-mono);
+  font-family: var(--font-data);
   -webkit-font-smoothing: antialiased;
 }
 

@@ -43,13 +43,68 @@
 
   /* Density. Tabular numerals matter here — every table in the design is
      numbers that need to line up column-wise. */
-  font-family: var(--font-mono);
+  font-family: var(--font-data);
   font-size: 13px;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
   background: var(--bg-page);
   color: var(--ink-body);
   min-height: 100svh;
+}
+
+/* Split by role ------------------------------------------------------------
+
+   The default above is --font-data, because most of this console is values:
+   event ids, timestamps, counts, paths, pills, labels. Monospace is right for
+   those — a column of ids only lines up if every glyph is the same width.
+
+   It is wrong for sentences. Equal widths destroy word shape, which is the
+   thing the eye actually reads, so a paragraph in mono has to be decoded
+   rather than taken in. The block below is the exception list: everywhere a
+   person is reading language rather than looking up a value.
+
+   Weight, letter-spacing, transform and colour are untouched. Size moves once,
+   and only to undo a difference between the two faces rather than to make
+   anything bigger — measured, not guessed:
+
+     JetBrains Mono  x-height 0.5625 em  →  7.31px at 13px
+     Archivo         x-height 0.5313 em  →  6.91px at 13px
+
+   Same px, 5.9% less letter. Next to a mono table that reads as the prose
+   having shrunk, which is not what a font swap should say. 13 × 0.5625 /
+   0.5313 = 13.76px is the exact match; 14px is the next step on the scale the
+   site already has and overshoots by 1.7%, which is below noticing. Line
+   height is a unitless 1.5 inherited from .admin, so it scales with the size
+   and the rhythm is unchanged.
+
+   Scoped under .admin so these win on specificity rather than on source
+   order — `.admin-field textarea` gets `font: inherit` further down the file,
+   which would otherwise silently take the quote box back to mono. */
+.admin .admin-pagehead p,
+.admin .admin-note,
+.admin .admin-state p,
+.admin .admin-reason,
+.admin .admin-secret__status,
+.admin .admin-formstatus,
+.admin .admin-check,
+.admin .admin-field textarea {
+  font-family: var(--font-prose);
+  font-size: var(--text-base-plus);
+}
+
+/* Values that appear INSIDE a sentence stay values. `event_deliveries` in the
+   middle of a paragraph is a table name you might type, not a word you read,
+   and the switch back is what says so. */
+.admin code,
+.admin kbd,
+.admin samp {
+  font-family: var(--font-data);
+}
+
+/* The reason under a state pill — "needs Measurement ID + API secret". It had
+   no class, only an inline colour, so there was nothing to select. */
+.admin-reason {
+  color: var(--ink-muted);
 }
 
 .admin a {
@@ -413,7 +468,7 @@
 }
 
 .admin-pagehead h1 {
-  font-family: var(--font-mono);
+  font-family: var(--font-prose);
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -441,7 +496,7 @@
 }
 
 .admin-card h2 {
-  font-family: var(--font-mono);
+  font-family: var(--font-data);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;

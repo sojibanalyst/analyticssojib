@@ -14,7 +14,7 @@ export function Footer() {
         alignItems: "center",
         flexWrap: "wrap",
         gap: "14px",
-        fontFamily: "var(--font-mono)",
+        fontFamily: "var(--font-data)",
         fontSize: "11px",
         letterSpacing: "0.08em",
         color: "var(--muted)",

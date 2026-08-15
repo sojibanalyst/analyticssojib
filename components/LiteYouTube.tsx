@@ -115,7 +115,7 @@ export function LiteYouTube({ id, label, orientation, badge }: Props) {
                 top: "10px",
                 left: "10px",
                 pointerEvents: "none",
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "10.5px",
                 letterSpacing: "0.1em",
                 whiteSpace: "nowrap",
