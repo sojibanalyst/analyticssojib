@@ -787,15 +787,6 @@ export const footer = {
   builtWith: "BUILT WITH NEXT.JS",
 };
 
-/* -------------------------------------------------------------------------- */
-/* Consent banner                                                              */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Wording matters here more than anywhere else on the site. It says what is
- * collected and why, in one sentence, without the word "experience". Both
- * choices are stated plainly because refusing has to be as easy as accepting.
- */
 /**
  * The enquiry form. Only name and email are required — every extra required
  * field is another reason for someone to close the tab instead.
@@ -814,11 +805,4 @@ export const leadForm = {
   doneTitle: "Got it.",
   privacy:
     "Goes to me, nobody else. No list, no sequence, no newsletter you did not ask for.",
-};
-
-export const consent = {
-  title: "Analytics on this site",
-  body: "I measure how people find and use this site — pages, referrer, campaign — to see what works. Decline and nothing is stored against you. This site sells measurement, so it says exactly what it does.",
-  accept: "ALLOW",
-  reject: "DECLINE",
 };

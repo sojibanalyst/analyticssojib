@@ -90,7 +90,14 @@ const EVENT_MAP = [
   },
   {
     event_name: "consent_update",
-    trigger_description: "The visitor allows or declines in the consent banner.",
+    // Documented and dormant, on purpose. setConsent() in lib/consent.ts still
+    // pushes it; nothing calls setConsent() while the site has no consent
+    // interface, so this fires zero times and the event map says "Documented"
+    // rather than "Receiving". Deleting it would throw away the contract a CMP
+    // has to satisfy — which is the one thing worth keeping here.
+    trigger_description:
+      "A consent management platform records a choice, via setConsent(). Nothing " +
+      "fires this today: the site has no consent interface.",
     parameters: { consent_state: "object" },
     destinations: [],
     dedup_key: "event_id",

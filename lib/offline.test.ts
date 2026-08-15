@@ -62,6 +62,20 @@ test("a declined visitor's click id is never uploaded", () => {
   assert.match(row.reason ?? "", /declined ad storage/i);
 });
 
+test("a never-asked visitor's click id is never uploaded either", () => {
+  // The gate is "granted", not "not denied". With no consent interface on
+  // the site every lead arrives as not_asked, and reading absence-of-refusal
+  // as permission would have uploaded all of them.
+  const row = evaluateLead(
+    lead({ consent: { status: "not_asked" } }),
+    "google_ads",
+    "USD",
+    NOW,
+  );
+  assert.equal(row.result, "ineligible");
+  assert.match(row.reason ?? "", /never asked/i);
+});
+
 test("the 90-day window is enforced, and the reason says how old", () => {
   const old = lead({ created_at: "2026-04-01T00:00:00.000Z" });
   const row = evaluateLead(old, "google_ads", "USD", NOW);

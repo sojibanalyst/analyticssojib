@@ -46,6 +46,8 @@ test("parseEnvelope keeps a well-formed event", () => {
     missing: null,
   });
   assert.equal(envelope.consent.analytics_storage, "granted");
+  // Signals with no status came from a client that did ask somebody.
+  assert.equal(envelope.consent.status, "asked");
 });
 
 test("parseEnvelope drops junk instead of storing it", () => {
@@ -64,7 +66,7 @@ test("parseEnvelope drops junk instead of storing it", () => {
   assert.ok(envelope);
   assert.deepEqual(envelope.params, { ok: "kept" });
   // "maybe" is not a consent value, so it is not recorded as one.
-  assert.deepEqual(envelope.consent, { ad_storage: "granted" });
+  assert.deepEqual(envelope.consent, { ad_storage: "granted", status: "asked" });
 });
 
 test("parseEnvelope caps sizes so one POST cannot write a megabyte", () => {
@@ -157,4 +159,35 @@ test("device types, with bots kept apart", () => {
   );
   // Android without "mobile" is a tablet — the one UA rule worth encoding.
   assert.equal(deviceTypeFrom("Mozilla/5.0 (Linux; Android 13; SM-X200)"), "tablet");
+});
+
+test("no consent in the payload is recorded as not_asked, not as an empty object", () => {
+  const envelope = parseEnvelope({ event_name: "page_view", event_id: "e-na" });
+
+  assert.ok(envelope);
+  // {} would mean "no consent data" — indistinguishable from a row written
+  // before consent was ever recorded. There is no banner on the site, so the
+  // true value is that nobody was asked, and the row has to say so.
+  assert.deepEqual(envelope.consent, { status: "not_asked" });
+});
+
+test("not_asked never carries signals, even if a payload claims both", () => {
+  const envelope = parseEnvelope({
+    event_name: "page_view",
+    event_id: "e-mix",
+    consent: { status: "not_asked", analytics_storage: "granted" },
+  });
+
+  assert.ok(envelope);
+  // A contradiction resolves to the reading that grants nothing.
+  assert.deepEqual(envelope.consent, { status: "not_asked" });
+});
+
+test("not_asked is not granted, so the collector creates no session for it", () => {
+  const envelope = parseEnvelope({ event_name: "page_view", event_id: "e-sess" });
+
+  assert.ok(envelope);
+  // The route's own gate, asserted here because it is the line that decides
+  // whether a visitor gets an identifier: "granted" and nothing else.
+  assert.equal(envelope.consent.analytics_storage === "granted", false);
 });

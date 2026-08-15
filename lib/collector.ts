@@ -34,6 +34,9 @@ export type Envelope = {
   consent: Record<string, string>;
 };
 
+/** Shape mirrors lib/consent.ts. Not imported: that module is "use client". */
+const NOT_ASKED: Record<string, string> = { status: "not_asked" };
+
 function str(value: unknown, max = MAX_STRING): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -81,14 +84,35 @@ export function parseEnvelope(input: unknown): Envelope | null {
   // signals we know. Storing it per event is what lets a later question —
   // "was this conversion collected with permission?" — be answered from the
   // row rather than from memory.
+  //
+  // With no banner on the site, every event arrives as not_asked, and that is
+  // what gets stored. An empty object would have been the lazy default and it
+  // would have been a lie by omission: a row with no consent data is
+  // indistinguishable from a row written before consent was recorded at all.
+  // The value has to say which of the three it is.
   const consent: Record<string, string> = {};
   if (body.consent && typeof body.consent === "object") {
     for (const [key, value] of Object.entries(body.consent as Record<string, unknown>)) {
+      if (key === "status") {
+        if (value === "asked" || value === "not_asked") consent.status = value;
+        continue;
+      }
       if (EVENT_NAME.test(key) && (value === "granted" || value === "denied")) {
         consent[key] = value;
       }
     }
   }
+
+  // A payload carrying signals but no status came from a client older than
+  // this change; it did ask somebody. One with neither says nothing, and
+  // nothing means nobody was asked.
+  if (!consent.status) {
+    consent.status = Object.keys(consent).length > 0 ? "asked" : "not_asked";
+  }
+  // Signals arriving alongside not_asked contradict each other, and the safe
+  // reading of a contradiction is the one that grants nothing.
+  const normalised =
+    consent.status === "not_asked" ? { ...NOT_ASKED } : consent;
 
   return {
     event_name: eventName,
@@ -97,7 +121,7 @@ export function parseEnvelope(input: unknown): Envelope | null {
     page_path: str(body.page_path, MAX_PATH),
     referrer: str(body.referrer, MAX_PATH),
     params,
-    consent,
+    consent: normalised,
   };
 }
 

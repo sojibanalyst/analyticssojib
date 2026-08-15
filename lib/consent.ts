@@ -1,17 +1,27 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+/**
+ * Consent state. No UI.
+ *
+ * The banner is gone — deliberately and permanently, not hidden behind a flag.
+ * What stays is the STATE: the seven Consent Mode v2 signals, the cookie they
+ * live in, the update call into gtag, and a third value that the binary
+ * granted/denied pair could not express.
+ *
+ * `not_asked` is the point of keeping any of this. It is not "denied": denied
+ * means a person was shown a choice and said no, and not_asked means nobody
+ * ever asked them. Collapsing the two would make /admin/events claim a refusal
+ * that never happened, and would make a later consent-rate figure meaningless.
+ * Every event collected from now on carries not_asked, and says so on screen.
+ *
+ * Nothing here writes the cookie any more. A CMP is what will — see the note
+ * at the bottom of this file.
+ */
 
 /**
- * Consent Mode v2.
- *
  * The seven signals Google defines. `security_storage` is not a choice — it
  * covers things like fraud prevention that a site cannot function without —
- * so it is always granted and never shown to the visitor.
- *
- * Everything else starts DENIED. That is the whole point of Consent Mode v2:
- * tags load, but they send cookieless pings until the visitor says otherwise,
- * instead of either firing without permission or not firing at all.
+ * so it is always granted.
  */
 export type ConsentSignal =
   | "ad_storage"
@@ -25,10 +35,24 @@ export type ConsentSignal =
 export type ConsentValue = "granted" | "denied";
 export type ConsentState = Record<ConsentSignal, ConsentValue>;
 
+/**
+ * What gets stored on an event or a session.
+ *
+ * The signal keys are ABSENT when nobody was asked, which is what keeps every
+ * existing reader correct without being rewritten: `consent.analytics_storage
+ * === "granted"` was false for a refusal and is false for a never-asked, and
+ * "granted" remains the only thing that unlocks anything.
+ */
+export type ConsentRecord =
+  | ({ status: "asked" } & ConsentState)
+  | { status: "not_asked" };
+
 /** Bumped if the meaning of a signal changes; a new key re-asks everyone. */
 export const CONSENT_COOKIE = "sf_consent_1";
 export const CONSENT_EVENT = "sf-consent-change";
 const MAX_AGE_DAYS = 180;
+
+export const NOT_ASKED: ConsentRecord = { status: "not_asked" };
 
 export const DENIED: ConsentState = {
   ad_storage: "denied",
@@ -51,11 +75,12 @@ export const GRANTED: ConsentState = {
 };
 
 /**
- * Read the stored choice, or null if the visitor has not made one.
+ * Read the stored choice, or null if there is not one.
  *
- * null is not the same as DENIED, and the difference matters: null means "ask
- * them", DENIED means "they said no". Collapsing the two would re-ask someone
- * who already declined on every visit.
+ * With no banner this returns null on every visit today. It is still here, and
+ * still correct, because the cookie is the interface: a CMP that writes
+ * sf_consent_1 in this shape is understood by the tracker and by the gtag
+ * bootstrap in app/layout.tsx without either of them changing.
  */
 export function readConsent(): ConsentState | null {
   if (typeof document === "undefined") return null;
@@ -75,20 +100,26 @@ export function readConsent(): ConsentState | null {
   }
 }
 
-/** What the collector and the tags should assume right now. */
-export function currentConsent(): ConsentState {
-  return readConsent() ?? DENIED;
-}
-
-export function hasChosen(): boolean {
-  return readConsent() !== null;
+/**
+ * What the collector should record for an event happening right now.
+ *
+ * No cookie means not_asked, NOT denied. That is the whole reason this
+ * function did not simply get deleted with the banner.
+ */
+export function currentConsent(): ConsentRecord {
+  const stored = readConsent();
+  return stored ? { status: "asked", ...stored } : NOT_ASKED;
 }
 
 /**
  * Store a choice and tell Google about it.
  *
- * The cookie is deliberately not HttpOnly: the banner and the tracker both
- * read it in the browser, and it holds a preference, not an identifier.
+ * Nothing calls this today. It is the entry point a CMP wraps: call it with a
+ * ConsentState and the cookie, the gtag update and the dataLayer event all
+ * happen together, in the order Google requires.
+ *
+ * The cookie is deliberately not HttpOnly: the tracker reads it in the
+ * browser, and it holds a preference, not an identifier.
  */
 export function setConsent(state: ConsentState): void {
   const value = encodeURIComponent(JSON.stringify(state));
@@ -111,29 +142,22 @@ export function setConsent(state: ConsentState): void {
   window.dispatchEvent(new Event(CONSENT_EVENT));
 }
 
-function subscribe(onChange: () => void) {
-  window.addEventListener(CONSENT_EVENT, onChange);
-  return () => window.removeEventListener(CONSENT_EVENT, onChange);
-}
+/* --------------------------------------------------------------------------
+   Putting a CMP back in
 
-/**
- * The server always renders as "not chosen yet" and the client corrects on
- * mount. The banner is hidden until mount for that reason — rendering it in
- * the prerendered HTML would show it for a frame to people who already
- * answered.
- */
-export function useConsent(): ConsentState | null {
-  return useSyncExternalStore(
-    subscribe,
-    readConsent,
-    () => null,
-  );
-}
+   Four things exist and are already wired; a CMP has to meet them, and needs
+   to change nothing else:
 
-export function useHasChosen(): boolean {
-  return useSyncExternalStore(
-    subscribe,
-    hasChosen,
-    () => true,
-  );
-}
+   1. gtag('consent','default',…) is declared in app/layout.tsx ABOVE the GTM
+      snippet, all denied except security_storage, with wait_for_update: 500.
+      A CMP must not re-declare defaults after the container loads.
+   2. setConsent(state) above is the write path — cookie, gtag update and
+      dataLayer event in one call. Point the CMP's accept/reject handlers at
+      it, or have the CMP write sf_consent_1 in the same JSON shape.
+   3. lib/track.ts stamps currentConsent() onto every event, so rows switch
+      from not_asked to a real answer the moment the cookie exists. No
+      collector or schema change.
+   4. The CONSENT_EVENT dispatch is what components/Tracker.tsx listens for to
+      re-fire a page_view once permission arrives — the pageview that was
+      collected without a session id gets a counterpart that has one.
+   -------------------------------------------------------------------------- */
