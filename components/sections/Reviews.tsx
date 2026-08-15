@@ -51,7 +51,7 @@ export function Reviews({
       >
         <span
           style={{
-            fontFamily: "var(--font-mono)",
+            fontFamily: "var(--font-data)",
             fontSize: "11px",
             letterSpacing: "0.14em",
             color: "var(--muted)",
@@ -97,7 +97,7 @@ export function Reviews({
           <span
             aria-live="polite"
             style={{
-              fontFamily: "var(--font-mono)",
+              fontFamily: "var(--font-data)",
               fontSize: "11px",
               letterSpacing: "0.08em",
               whiteSpace: "nowrap",
@@ -153,7 +153,7 @@ export function Reviews({
               <div className="review-slide__body">
                 <span
                   style={{
-                    fontFamily: "var(--font-mono)",
+                    fontFamily: "var(--font-data)",
                     fontSize: "11px",
                     letterSpacing: "0.1em",
                     color: "var(--result)",
@@ -177,7 +177,7 @@ export function Reviews({
                 </p>
                 <span
                   style={{
-                    fontFamily: "var(--font-mono)",
+                    fontFamily: "var(--font-data)",
                     fontSize: "11px",
                     letterSpacing: "0.08em",
                     color: "var(--muted)",
@@ -200,7 +200,7 @@ export function Reviews({
       <p
         style={{
           margin: 0,
-          fontFamily: "var(--font-mono)",
+          fontFamily: "var(--font-data)",
           fontSize: "10.5px",
           letterSpacing: "0.1em",
           color: "var(--faint)",

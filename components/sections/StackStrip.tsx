@@ -23,7 +23,7 @@ export function StackStrip() {
         <span
           style={{
             flex: "0 0 auto",
-            fontFamily: "var(--font-mono)",
+            fontFamily: "var(--font-data)",
             fontSize: "11px",
             letterSpacing: "0.14em",
             color: "var(--ink)",
@@ -44,7 +44,7 @@ export function StackStrip() {
             <StackIcon item={item} />
             <span
               style={{
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "11px",
                 fontWeight: 500,
                 letterSpacing: "0.1em",

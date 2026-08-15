@@ -19,11 +19,21 @@ export const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-// Archivo carries headings only, and every heading in the design is 700.
-// Loading the other three weights would ship ~90 KB nobody renders.
+/**
+ * Archivo, as the variable font — every weight from one file.
+ *
+ * It was pinned to `weight: ["700"]` when it carried nothing but the two
+ * uppercase display headings on the marketing site. That stopped being true
+ * when it took over the console's prose: a family with only a 700 file does
+ * not render body text at 400, it renders it at 700, because the browser
+ * picks the nearest weight it has. Every paragraph would have come out bold.
+ *
+ * Omitting `weight` gives the variable font instead of a static instance, so
+ * 400 body, 700 headings and the 800 the pagehead asks for all resolve from a
+ * single request — smaller than the three static files it replaces.
+ */
 export const archivo = Archivo({
   subsets: ["latin"],
-  weight: ["700"],
   variable: "--font-archivo",
   display: "swap",
 });

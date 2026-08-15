@@ -66,7 +66,7 @@ export default async function BlogPost({ params }: Params) {
             style={{
               margin: 0,
               maxWidth: "22ch",
-              fontFamily: "var(--font-sans)",
+              fontFamily: "var(--font-prose)",
               fontSize: "clamp(28px, 5.2vw, 46px)",
               lineHeight: 1.1,
               fontWeight: 700,

@@ -26,7 +26,7 @@ export default function NotFound() {
         style={{
           margin: 0,
           maxWidth: "20ch",
-          fontFamily: "var(--font-sans)",
+          fontFamily: "var(--font-prose)",
           fontSize: "clamp(28px, 5.2vw, 46px)",
           lineHeight: 1.1,
           fontWeight: 700,

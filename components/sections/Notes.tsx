@@ -18,7 +18,7 @@ export function Notes({ posts }: { posts: Post[] }) {
           <Link key={post.slug} href={`/blog/${post.slug}`} className="note-card">
             <span
               style={{
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
                 color: "var(--muted)",
@@ -30,7 +30,7 @@ export function Notes({ posts }: { posts: Post[] }) {
 
             <span
               style={{
-                fontFamily: "var(--font-sans)",
+                fontFamily: "var(--font-prose)",
                 fontSize: "16.5px",
                 fontWeight: 700,
                 letterSpacing: "-0.01em",
@@ -44,7 +44,7 @@ export function Notes({ posts }: { posts: Post[] }) {
 
             <span
               style={{
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
                 color: "var(--ink)",

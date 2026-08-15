@@ -22,7 +22,7 @@ export function Process() {
           >
             <span
               style={{
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "28px",
                 fontWeight: 800,
                 color: "var(--ink)",
@@ -34,7 +34,7 @@ export function Process() {
             <h3
               style={{
                 margin: 0,
-                fontFamily: "var(--font-mono)",
+                fontFamily: "var(--font-data)",
                 fontSize: "15px",
                 fontWeight: 700,
                 letterSpacing: "0.04em",
