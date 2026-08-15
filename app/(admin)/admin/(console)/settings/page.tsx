@@ -22,9 +22,12 @@ export default async function SettingsPage() {
       <div className="admin-pagehead">
         <h1>Settings</h1>
         <p>
-          Non-secret configuration only. Access tokens and API secrets are not
-          here and will not be: they live in environment variables, where a
-          screenshot of this page cannot leak them.
+          Site-wide configuration, none of it secret. Destination credentials
+          are not on this page — they are set on{" "}
+          <a href="/admin/destinations">Destinations</a>, encrypted into
+          Supabase Vault, and never sent back to the browser. A screenshot of
+          either page cannot leak one, because neither page has ever been given
+          the value to show.
         </p>
       </div>
 
@@ -82,6 +85,13 @@ export default async function SettingsPage() {
 
       <section className="admin-card">
         <h2>Set elsewhere, on purpose</h2>
+        <p className="admin-note">
+          <strong>Destination credentials</strong> are on{" "}
+          <a href="/admin/destinations">Destinations</a>, one per platform. Each
+          is stored encrypted and can be rotated from that screen without a
+          redeploy; an environment variable is still read as a fallback if no
+          value has been set there.
+        </p>
         <p className="admin-note">
           <strong>GTM container</strong> ({data?.gtm_container_id || "not set"})
           comes from <code>NEXT_PUBLIC_GTM_ID</code>, so production and a

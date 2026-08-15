@@ -202,6 +202,9 @@ export type Database = {
           last_error: string | null
           last_error_at: string | null
           last_ok_at: string | null
+          secret_last4: string | null
+          secret_updated_at: string | null
+          secret_vault_id: string | null
           test_event_code: string | null
           updated_at: string
         }
@@ -215,6 +218,9 @@ export type Database = {
           last_error?: string | null
           last_error_at?: string | null
           last_ok_at?: string | null
+          secret_last4?: string | null
+          secret_updated_at?: string | null
+          secret_vault_id?: string | null
           test_event_code?: string | null
           updated_at?: string
         }
@@ -228,6 +234,9 @@ export type Database = {
           last_error?: string | null
           last_error_at?: string | null
           last_ok_at?: string | null
+          secret_last4?: string | null
+          secret_updated_at?: string | null
+          secret_vault_id?: string | null
           test_event_code?: string | null
           updated_at?: string
         }
@@ -852,6 +861,9 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      set_destination_secret: { Args: { p_key: string; p_secret: string }; Returns: undefined }
+      clear_destination_secret: { Args: { p_key: string }; Returns: undefined }
+      get_destination_secret: { Args: { p_key: string }; Returns: string }
       submit_lead: {
         Args: {
           p_name: string
