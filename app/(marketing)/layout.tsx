@@ -1,6 +1,5 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
-import { ConsentBanner } from "@/components/ConsentBanner";
 import { Tracker } from "@/components/Tracker";
 import { ldJson, personJsonLd, professionalServiceJsonLd } from "@/lib/jsonld";
 
@@ -26,9 +25,8 @@ export default function MarketingLayout({
       <Footer />
 
       {/* Public pages only. The console must not appear in the analytics it
-          exists to inspect, so neither of these is in the (admin) group. */}
+          exists to inspect, so this is not in the (admin) group. */}
       <Tracker />
-      <ConsentBanner />
 
       <script
         type="application/ld+json"

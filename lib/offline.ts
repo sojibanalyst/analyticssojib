@@ -108,15 +108,25 @@ export function evaluateLead(
     };
   }
 
-  // Consent is per-event and recorded when the visit happened. Uploading a
+  // Consent is per-lead and recorded when the visit happened. Uploading a
   // conversion for someone who declined ad storage would send their click id
   // to an ad platform after they said no.
+  //
+  // The test is "granted", not "not denied". It used to be the latter, which
+  // was survivable while a banner meant every lead carried a real answer, and
+  // became a hole the moment not_asked existed: absence of a refusal would
+  // have been read as permission, and every lead collected without a consent
+  // interface would have been uploaded. Nobody asked them.
   const consent = (lead.consent ?? {}) as Record<string, string>;
-  if (consent.ad_storage === "denied") {
+  if (consent.ad_storage !== "granted") {
+    const refused = consent.ad_storage === "denied";
     return {
       ...base,
       result: "ineligible",
-      reason: "Visitor declined ad storage. Their click id must not be sent to an ad platform.",
+      reason: refused
+        ? "Visitor declined ad storage. Their click id must not be sent to an ad platform."
+        : "No ad storage consent on this lead — they were never asked. A click id cannot be " +
+          "sent to an ad platform on an assumption, so this needs a CMP before it can be uploaded.",
     };
   }
 

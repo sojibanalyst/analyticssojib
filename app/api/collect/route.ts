@@ -48,6 +48,13 @@ export async function POST(request: NextRequest) {
     return NO_CONTENT;
   }
 
+  // "granted" and nothing else. With the banner removed every event arrives as
+  // not_asked, so this is false on every request and no session identifier is
+  // created — which is the correct outcome, not a regression: nobody has been
+  // asked, so nobody has agreed to be identified across pageviews. Events are
+  // still recorded, with session_id null and the honest consent value on the
+  // row. Wire a CMP back in (see lib/consent.ts) and sessions resume by
+  // themselves, with no change here.
   const analyticsAllowed = envelope.consent.analytics_storage === "granted";
 
   // Existing session, if the visitor has one and still allows it.

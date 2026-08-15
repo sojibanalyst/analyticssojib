@@ -58,6 +58,13 @@ export default async function EventsPage({
           is sent from the browser and from the server, so both resolve to one
           conversion downstream. Hover a timestamp for the exact time.
         </p>
+        <p>
+          Consent reads <em>Not asked</em> while the site has no consent
+          interface: nobody was shown a choice, so nothing was granted and
+          nothing was refused. Events are still recorded; sessions are not,
+          because a session identifier needs permission this site has not
+          asked for.
+        </p>
       </div>
 
       <nav className="admin-filters" aria-label="Filter by event">
@@ -106,6 +113,12 @@ export default async function EventsPage({
           >
             {data.map((row) => {
               const consent = (row.consent ?? {}) as Record<string, string>;
+              // Three states, because there are three. "Denied" means someone
+              // was asked and said no; "Not asked" means there is no consent
+              // interface on the site, which is true right now and will stop
+              // being true when a CMP goes back in. Showing the second as the
+              // first would invent a refusal that never happened.
+              const asked = consent.status !== "not_asked" && Object.keys(consent).length > 0;
               const analytics = consent.analytics_storage === "granted";
               return (
                 <tr key={row.id}>
@@ -117,8 +130,11 @@ export default async function EventsPage({
                   </td>
                   <td className="admin-mono">{row.page_path ?? "—"}</td>
                   <td>
-                    <span className="admin-pill" data-tone={analytics ? "success" : "warn"}>
-                      {analytics ? "Granted" : "Denied"}
+                    <span
+                      className="admin-pill"
+                      data-tone={!asked ? "info" : analytics ? "success" : "warn"}
+                    >
+                      {!asked ? "Not asked" : analytics ? "Granted" : "Denied"}
                     </span>
                   </td>
                   <td>
