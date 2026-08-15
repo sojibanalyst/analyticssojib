@@ -5,8 +5,8 @@ import { SavingForm } from "@/components/admin/SavingForm";
 import { SecretField } from "@/components/admin/SecretField";
 import { createClient } from "@/lib/supabase/server";
 import { DESTINATION_SPECS } from "@/lib/destinations";
-import { getDestinationSecret } from "@/lib/secrets";
-import { clearDestinationSecret, saveDestination } from "./actions";
+import { destinationState, missingFor, STATE_LABEL, STATE_TONE } from "@/lib/destination-state";
+import { clearDestinationSecret, saveDestination, testDestination } from "./actions";
 
 export const metadata: Metadata = {
   title: "Destinations",
@@ -20,20 +20,30 @@ export default async function DestinationsPage() {
     supabase
       .from("destinations")
       .select(
-        "id, key, label, enabled, config, last_ok_at, last_error_at, last_error, secret_last4, secret_updated_at",
+        "id, key, label, enabled, config, last_ok_at, last_error_at, last_error, secret_last4, secret_updated_at, secret_vault_id, last_test_at, last_test_ok, last_test_message, last_test_conclusive",
       )
       .order("key", { ascending: true }),
     supabase.from("event_deliveries").select("destination, status").limit(1000),
   ]);
 
-  // Which credential the worker would actually use, per destination. This
-  // resolves the value server-side and keeps it here — only the source label
-  // reaches the page.
+  /**
+   * Where the credential would come from — without decrypting anything.
+   *
+   * The console never needs the value, only whether one exists, so this reads
+   * the vault POINTER on the row and the presence of the env var. Decrypting
+   * to render a status pill would put plaintext secrets into page rendering
+   * for no benefit, and would be the one place they could end up cached.
+   *
+   * Only the fan-out worker and the Test button decrypt, at the moment of use.
+   */
   const sources = new Map<string, "database" | "env" | "none">();
   for (const row of destinations.data ?? []) {
-    if (!DESTINATION_SPECS[row.key]?.secret) continue;
-    const { source } = await getDestinationSecret(row.key);
-    sources.set(row.key, source);
+    const spec = DESTINATION_SPECS[row.key];
+    if (!spec?.secret) continue;
+
+    if (row.secret_vault_id) sources.set(row.key, "database");
+    else if (process.env[spec.secret.envVar]) sources.set(row.key, "env");
+    else sources.set(row.key, "none");
   }
 
   const tally = new Map<string, Record<string, number>>();
@@ -74,9 +84,14 @@ export default async function DestinationsPage() {
           >
             {destinations.data.map((destination) => {
               const counts = tally.get(destination.key) ?? {};
-              const configured = Object.keys(
-                (destination.config ?? {}) as Record<string, unknown>,
-              ).length;
+              const inputs = {
+                key: destination.key,
+                enabled: destination.enabled,
+                config: (destination.config ?? {}) as Record<string, unknown>,
+                hasSecret: sources.get(destination.key) !== "none",
+              };
+              const state = destinationState(inputs);
+              const missing = missingFor(inputs);
 
               return (
                 <tr key={destination.id}>
@@ -85,16 +100,18 @@ export default async function DestinationsPage() {
                     <div style={{ color: "var(--ink-muted)" }}>{destination.key}</div>
                   </td>
                   <td>
-                    <span
-                      className="admin-pill"
-                      data-tone={destination.enabled ? "success" : configured ? "warn" : "info"}
-                    >
-                      {destination.enabled
-                        ? "Enabled"
-                        : configured
-                          ? "Configured, off"
-                          : "Not set up"}
+                    {/* Derived, never stored — same principle as the reviews
+                        page's placeholder flag. A status column would be one
+                        forgotten update away from claiming LIVE about a
+                        destination with no credentials. */}
+                    <span className="admin-pill" data-tone={STATE_TONE[state]}>
+                      {STATE_LABEL[state]}
                     </span>
+                    {missing.length ? (
+                      <div style={{ color: "var(--ink-muted)" }}>
+                        needs {missing.join(" + ")}
+                      </div>
+                    ) : null}
                   </td>
                   <td>{counts.sent ?? 0}</td>
                   <td>{counts.skipped ?? 0}</td>
@@ -170,6 +187,55 @@ export default async function DestinationsPage() {
                 Forward events to this destination
               </label>
             </SavingForm>
+
+            {/* The result of a real request, not an inference from the
+                presence of credentials. A card that has never been tested says
+                so — implying health it has not demonstrated is how a wrong
+                token survives three weeks of silently failed conversions. */}
+            <div className="admin-testrow">
+              <SavingForm
+                action={testDestination}
+                className="admin-inline-form"
+                submitLabel="Test connection"
+                pendingLabel="Testing…"
+                variant="ghost"
+              >
+                <input type="hidden" name="key" value={destination.key} />
+              </SavingForm>
+
+              {destination.last_test_at ? (
+                <p className="admin-note">
+                  {/* Three outcomes, not two. "Inconclusive" is green-adjacent
+                      nowhere: GA4 answers 2xx for a wrong api_secret, so an
+                      accepted payload has proved the payload and nothing more,
+                      and saying "Passed" there would be the exact false
+                      assurance this button exists to remove. */}
+                  <span
+                    className="admin-pill"
+                    data-tone={
+                      !destination.last_test_ok
+                        ? "danger"
+                        : destination.last_test_conclusive
+                          ? "success"
+                          : "warn"
+                    }
+                  >
+                    {!destination.last_test_ok
+                      ? "Failed"
+                      : destination.last_test_conclusive
+                        ? "Passed"
+                        : "Inconclusive"}
+                  </span>{" "}
+                  Tested <Ago iso={destination.last_test_at} /> —{" "}
+                  {destination.last_test_message}
+                </p>
+              ) : (
+                <p className="admin-note">
+                  Never tested. Credentials being present is not evidence they
+                  work.
+                </p>
+              )}
+            </div>
 
             {spec.secret && source === "database" ? (
               <DeleteButton

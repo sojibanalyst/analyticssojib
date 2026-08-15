@@ -41,6 +41,23 @@ export default async function SettingsPage() {
         <section className="admin-card">
           <SavingForm action={updateSettings}>
             <div className="admin-field">
+              <label htmlFor="gtm_container_id">GTM container ID</label>
+              <input
+                id="gtm_container_id"
+                name="gtm_container_id"
+                defaultValue={data?.gtm_container_id ?? ""}
+                placeholder="GTM-XXXXXXX"
+                pattern="^GTM-[A-Z0-9]{4,10}$"
+                spellCheck={false}
+              />
+              <p className="admin-note">
+                Takes effect on the next page load — no redeploy. Leave it empty
+                and no container script is rendered at all, rather than a broken
+                one.
+              </p>
+            </div>
+
+            <div className="admin-field">
               <label htmlFor="site_name">Site name</label>
               <input id="site_name" name="site_name" defaultValue={data?.site_name ?? ""} />
             </div>
@@ -93,9 +110,10 @@ export default async function SettingsPage() {
           value has been set there.
         </p>
         <p className="admin-note">
-          <strong>GTM container</strong> ({data?.gtm_container_id || "not set"})
-          comes from <code>NEXT_PUBLIC_GTM_ID</code>, so production and a
-          preview can point at different containers.
+          <strong>GTM container</strong> is set above and read at request time.{" "}
+          <code>NEXT_PUBLIC_GTM_ID</code> is still read as a fallback when the
+          field is empty, so a deployment configured before this existed keeps
+          working — but the field wins, and changing it needs no redeploy.
         </p>
         <p className="admin-note">
           <strong>Retention</strong> is {data?.retention_days} days. Changing it

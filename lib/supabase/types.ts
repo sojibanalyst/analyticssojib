@@ -202,6 +202,10 @@ export type Database = {
           last_error: string | null
           last_error_at: string | null
           last_ok_at: string | null
+          last_test_at: string | null
+          last_test_message: string | null
+          last_test_conclusive: boolean
+          last_test_ok: boolean | null
           secret_last4: string | null
           secret_updated_at: string | null
           secret_vault_id: string | null
@@ -218,6 +222,10 @@ export type Database = {
           last_error?: string | null
           last_error_at?: string | null
           last_ok_at?: string | null
+          last_test_at?: string | null
+          last_test_message?: string | null
+          last_test_conclusive?: boolean
+          last_test_ok?: boolean | null
           secret_last4?: string | null
           secret_updated_at?: string | null
           secret_vault_id?: string | null
@@ -234,6 +242,10 @@ export type Database = {
           last_error?: string | null
           last_error_at?: string | null
           last_ok_at?: string | null
+          last_test_at?: string | null
+          last_test_message?: string | null
+          last_test_conclusive?: boolean
+          last_test_ok?: boolean | null
           secret_last4?: string | null
           secret_updated_at?: string | null
           secret_vault_id?: string | null
@@ -850,6 +862,12 @@ export type Database = {
       }
     }
     Views: {
+      public_site_settings: {
+        Row: {
+          gtm_container_id: string | null
+        }
+        Relationships: []
+      }
       event_last_fired: {
         Row: {
           event_name: string | null

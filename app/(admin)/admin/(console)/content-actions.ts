@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { isAllowedEmail } from "@/lib/auth";
 import { CONTENT_TAG } from "@/lib/content/client";
+import { GTM_ID_PATTERN, SETTINGS_TAG } from "@/lib/settings";
 import { createClient, getUser } from "@/lib/supabase/server";
 import {
   ACTION_ERRORS,
@@ -201,9 +202,18 @@ export async function updateSettings(
   const supabase = await requireAdmin();
   if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
+  // Validated here, not only via the input's pattern. A malformed container id
+  // renders a snippet that silently never loads — the page looks instrumented
+  // and is not, which is worse than having no container at all.
+  const gtm = String(formData.get("gtm_container_id") ?? "").trim().toUpperCase();
+  if (gtm && !GTM_ID_PATTERN.test(gtm)) {
+    return fail("Container ID looks like GTM-XXXXXXX — capitals and digits after the hyphen.");
+  }
+
   const { error } = await supabase
     .from("settings")
     .update({
+      gtm_container_id: gtm || null,
       site_name: String(formData.get("site_name") ?? "").trim() || null,
       contact_email: String(formData.get("contact_email") ?? "").trim() || null,
       calendly_url: String(formData.get("calendly_url") ?? "").trim() || null,
@@ -216,6 +226,11 @@ export async function updateSettings(
 
   if (error) return fail(error.message);
 
+  // The GTM snippet on every public page reads through this tag. Dropping it
+  // is what makes a container change take effect on the next request instead
+  // of the next deploy — the whole point of moving the id out of the bundle.
+  revalidateTag(SETTINGS_TAG, { expire: 0 });
+  revalidatePath("/", "layout");
   revalidatePath("/admin/settings");
   return ok("Settings saved.");
 }
