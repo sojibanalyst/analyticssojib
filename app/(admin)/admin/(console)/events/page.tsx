@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { createClient } from "@/lib/supabase/server";
 
@@ -67,25 +68,32 @@ export default async function EventsPage({
         </p>
       </div>
 
+      {/* prefetch={false} throughout: every chip points at this page, which
+          runs two Supabase queries per render, and Next prefetches any Link in
+          the viewport. Left on, five chips would fire five database round
+          trips for filters nobody clicked — the same fault that put 36 RSC
+          requests and three 503s into one session from the sidebar. */}
       <nav className="admin-filters" aria-label="Filter by event">
-        <a
+        <Link
           href="/admin/events"
+          prefetch={false}
           className="admin-navlink"
           data-compact="true"
           aria-current={!filtering ? "page" : undefined}
         >
           All
-        </a>
+        </Link>
         {EVENT_NAMES.map((name) => (
-          <a
+          <Link
             key={name}
             href={`/admin/events?event=${name}`}
+            prefetch={false}
             className="admin-navlink"
             data-compact="true"
             aria-current={filtering === name ? "page" : undefined}
           >
             {name}
-          </a>
+          </Link>
         ))}
       </nav>
 

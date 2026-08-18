@@ -592,6 +592,25 @@
   color: var(--ink);
 }
 
+/* A link wearing the button's clothes.
+   `.admin a` sets link colour to --accent and is (0,1,1); `.admin-button` is
+   (0,1,0), so the anchor won on specificity and the primary variant rendered
+   accent-on-accent — a green label on a green button, which is to say an empty
+   button. Found in a screenshot of the console's own 404 page, where every
+   route out was one of these. */
+.admin a.admin-button {
+  color: var(--accent-fg);
+  text-decoration: none;
+}
+
+.admin a.admin-button[data-variant="ghost"] {
+  color: var(--ink);
+}
+
+.admin a.admin-button:hover {
+  text-decoration: none;
+}
+
 .admin-button:disabled {
   opacity: 0.6;
   cursor: progress;

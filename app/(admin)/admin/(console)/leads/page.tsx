@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
@@ -62,25 +63,30 @@ export default async function LeadsPage({
         </p>
       </div>
 
+      {/* prefetch={false}: see the same nav on /admin/events. Seven chips, all
+          pointing at a page that queries Supabase twice, would otherwise be
+          seven prefetched round trips for filters nobody clicked. */}
       <nav className="admin-filters" aria-label="Filter by status">
-        <a
+        <Link
           href="/admin/leads"
+          prefetch={false}
           className="admin-navlink"
           data-compact="true"
           aria-current={!filtering ? "page" : undefined}
         >
           All
-        </a>
+        </Link>
         {LEAD_STATUSES.map((value) => (
-          <a
+          <Link
             key={value}
             href={`/admin/leads?status=${value}`}
+            prefetch={false}
             className="admin-navlink"
             data-compact="true"
             aria-current={filtering === value ? "page" : undefined}
           >
             {value}
-          </a>
+          </Link>
         ))}
       </nav>
 

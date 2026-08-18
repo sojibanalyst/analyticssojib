@@ -3,7 +3,7 @@ import Link from "next/link";
 import { blog } from "@/content/posts";
 import { site } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getPosts } from "@/lib/content";
+import { getPublishedPosts } from "@/lib/content";
 
 const url = `${site.url}/blog`;
 
@@ -13,7 +13,7 @@ export const revalidate = 3600;
 // indexable depends on how many posts are published — which now comes from
 // the database. The output is identical.
 export async function generateMetadata(): Promise<Metadata> {
-  const published = (await getPosts()).filter((post) => !post.draft);
+  const published = await getPublishedPosts();
 
   return {
     title: "Writing",
@@ -34,7 +34,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogIndex() {
-  const posts = await getPosts();
+  // Finished posts only, matching the homepage section. A visitor who clicks
+  // through from a section listing two posts should not land on a page listing
+  // five, three of them badged DRAFT — and an unfinished post is noindexed, so
+  // listing it here earns nothing either.
+  const posts = await getPublishedPosts();
 
   return (
     <main id="main">
@@ -44,6 +48,26 @@ export default async function BlogIndex() {
           title={blog.title}
           titleId="blog-index-title"
         />
+
+        {/* This page is reachable directly and from the foot of every post, so
+            unlike the homepage section it cannot render nothing — a heading
+            above a void reads as a bug. It says the true thing instead, and is
+            already noindexed while it is in this state. */}
+        {posts.length === 0 ? (
+          <p
+            style={{
+              margin: 0,
+              maxWidth: "52ch",
+              fontSize: "16px",
+              lineHeight: 1.65,
+              color: "var(--muted)",
+            }}
+          >
+            Nothing finished yet. What is in progress is not listed here until
+            it is worth your time — there is enough half-written analytics
+            writing on the internet already.
+          </p>
+        ) : null}
 
         <div
           style={{
@@ -63,7 +87,6 @@ export default async function BlogIndex() {
                 }}
               >
                 {post.topic} · {post.readingTime}
-                {post.draft && <span style={{ color: "var(--faint)" }}> · DRAFT</span>}
               </span>
 
               <span
