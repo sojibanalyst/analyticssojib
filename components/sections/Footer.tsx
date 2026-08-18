@@ -1,7 +1,7 @@
-import { footer, footerNav, site, socials } from "@/content/site";
+import { footer, footerNav, site, socials, type NavLink } from "@/content/site";
 import { SocialIcon } from "@/components/ui/Icon";
 
-export function Footer() {
+export function Footer({ links = footerNav }: { links?: NavLink[] }) {
   const year = new Date().getFullYear();
 
   return (
@@ -57,7 +57,7 @@ export function Footer() {
           gap: "4px 16px",
         }}
       >
-        {footerNav.map((item) => (
+        {links.map((item) => (
           <a
             key={item.href}
             href={item.href}

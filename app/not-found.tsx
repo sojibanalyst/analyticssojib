@@ -46,8 +46,10 @@ export default function NotFound() {
           color: "var(--muted)",
         }}
       >
-        The link may be out of date. Everything on {site.domain} lives on the one
-        page.
+        The link is either out of date or was never right. Most of{" "}
+        {site.domain} is one page — the services, the case studies, the reviews
+        and how to reach me are all sections of the homepage — so start there
+        and it is a scroll to any of them.
       </p>
       <Link href="/" className="btn btn-primary">
         BACK TO THE HOMEPAGE →

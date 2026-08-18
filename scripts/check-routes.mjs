@@ -26,6 +26,11 @@ const ROUTES = [
   ["/manifest.webmanifest", 200],
   ["/services", 308],
   ["/this-route-does-not-exist", 404],
+  // An /admin path that does not exist. Signed out it is the middleware that
+  // answers, exactly as it does for a real console screen; signed in it now
+  // renders the console's own not-found inside the shell rather than the
+  // public 404 outside it.
+  ["/admin/zzz-not-a-page", 307],
 
   // The console. Signed out is the only state this script can test, and it is
   // the one that matters: /admin must never render to a stranger.

@@ -188,8 +188,18 @@ export const site = {
   domain: "analyticssojib.com",
   calendly: "https://calendly.com/sojibh2001/30min",
   twitterHandle: "@analyticssojib",
+  /**
+   * 135 characters. It was 203, and Google truncates a description around
+   * 155-160, so the old tail — the half naming the platforms — was being cut
+   * off in the result that people actually saw.
+   *
+   * The claim is finished by character 90, which is what matters: everything
+   * before ~120 is visible on every device, so the sentence that says what I
+   * do cannot be the part that gets clipped. The platform list follows, and is
+   * expendable by design.
+   */
   description:
-    "I fix broken tracking so marketing teams can trust their numbers and their ad platforms can actually optimise. GA4, Google Tag Manager, server-side tagging, Meta CAPI and Google Ads enhanced conversions.",
+    "I fix broken tracking so the numbers in GA4 and your ad platforms match what actually sold. Server-side tagging, Meta CAPI, Google Ads.",
   footerTagline: "ANALYTICSSOJIB.COM · MEASUREMENT, DONE PROPERLY",
 } as const;
 

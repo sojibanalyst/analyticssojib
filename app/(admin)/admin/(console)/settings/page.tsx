@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AdminState } from "@/components/admin/Table";
 import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
@@ -24,7 +25,7 @@ export default async function SettingsPage() {
         <p>
           Site-wide configuration, none of it secret. Destination credentials
           are not on this page — they are set on{" "}
-          <a href="/admin/destinations">Destinations</a>, encrypted into
+          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, encrypted into
           Supabase Vault, and never sent back to the browser. A screenshot of
           either page cannot leak one, because neither page has ever been given
           the value to show.
@@ -109,7 +110,7 @@ export default async function SettingsPage() {
         <h2>Set elsewhere, on purpose</h2>
         <p className="admin-note">
           <strong>Destination credentials</strong> are on{" "}
-          <a href="/admin/destinations">Destinations</a>, one per platform. Each
+          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, one per platform. Each
           is stored encrypted and can be rotated from that screen without a
           redeploy; an environment variable is still read as a fallback if no
           value has been set there.

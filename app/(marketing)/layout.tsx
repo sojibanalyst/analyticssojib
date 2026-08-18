@@ -1,6 +1,8 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
 import { Tracker } from "@/components/Tracker";
+import { nav, footerNav } from "@/content/site";
+import { getPublishedPosts } from "@/lib/content";
 import { ldJson, personJsonLd, professionalServiceJsonLd } from "@/lib/jsonld";
 
 /**
@@ -12,17 +14,33 @@ import { ldJson, personJsonLd, professionalServiceJsonLd } from "@/lib/jsonld";
  * the structured data describes the marketing site only — /admin is not part
  * of the public entity graph and should not carry it.
  */
-export default function MarketingLayout({
+export default async function MarketingLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  /**
+   * The WRITING section hides itself when nothing is finished (see
+   * components/sections/Notes.tsx), and both nav entries for it point at
+   * /#blog — an anchor that then does not exist. A link that scrolls nowhere
+   * is worse than no link, so the entry goes with the section.
+   *
+   * Read through lib/content's cached client, the same as every other content
+   * read, so this stays a build-time value and no page becomes dynamic.
+   */
+  const published = await getPublishedPosts();
+  const hideWriting = published.length === 0;
+  const headerNav = hideWriting ? nav.filter((item) => item.href !== "/#blog") : nav;
+  const footerLinks = hideWriting
+    ? footerNav.filter((item) => item.href !== "/#blog")
+    : footerNav;
+
   return (
     <>
       <a href="#main" className="skip-link">
         SKIP TO CONTENT
       </a>
-      <Header />
+      <Header items={headerNav} />
       {children}
-      <Footer />
+      <Footer links={footerLinks} />
 
       {/* Public pages only. The console must not appear in the analytics it
           exists to inspect, so this is not in the (admin) group. */}

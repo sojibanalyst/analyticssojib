@@ -3,11 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ctaLabel, nav, site } from "@/content/site";
+import { ctaLabel, nav, site, type NavLink } from "@/content/site";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
 import { toggleTheme, useTheme } from "@/lib/theme";
 
-export function Header() {
+/**
+ * `items` defaults to the full nav. The marketing layout passes a shorter one
+ * when nothing has been published: the BLOG entry points at /#blog, and that
+ * anchor does not exist on a homepage whose WRITING section rendered nothing,
+ * so the link would scroll nowhere.
+ */
+export function Header({ items = nav }: { items?: NavLink[] }) {
   const theme = useTheme();
   const onHome = usePathname() === "/";
   const [scrolled, setScrolled] = useState(false);
@@ -103,7 +109,7 @@ export function Header() {
         </Link>
 
         <nav className="header-nav" aria-label="Main">
-          {nav.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -161,7 +167,7 @@ export function Header() {
             aria-label="Site navigation"
             className="mobile-menu"
           >
-            {nav.map((item) => (
+            {items.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
