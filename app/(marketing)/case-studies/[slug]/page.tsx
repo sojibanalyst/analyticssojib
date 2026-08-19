@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { site, work } from "@/content/site";
+import { BeforeAfter } from "@/components/sections/BeforeAfter";
+import { canClaimReconciliation, hasMetric } from "@/lib/case-study";
 import { getCaseStudies, getCaseStudy } from "@/lib/content";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -92,6 +94,18 @@ export default async function CaseStudyPage({ params }: Params) {
             ))}
           </div>
 
+          {/*
+            The headline figure, which used to appear on the homepage card and
+            nowhere else — so anyone arriving from a search result or a shared
+            link read the whole case without ever seeing the number it is
+            about. Same component as the card, so the two cannot drift.
+          */}
+          {hasMetric(item.metric) ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "70ch" }}>
+              <BeforeAfter metric={item.metric} />
+            </div>
+          ) : null}
+
           <div className="grid4">
             {item.stats.map((stat) => (
               <div key={stat.label} className="stat-tile">
@@ -169,19 +183,30 @@ export default async function CaseStudyPage({ params }: Params) {
             </section>
           ))}
 
-          <p
-            style={{
-              margin: 0,
-              maxWidth: "72ch",
-              fontFamily: "var(--font-prose)",
-              fontSize: "11.5px",
-              lineHeight: 1.6,
-              letterSpacing: "0.04em",
-              color: "var(--faint)",
-            }}
-          >
-            {work.metricNote}
-          </p>
+          {/*
+            "Every figure above was reconciled against the client's own order
+            data before sign-off." That is a claim, not decoration, and it was
+            printed unconditionally — including on a case study with no figures
+            above it at all, and on the one the console flags as "my
+            construction rather than fact". Either of those makes it false, so
+            it now renders only when both are answered. When it cannot be said,
+            nothing is said.
+          */}
+          {canClaimReconciliation(item) ? (
+            <p
+              style={{
+                margin: 0,
+                maxWidth: "72ch",
+                fontFamily: "var(--font-prose)",
+                fontSize: "11.5px",
+                lineHeight: 1.6,
+                letterSpacing: "0.04em",
+                color: "var(--faint)",
+              }}
+            >
+              {work.metricNote}
+            </p>
+          ) : null}
 
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <Link href="/tracking-plan" className="btn btn-primary">
