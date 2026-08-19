@@ -75,12 +75,26 @@ export function LiteYouTube({ id, label, orientation, badge }: Props) {
             display: "block",
           }}
         >
-          {/* Decorative: the button's aria-label is the accessible name.
-              Giving the poster its own alt would make the button's visible
-              text and its accessible name disagree. */}
+          {/*
+            Decorative, and now says so twice.
+
+            The button's aria-label is the accessible name for the whole
+            facade, so the poster must not carry its own alt: a screen reader
+            would announce the video once for the button and again for the
+            image. An empty alt is the correct markup and always was.
+
+            What it was missing is an EXPLICIT signal. alt="" is the same
+            attribute an author leaves empty by accident, so an audit — human
+            or automated — cannot tell "decorative on purpose" from
+            "forgotten", and this one gets re-reported every time somebody
+            checks. aria-hidden makes the intent machine-readable and matches
+            what the dark hero image already does. It changes nothing for a
+            screen reader; it changes what the markup admits to.
+          */}
           <Image
             src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
             alt=""
+            aria-hidden="true"
             fill
             sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 620px"
             style={{ objectFit: "cover" }}
