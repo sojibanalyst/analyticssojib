@@ -115,7 +115,16 @@ export default async function BlogPost({ params }: Params) {
                 </p>
               ))}
             </div>
-          ) : (
+          ) : post.draft ? (
+            /*
+              "This one is still being written." Tied to the unfinished flag
+              now, not to the body being empty — the two had come apart, so
+              marking a post finished cleared the DRAFT badge and the noindex
+              and left this sentence contradicting both. An empty finished post
+              renders nothing here instead: saying it is still being written
+              would be a second claim the flag disagrees with, and the console
+              no longer lets that state be created anyway.
+            */
             <p
               style={{
                 margin: 0,
@@ -130,7 +139,7 @@ export default async function BlogPost({ params }: Params) {
             >
               {blog.draftNotice}
             </p>
-          )}
+          ) : null}
 
           <Link href="/blog" className="btn btn-ghost" style={{ alignSelf: "flex-start" }}>
             ← ALL NOTES

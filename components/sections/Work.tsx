@@ -2,93 +2,8 @@ import Link from "next/link";
 import { work, type CaseStudy } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { CaseGallery } from "@/components/sections/CaseGallery";
-
-function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
-  return (
-    <>
-      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "14px" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span
-            style={{
-              fontFamily: "var(--font-prose)",
-              fontSize: "11px",
-              letterSpacing: "0.1em",
-              color: "var(--muted)",
-            }}
-          >
-            {metric.beforeLabel}
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-prose)",
-              fontSize: "clamp(28px, 3.4vw, 34px)",
-              fontWeight: 500,
-              color: "var(--faint)",
-              letterSpacing: "-0.03em",
-            }}
-          >
-            {metric.before}
-          </span>
-        </div>
-
-        <div style={{ flex: "1 1 110px", display: "flex", flexDirection: "column", gap: "6px" }}>
-          <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
-            <div
-              style={{
-                position: "absolute",
-                inset: `0 ${100 - metric.beforePct}% 0 0`,
-                background: "var(--faint)",
-              }}
-            />
-          </div>
-          <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
-            <div
-              style={{
-                position: "absolute",
-                inset: `0 ${100 - metric.afterPct}% 0 0`,
-                background: "var(--accent)",
-              }}
-            />
-          </div>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span
-            style={{
-              fontFamily: "var(--font-prose)",
-              fontSize: "11px",
-              letterSpacing: "0.1em",
-              color: "var(--ink)",
-            }}
-          >
-            {metric.afterLabel}
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-prose)",
-              fontSize: "clamp(28px, 3.4vw, 34px)",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            {metric.after}
-          </span>
-        </div>
-      </div>
-
-      <span
-        style={{
-          fontFamily: "var(--font-prose)",
-          fontSize: "11px",
-          letterSpacing: "0.08em",
-          color: "var(--muted)",
-        }}
-      >
-        {metric.caption}
-      </span>
-    </>
-  );
-}
+import { BeforeAfter } from "@/components/sections/BeforeAfter";
+import { canClaimReconciliation, hasFigures, hasMetric } from "@/lib/case-study";
 
 /** The design's image slot: a gallery once screenshots exist, a labelled drop
  *  zone until then — never a broken image. */
@@ -165,7 +80,10 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
             </div>
 
             <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: "18px" }}>
-              <BeforeAfter metric={item.metric} />
+              {/* A case study created with the figures left blank rendered
+                  this as two empty values and two zero-width bars. Nothing is
+                  better than a comparison with nothing on either side. */}
+              {hasMetric(item.metric) ? <BeforeAfter metric={item.metric} /> : null}
 
               <div className="grid4">
                 {item.stats.map((stat) => (
@@ -202,19 +120,27 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
         </article>
       ))}
 
-      <p
-        style={{
-          margin: 0,
-          maxWidth: "72ch",
-          fontFamily: "var(--font-prose)",
-          fontSize: "11.5px",
-          lineHeight: 1.6,
-          letterSpacing: "0.04em",
-          color: "var(--faint)",
-        }}
-      >
-        {work.metricNote}
-      </p>
+      {/*
+        "Every figure above was reconciled…" — so it may only appear when there
+        ARE figures above it and every one of them is confirmed. One case study
+        still flagged in the console as "my construction rather than fact" is
+        enough to make the sentence false, because the sentence says every.
+      */}
+      {cases.some(hasFigures) && cases.every((item) => canClaimReconciliation(item)) ? (
+        <p
+          style={{
+            margin: 0,
+            maxWidth: "72ch",
+            fontFamily: "var(--font-prose)",
+            fontSize: "11.5px",
+            lineHeight: 1.6,
+            letterSpacing: "0.04em",
+            color: "var(--faint)",
+          }}
+        >
+          {work.metricNote}
+        </p>
+      ) : null}
 
       <div className="table-scroll">
         <table className="defect-table">
