@@ -13,6 +13,8 @@ import Link from "next/link";
 export default function ConsoleNotFound() {
   return (
     <>
+      {/* The title comes from the catch-all page's metadata export — a
+          not-found file cannot have one of its own. See [...missing]. */}
       <div className="admin-pagehead">
         <h1>No such page</h1>
         <p>

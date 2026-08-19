@@ -55,10 +55,25 @@ export function LeadForm() {
       <p className="lead-form__title">{copy.title}</p>
       <p className="lead-form__note">{copy.body}</p>
 
-      {/* Honeypot: off-screen, not announced, and never focusable by tab. */}
+      {/*
+        Honeypot: off-screen, not announced, and never focusable by tab.
+
+        aria-hidden is on the wrapper AND on the input. The wrapper alone is
+        sufficient — aria-hidden removes the whole subtree, label included —
+        but the input is the element anyone auditing this actually inspects,
+        and an attribute that has to be inferred from an ancestor is one that
+        gets reported missing. The duplicate costs nothing and answers the
+        question where it is asked.
+      */}
       <div aria-hidden="true" className="lead-form__trap">
         <label htmlFor="company_website">Company website</label>
-        <input id="company_website" name="company_website" tabIndex={-1} autoComplete="off" />
+        <input
+          id="company_website"
+          name="company_website"
+          aria-hidden="true"
+          tabIndex={-1}
+          autoComplete="off"
+        />
       </div>
 
       <div className="lead-form__row">
