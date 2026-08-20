@@ -262,10 +262,16 @@ export async function getWrittenReviews(): Promise<WrittenReview[]> {
   const rows = (await getReviewRows()).filter((row) => row.type === "written");
 
   return rows.map((row) => ({
-    quote: row.quote ?? "",
+    // A placeholder's "quote" is a note to myself — "paste the client's own
+    // words here, unedited" — so the public read does not carry it at all.
+    // Not rendering it was not enough: the string still travelled to the
+    // browser inside the RSC payload, where it is findable in page source by
+    // anyone who looks, which is the same sentence appearing on the site by a
+    // slower route.
+    quote: row.is_placeholder ? "" : row.quote ?? "",
     attribution: row.attribution ?? "",
-    // Same rule as above: the flag is only present when it is true, and it is
-    // what stops a placeholder being rendered as a real client's words.
+    // The flag is only present when it is true, and it is what stops a
+    // placeholder being rendered as a real client's words.
     ...(row.is_placeholder ? { placeholder: true } : {}),
   }));
 }

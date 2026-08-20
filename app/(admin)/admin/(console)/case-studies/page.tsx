@@ -26,6 +26,20 @@ export default async function CaseStudiesPage() {
 
   const unconfirmed = (data ?? []).filter((row) => row.needs_confirmation);
 
+  /**
+   * Published AND unconfirmed — the combination that should not sit unnoticed.
+   *
+   * Each half is legitimate on its own: a draft may hold unconfirmed figures
+   * while it is being written, and a published study may be fully confirmed.
+   * Together they mean numbers are on the public internet that the person who
+   * published them has not stood behind. Not blocked — whether to publish is
+   * Sojib's call and the console does not get a veto — but it is stated at the
+   * top of the screen so the state has to be a decision rather than an
+   * oversight. The public page already withholds its reconciliation claim for
+   * exactly these; see lib/case-study.ts.
+   */
+  const liveUnconfirmed = unconfirmed.filter((row) => row.status === "published");
+
   return (
     <>
       <div className="admin-pagehead">
@@ -38,13 +52,29 @@ export default async function CaseStudiesPage() {
         </p>
       </div>
 
-      {unconfirmed.length ? (
+      {liveUnconfirmed.length ? (
         <section className="admin-card">
           <p className="admin-note" data-tone="danger">
-            {unconfirmed.length} case study carries figures you have not
-            confirmed: {unconfirmed.map((row) => row.code).join(", ")}. Until
-            the tick below is cleared, treat those numbers as my construction
-            rather than as fact.
+            <strong>
+              {liveUnconfirmed.length === 1 ? "One case study is" : `${liveUnconfirmed.length} case studies are`}{" "}
+              live with unconfirmed figures
+            </strong>{" "}
+            — {liveUnconfirmed.map((row) => row.code).join(", ")}. Published and
+            readable by anyone, carrying numbers you have not stood behind.
+            Either confirm the figures with the tick on the card, or set the
+            status back to draft. Nothing is blocking you: the public page is
+            already withholding its &ldquo;every figure was reconciled&rdquo;
+            line for these, so the site is not claiming more than you have.
+          </p>
+        </section>
+      ) : null}
+
+      {unconfirmed.length > liveUnconfirmed.length ? (
+        <section className="admin-card">
+          <p className="admin-note" data-tone="danger">
+            {unconfirmed.length - liveUnconfirmed.length} draft case study
+            carries figures you have not confirmed. Until the tick is cleared,
+            treat those numbers as my construction rather than as fact.
           </p>
         </section>
       ) : null}

@@ -82,6 +82,16 @@ runs in CI.
   there because those are ordered by strategy, not position.
 - Declining must stay exactly as easy as accepting — same size, same weight,
   same row. Anything else is not consent.
+- There is **no consent banner**; it was removed on purpose. The state it wrote
+  is all still here, and every event records `{"status":"not_asked"}` — which is
+  not the same as denied and must never be collapsed into it. Putting a consent
+  interface back is a half-day of work, not a flag:
+  **`docs/consent-re-enable.md`**. Read it before a GTM container id goes in if
+  the site will see UK or EU traffic.
+- **GA4 does not deduplicate by `event_id`.** Meta and TikTok do. An event sent
+  from both the browser and the Measurement Protocol is counted twice in GA4, so
+  `lib/forwarding/ga4.ts` accepts exactly one event name and rejects the rest in
+  code rather than by convention.
 - The collector answers 204 to everything, including rubbish. It never reports
   its own validation failures to the page.
 

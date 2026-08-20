@@ -256,13 +256,28 @@ export default async function DestinationsPage() {
       })}
 
       <section className="admin-card">
-        <h2>Not wired yet</h2>
+        <h2>What forwards today</h2>
         <p className="admin-note">
-          Forwarding itself — the worker that reads `event_deliveries` and calls
-          each API — is not built. These settings are stored and ready; nothing
-          is being sent anywhere, and the table above says so rather than
-          showing zeros that could be mistaken for &ldquo;sent nothing
-          today&rdquo;.
+          <strong>GA4 only, and only <code>generate_lead</code>.</strong> It is
+          sent from the enquiry form&rsquo;s server action the moment the
+          database confirms the lead — after the visitor already has their
+          answer, so a slow or failing GA4 can never make someone wait or turn a
+          saved lead into an error.
+        </p>
+        <p className="admin-note">
+          Nothing else is forwarded, and that is a rule in code rather than a
+          setting. GA4 does not deduplicate by <code>event_id</code> the way
+          Meta and TikTok do, so an event sent from both the browser and the
+          Measurement Protocol is counted twice with no error anywhere.{" "}
+          <code>page_view</code> is denied by name. The counters above are real:
+          a skip is recorded with its reason, not silently dropped.
+        </p>
+        <p className="admin-note">
+          Meta, Google Ads, TikTok and server-side GTM are{" "}
+          <strong>not built</strong>. Their credentials store and their Test
+          buttons work, but no event has ever been forwarded to them. Each is a
+          new file implementing the same adapter — see{" "}
+          <code>lib/forwarding/types.ts</code>.
         </p>
       </section>
     </>

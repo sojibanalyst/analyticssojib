@@ -1,8 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { SESSION_COOKIE } from "@/lib/collector";
+import { clientIdFromGaCookie, findStreamCookie, sessionIdFromGaCookie } from "@/lib/forwarding/ga-cookies";
+import { forwardEvent } from "@/lib/forwarding";
 
 /**
  * The public enquiry form's Server Action.
@@ -88,9 +91,44 @@ export async function submitLead(
     };
   }
 
+  const eventId = typeof data === "string" ? data : undefined;
+
+  /**
+   * Server-side forwarding, after the visitor has their answer.
+   *
+   * `after()` runs this once the response has been sent, so a slow GA4 cannot
+   * make a person wait and a failing GA4 cannot turn a saved lead into an
+   * error message. forwardEvent never throws for the same reason.
+   *
+   * Here rather than on a schedule because this is the moment the lead is
+   * CONFIRMED — the row exists, the id is final. A cron would have to
+   * rediscover both, and would forward things the database later rejected.
+   *
+   * generate_lead is not sent from the browser to GA4, which is what makes it
+   * safe to send from here: GA4 counts duplicates rather than resolving them.
+   */
+  if (eventId) {
+    const all = store.getAll().map((c) => ({ name: c.name, value: c.value }));
+    const ga = all.find((c) => c.name === "_ga")?.value ?? null;
+
+    after(
+      forwardEvent({
+        eventId,
+        eventName: "generate_lead",
+        occurredAt: new Date().toISOString(),
+        clientId: clientIdFromGaCookie(ga),
+        // The measurement id lives on the destination row, which this action
+        // does not read; with one stream cookie that is unambiguous anyway.
+        sessionId: sessionIdFromGaCookie(findStreamCookie(all, null)),
+        pagePath: null,
+        params: { form: "contact", platform, has_problem: Boolean(problem) },
+      }),
+    );
+  }
+
   return {
     status: "sent",
     message: "Thanks — I'll reply personally, usually within a day.",
-    eventId: typeof data === "string" ? data : undefined,
+    eventId,
   };
 }
