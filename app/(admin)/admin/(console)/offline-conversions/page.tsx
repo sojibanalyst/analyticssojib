@@ -66,10 +66,13 @@ export default async function OfflineConversionsPage({
           <label className="sr-only" htmlFor="conversion_action">
             Conversion action name
           </label>
+          {/* .admin-input, not .admin-select — it is a text field, and
+              borrowing the select's class is how it inherited the select's
+              wrong metrics in the first place. Both now match .admin-field. */}
           <input
             id="conversion_action"
             name="conversion_action"
-            className="admin-select"
+            className="admin-input"
             placeholder="Conversion action name"
             defaultValue="Booked call"
           />

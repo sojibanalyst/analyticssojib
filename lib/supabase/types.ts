@@ -424,6 +424,18 @@ export type Database = {
         Row: {
           answers: Json
           campaign: string | null
+          wbraid: string | null
+          li_fat_id: string | null
+          last_touch_term: string | null
+          last_touch_source: string | null
+          last_touch_medium: string | null
+          last_touch_content: string | null
+          last_touch_campaign: string | null
+          last_referrer: string | null
+          last_landing_page: string | null
+          gbraid: string | null
+          first_seen_at: string | null
+          attribution_status: string
           company: string | null
           consent: Json
           content: string | null
@@ -451,6 +463,18 @@ export type Database = {
         Insert: {
           answers?: Json
           campaign?: string | null
+          wbraid?: string | null
+          li_fat_id?: string | null
+          last_touch_term?: string | null
+          last_touch_source?: string | null
+          last_touch_medium?: string | null
+          last_touch_content?: string | null
+          last_touch_campaign?: string | null
+          last_referrer?: string | null
+          last_landing_page?: string | null
+          gbraid?: string | null
+          first_seen_at?: string | null
+          attribution_status?: string
           company?: string | null
           consent?: Json
           content?: string | null
@@ -478,6 +502,18 @@ export type Database = {
         Update: {
           answers?: Json
           campaign?: string | null
+          wbraid?: string | null
+          li_fat_id?: string | null
+          last_touch_term?: string | null
+          last_touch_source?: string | null
+          last_touch_medium?: string | null
+          last_touch_content?: string | null
+          last_touch_campaign?: string | null
+          last_referrer?: string | null
+          last_landing_page?: string | null
+          gbraid?: string | null
+          first_seen_at?: string | null
+          attribution_status?: string
           company?: string | null
           consent?: Json
           content?: string | null
@@ -884,6 +920,7 @@ export type Database = {
       get_destination_secret: { Args: { p_key: string }; Returns: string }
       submit_lead: {
         Args: {
+          p_attribution?: Json
           p_name: string
           p_email: string
           p_company?: string

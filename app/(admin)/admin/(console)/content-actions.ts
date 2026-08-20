@@ -3,7 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { isAllowedEmail } from "@/lib/auth";
 import { CONTENT_TAG } from "@/lib/content/client";
-import { toParagraphs } from "@/lib/post-body";
+import { finishBlockedReason, toParagraphs } from "@/lib/post-body";
 import { GTM_ID_PATTERN, SETTINGS_TAG } from "@/lib/settings";
 import { createClient, getUser } from "@/lib/supabase/server";
 import {
@@ -50,18 +50,10 @@ export async function updatePost(
 
   const paragraphs = toParagraphs(body);
 
-  // Finished means indexable, and an indexable page whose entire text is a
-  // headline and a summary is thin content — measured at 579 characters for
-  // one of these, which is the kind of page Google files under "no main
-  // content". Same rule the case studies screen already states about numbers:
-  // a thing should not go live the second it exists.
-  if (!isDraft && paragraphs.length === 0) {
-    return fail(
-      "This post has no body, so it cannot be marked finished — it would publish " +
-        "as an indexable page with a headline and no article. Paste the post in, " +
-        "or leave it ticked as unfinished.",
-    );
-  }
+  // The rule lives in lib/post-body so it can be tested without an admin
+  // session; this is the one place that enforces it.
+  const blocked = finishBlockedReason(isDraft, paragraphs);
+  if (blocked) return fail(blocked);
 
   const { error } = await supabase
     .from("posts")

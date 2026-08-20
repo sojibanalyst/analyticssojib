@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { submitLead, type LeadState } from "@/app/(marketing)/actions";
 import { leadForm as copy } from "@/content/site";
-import { track } from "@/lib/track";
+import { pushEvent } from "@/lib/gtm";
 
 const initial: LeadState = { status: "idle", message: "" };
 
@@ -30,15 +30,34 @@ export function LeadForm() {
   const statusRef = useRef<HTMLParagraphElement>(null);
   const fired = useRef<string | null>(null);
 
-  // generate_lead fires once the server confirms the row, not on click. A
-  // conversion counted before it happened is the same lie as one counted
-  // twice, and this is the event the whole site exists to produce.
+  /**
+   * generate_lead reaches the dataLayer here, and ONLY the dataLayer.
+   *
+   * This used to call track(), which does two things: pushes to the dataLayer
+   * AND posts to /api/collect. The post created a second events row under an
+   * id track() generated itself — so one enquiry existed twice, under two
+   * different ids, one of them the id the server forwards to a destination.
+   * That is the double count GA4 cannot resolve, because GA4 does not
+   * deduplicate by event_id the way Meta and TikTok do.
+   *
+   * Now: submit_lead writes the single event row in the same transaction as
+   * the lead, and the id it returns is pushed here so a GTM tag firing on
+   * generate_lead carries the SAME event_id the Measurement Protocol sends.
+   * Meta, TikTok and Google Ads can dedupe on it.
+   *
+   * IN GTM: do not put a GA4 event tag on this. The server sends GA4 through
+   * the Measurement Protocol; a browser tag as well would count every lead
+   * twice. Meta / TikTok / Ads tags are fine — they dedupe on event_id.
+   */
   useEffect(() => {
     if (state.status !== "sent") return;
     const key = state.eventId ?? "sent";
     if (fired.current === key) return;
     fired.current = key;
-    track("generate_lead", { form: "contact" });
+    pushEvent("generate_lead", {
+      form: "contact",
+      ...(state.eventId ? { event_id: state.eventId } : {}),
+    });
   }, [state]);
 
   if (state.status === "sent") {
