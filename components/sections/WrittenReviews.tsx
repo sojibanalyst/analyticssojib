@@ -171,27 +171,66 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
       >
         {items.map((item, i) => (
           <figure key={i} className="written-card" data-placeholder={item.placeholder}>
-            <span
-              style={{
-                fontFamily: "var(--font-prose)",
-                fontSize: "11px",
-                letterSpacing: "0.1em",
-                color: item.placeholder ? "var(--faint)" : "var(--result)",
-              }}
-            >
-              ★★★★★ VERIFIED
-            </span>
-            <blockquote
-              style={{
-                margin: 0,
-                fontSize: "15px",
-                lineHeight: 1.6,
-                color: item.placeholder ? "var(--faint)" : "var(--text)",
-                textWrap: "pretty",
-              }}
-            >
-              {item.quote}
-            </blockquote>
+            {/*
+              An empty slot renders as an empty slot.
+
+              It used to render ★★★★★ VERIFIED above a note I had written to
+              myself — "paste the client's own words here, unedited" — so eight
+              unfilled slots put eight verified five-star reviews on a page
+              whose headline is that wrong data makes every decision a guess.
+              /admin/reviews already promised placeholders "render on the live
+              site as clearly-labelled empty slots — never as a real quote";
+              this is that sentence becoming true.
+
+              No stars, no badge, no body. The figcaption below still labels
+              the slot ("AWAITING REVIEW 1 OF 8"), which is the honest thing to
+              show and the only thing left showing.
+
+              Keyed off the same derived `placeholder` flag as everything else
+              — a slot stops being a placeholder when it stops containing the
+              placeholder text, and there is no second switch to forget.
+            */}
+            {item.placeholder ? (
+              /* Not even hollow stars: five empty stars still reads as a
+                 rating of zero, and it would still be five star characters on
+                 a page that should have none until a client has actually said
+                 something. */
+              <span
+                style={{
+                  fontFamily: "var(--font-prose)",
+                  fontSize: "11px",
+                  letterSpacing: "0.1em",
+                  color: "var(--faint)",
+                }}
+              >
+                EMPTY SLOT
+              </span>
+            ) : (
+              <span
+                style={{
+                  fontFamily: "var(--font-prose)",
+                  fontSize: "11px",
+                  letterSpacing: "0.1em",
+                  color: "var(--result)",
+                }}
+              >
+                ★★★★★ VERIFIED
+              </span>
+            )}
+
+            {item.placeholder ? null : (
+              <blockquote
+                style={{
+                  margin: 0,
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                  color: "var(--text)",
+                  textWrap: "pretty",
+                }}
+              >
+                {item.quote}
+              </blockquote>
+            )}
             <figcaption
               style={{
                 fontFamily: "var(--font-prose)",
