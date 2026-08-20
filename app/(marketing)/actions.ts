@@ -3,7 +3,13 @@
 import { cookies } from "next/headers";
 import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import type { Json } from "@/lib/supabase/types";
 import { SESSION_COOKIE } from "@/lib/collector";
+import {
+  ATTRIBUTION_COOKIE,
+  UNKNOWN_ATTRIBUTION,
+  parseAttribution,
+} from "@/lib/attribution";
 import { clientIdFromGaCookie, findStreamCookie, sessionIdFromGaCookie } from "@/lib/forwarding/ga-cookies";
 import { forwardEvent } from "@/lib/forwarding";
 
@@ -69,6 +75,18 @@ export async function submitLead(
   const store = await cookies();
   const sessionId = store.get(SESSION_COOKIE)?.value ?? null;
 
+  /**
+   * Attribution, read from the cookie the middleware froze — never from the
+   * form. The field could say anything; the cookie is HttpOnly and was written
+   * from the request URL and the Referer header on the visit itself.
+   *
+   * No cookie at all is "unknown", which is NOT "direct": the first means the
+   * capture failed, the second means the first request was seen and carried
+   * nothing. The Leads page shows them differently on purpose.
+   */
+  const attribution =
+    parseAttribution(store.get(ATTRIBUTION_COOKIE)?.value) ?? UNKNOWN_ATTRIBUTION;
+
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("submit_lead", {
     p_name: name,
@@ -77,6 +95,9 @@ export async function submitLead(
     p_platform: platform || undefined,
     p_answers: problem ? { problem } : {},
     p_session_id: sessionId ?? undefined,
+    // One call writes the lead, its attribution and its generate_lead event in
+    // one transaction. Either all three exist or none does.
+    p_attribution: attribution as unknown as Json,
   });
 
   if (error) {
@@ -104,8 +125,12 @@ export async function submitLead(
    * CONFIRMED — the row exists, the id is final. A cron would have to
    * rediscover both, and would forward things the database later rejected.
    *
-   * generate_lead is not sent from the browser to GA4, which is what makes it
-   * safe to send from here: GA4 counts duplicates rather than resolving them.
+   * The event row itself is NOT written here — submit_lead wrote it in the
+   * same transaction as the lead, with the same id. This only delivers it.
+   *
+   * The browser does not send generate_lead to /api/collect any more, and must
+   * not fire a GA4 tag on it in GTM: GA4 counts duplicates rather than
+   * resolving them. See components/sections/LeadForm.tsx.
    */
   if (eventId) {
     const all = store.getAll().map((c) => ({ name: c.name, value: c.value }));
@@ -120,7 +145,7 @@ export async function submitLead(
         // The measurement id lives on the destination row, which this action
         // does not read; with one stream cookie that is unambiguous anyway.
         sessionId: sessionIdFromGaCookie(findStreamCookie(all, null)),
-        pagePath: null,
+        pagePath: attribution.last.landing_page ?? attribution.first.landing_page,
         params: { form: "contact", platform, has_problem: Boolean(problem) },
       }),
     );

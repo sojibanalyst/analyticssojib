@@ -661,9 +661,16 @@
   flex-wrap: wrap;
 }
 
+/* Inline controls: the same metrics as a field in a form.
+
+   These were 32px with 4px 8px padding while .admin-field input is 9px 11px
+   and every button is 40px, so the BUILD A BATCH row on
+   /admin/offline-conversions rendered two 32px controls against a 40px Dry run
+   button — a row that never picked up the shared styles and had quietly
+   invented its own. One set of numbers now, and they are the field's. */
 .admin-select {
-  min-height: 32px;
-  padding: 4px 8px;
+  min-height: 40px;
+  padding: 9px 11px;
   border: 1px solid var(--border-input);
   border-radius: 8px;
   background: var(--bg-sunk);
@@ -671,6 +678,19 @@
   font: inherit;
 }
 
+/* Same box as .admin-select, for a text input that sits in an inline row.
+   Sharing the rule rather than the class so neither can drift. */
+.admin-input {
+  min-height: 40px;
+  padding: 9px 11px;
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  background: var(--bg-sunk);
+  color: var(--ink);
+  font: inherit;
+}
+
+.admin-input:focus-visible,
 .admin-select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
@@ -863,6 +883,7 @@
   }
 
   .admin-select,
+  .admin-input,
   .admin-field input,
   .admin-field select {
     min-height: 44px;
