@@ -12,6 +12,7 @@ import {
 } from "@/lib/attribution";
 import { clientIdFromGaCookie, findStreamCookie, sessionIdFromGaCookie } from "@/lib/forwarding/ga-cookies";
 import { forwardEvent } from "@/lib/forwarding";
+import { leadIdFrom } from "@/lib/lead-result";
 
 /**
  * The public enquiry form's Server Action.
@@ -41,6 +42,8 @@ const PLATFORMS = new Set([
   "",
 ]);
 
+const SENT_MESSAGE = "Thanks — I'll reply personally, usually within a day.";
+
 const ERRORS: Record<string, string> = {
   name_invalid: "Please enter your name.",
   email_invalid: "That email address does not look right.",
@@ -51,23 +54,12 @@ export async function submitLead(
   _prev: LeadState,
   formData: FormData,
 ): Promise<LeadState> {
-  // Honeypot. A field positioned off-screen and hidden from assistive tech,
-  // which a person never sees and a form-filling bot almost always completes.
-  // Answering "sent" rather than "error" means the bot has no signal to learn
-  // from.
-  if (String(formData.get("company_website") ?? "")) {
-    return { status: "sent", message: "Thanks — I'll reply personally, usually within a day." };
-  }
-
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const company = String(formData.get("company") ?? "").trim();
   const platformRaw = String(formData.get("platform") ?? "").trim().toLowerCase();
   const platform = PLATFORMS.has(platformRaw) ? platformRaw : "other";
   const problem = String(formData.get("problem") ?? "").trim().slice(0, 4000);
-
-  if (!name) return { status: "error", message: ERRORS.name_invalid };
-  if (!email.includes("@")) return { status: "error", message: ERRORS.email_invalid };
 
   // The session cookie is HttpOnly, so only the server can read it. That is
   // also why attribution cannot be faked from the page: the browser never
@@ -87,7 +79,54 @@ export async function submitLead(
   const attribution =
     parseAttribution(store.get(ATTRIBUTION_COOKIE)?.value) ?? UNKNOWN_ATTRIBUTION;
 
-  const supabase = await createClient();
+  const supabaseEarly = await createClient();
+
+  /**
+   * Honeypot — kept, but it no longer DISCARDS anything.
+   *
+   * A field a person never sees and a bot fills in. What it used to do was
+   * return "Thanks, I'll reply personally" and insert nothing: no row, no
+   * error, no log line. That is not a spam filter, it is a lead shredder, and
+   * it took a real submission on the live site — a browser autofilling a field
+   * labelled "Company website" is enough to trigger it.
+   *
+   * Now every refusal is written to lead_rejections and shown on /admin/leads.
+   * The visitor still sees success, because telling a bot it was detected
+   * teaches the bot; the difference is that the message is no longer the only
+   * place the submission ever existed.
+   */
+  if (String(formData.get("company_website") ?? "")) {
+    await supabaseEarly.rpc("record_lead_rejection", {
+      p_reason: "honeypot",
+      p_name: name,
+      p_email: email,
+      p_company: company || undefined,
+      p_platform: platform || undefined,
+      p_answers: problem ? { problem } : {},
+      p_attribution: attribution as unknown as Json,
+    });
+    return { status: "sent", message: SENT_MESSAGE };
+  }
+
+  if (!name || !email.includes("@")) {
+    // Recorded too: a validation refusal is still somebody who tried to reach
+    // me, and "which field did people get wrong" is worth being able to ask.
+    await supabaseEarly.rpc("record_lead_rejection", {
+      p_reason: "invalid",
+      p_name: name,
+      p_email: email,
+      p_company: company || undefined,
+      p_platform: platform || undefined,
+      p_answers: problem ? { problem } : {},
+      p_attribution: attribution as unknown as Json,
+    });
+    return {
+      status: "error",
+      message: !name ? ERRORS.name_invalid : ERRORS.email_invalid,
+    };
+  }
+
+  const supabase = supabaseEarly;
   const { data, error } = await supabase.rpc("submit_lead", {
     p_name: name,
     p_email: email,
@@ -112,7 +151,26 @@ export async function submitLead(
     };
   }
 
-  const eventId = typeof data === "string" ? data : undefined;
+  /**
+   * Success is only spoken after the row is CONFIRMED.
+   *
+   * submit_lead returns the new lead's uuid. No error and no uuid means the
+   * insert did not happen, and the old code would still have said "Thanks,
+   * I'll reply personally" — a lost lead wearing a success message, which is
+   * the worst failure this form has because nothing looks broken.
+   *
+   * lib/lead-result.ts holds the rule so it can be tested; see the test that
+   * fails if success can be returned without an id.
+   */
+  const eventId = leadIdFrom(data);
+  if (!eventId) {
+    return {
+      status: "error",
+      message:
+        "That did not save. Nothing was recorded, so please email me directly " +
+        "rather than assuming it arrived.",
+    };
+  }
 
   /**
    * Server-side forwarding, after the visitor has their answer.
@@ -132,7 +190,7 @@ export async function submitLead(
    * not fire a GA4 tag on it in GTM: GA4 counts duplicates rather than
    * resolving them. See components/sections/LeadForm.tsx.
    */
-  if (eventId) {
+  {
     const all = store.getAll().map((c) => ({ name: c.name, value: c.value }));
     const ga = all.find((c) => c.name === "_ga")?.value ?? null;
 
@@ -151,9 +209,5 @@ export async function submitLead(
     );
   }
 
-  return {
-    status: "sent",
-    message: "Thanks — I'll reply personally, usually within a day.",
-    eventId,
-  };
+  return { status: "sent", message: SENT_MESSAGE, eventId };
 }
