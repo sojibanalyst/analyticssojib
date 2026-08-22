@@ -74,6 +74,7 @@ export type Database = {
           company: string | null
           created_at: string
           email: string | null
+          expires_at: string
           id: string
           name: string | null
           platform: string | null
@@ -86,6 +87,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          expires_at?: string
           id?: string
           name?: string | null
           platform?: string | null
@@ -98,6 +100,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          expires_at?: string
           id?: string
           name?: string | null
           platform?: string | null
@@ -256,6 +259,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      deletion_log: {
+        Row: {
+          action: string
+          actor: string | null
+          affected: number
+          at: string
+          detail: string | null
+          id: string
+          subject: string | null
+          subject_id: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          affected?: number
+          at?: string
+          detail?: string | null
+          id?: string
+          subject?: string | null
+          subject_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          affected?: number
+          at?: string
+          detail?: string | null
+          id?: string
+          subject?: string | null
+          subject_id?: string | null
+        }
+        Relationships: []
       }
       destinations: {
         Row: {
@@ -489,6 +525,8 @@ export type Database = {
       leads: {
         Row: {
           answers: Json
+          booking_ref: string | null
+          archived_at: string | null
           campaign: string | null
           wbraid: string | null
           li_fat_id: string | null
@@ -534,6 +572,8 @@ export type Database = {
         }
         Insert: {
           answers?: Json
+          booking_ref?: string | null
+          archived_at?: string | null
           campaign?: string | null
           wbraid?: string | null
           li_fat_id?: string | null
@@ -579,6 +619,8 @@ export type Database = {
         }
         Update: {
           answers?: Json
+          booking_ref?: string | null
+          archived_at?: string | null
           campaign?: string | null
           wbraid?: string | null
           li_fat_id?: string | null
@@ -1002,6 +1044,15 @@ export type Database = {
       set_destination_secret: { Args: { p_key: string; p_secret: string }; Returns: undefined }
       clear_destination_secret: { Args: { p_key: string }; Returns: undefined }
       get_destination_secret: { Args: { p_key: string }; Returns: string }
+      archive_lead: {
+        Args: { p_id: string; p_restore?: boolean }
+        Returns: string
+      }
+      erase_lead: { Args: { p_id: string }; Returns: string }
+      erase_rejection: { Args: { p_id: string }; Returns: string }
+      rescue_rejection: { Args: { p_id: string }; Returns: string }
+      purge_expired_rejections: { Args: never; Returns: number }
+      mask_email: { Args: { p_email: string }; Returns: string }
       record_lead_rejection: {
         Args: {
           p_answers?: Json
