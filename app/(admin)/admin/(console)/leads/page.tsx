@@ -41,16 +41,24 @@ export default async function LeadsPage({
        source, medium, campaign, term, content, landing_page, referrer,
        last_touch_source, last_touch_medium, last_touch_campaign,
        last_landing_page, last_referrer, first_seen_at, attribution_status,
-       gclid, fbclid, ttclid, msclkid, wbraid, gbraid, li_fat_id`,
+       gclid, fbclid, ttclid, msclkid, wbraid, gbraid, li_fat_id,
+       origin, booked_at, canceled_at, calendly_invitee_uri`,
     )
     .order("created_at", { ascending: false })
     .limit(200);
 
   if (filtering) query = query.eq("status", filtering);
 
-  const [{ data, error }, total] = await Promise.all([
+  const [{ data, error }, total, rejections] = await Promise.all([
     query,
     supabase.from("leads").select("*", { count: "exact", head: true }),
+    // Everything the form refused. A rejection nobody can see is
+    // indistinguishable from a lost lead — which is exactly how one was lost.
+    supabase
+      .from("lead_rejections")
+      .select("id, created_at, reason, name, email, company, answers")
+      .order("created_at", { ascending: false })
+      .limit(50),
   ]);
 
   const anyLeads = (total.count ?? 0) > 0;
@@ -96,6 +104,54 @@ export default async function LeadsPage({
           </Link>
         ))}
       </nav>
+
+      {rejections.data?.length ? (
+        <section className="admin-card">
+          <h2>Refused submissions</h2>
+          <p className="admin-note">
+            Submissions the form turned away, kept rather than dropped. A
+            honeypot rejection is usually a bot — but a browser autofilling the
+            hidden field is enough to trigger one, and that is how a real
+            enquiry was lost. If you recognise a person here, reply to them
+            directly.
+          </p>
+          <AdminTable
+            caption="Refused submissions"
+            columns={["When", "Reason", "Who", "Message"]}
+          >
+            {rejections.data.map((row) => {
+              const answers = (row.answers ?? {}) as { problem?: string };
+              return (
+                <tr key={row.id}>
+                  <td>
+                    <Ago iso={row.created_at} />
+                  </td>
+                  <td>
+                    <span
+                      className="admin-pill"
+                      data-tone={row.reason === "honeypot" ? "warn" : "info"}
+                    >
+                      {row.reason}
+                    </span>
+                  </td>
+                  <td style={{ color: "var(--ink)" }}>
+                    {row.name || "—"}
+                    {row.email ? (
+                      <div>
+                        <a href={`mailto:${row.email}`}>{row.email}</a>
+                      </div>
+                    ) : null}
+                    {row.company ? (
+                      <div style={{ color: "var(--ink-muted)" }}>{row.company}</div>
+                    ) : null}
+                  </td>
+                  <td style={{ maxWidth: "40ch" }}>{answers.problem ?? "—"}</td>
+                </tr>
+              );
+            })}
+          </AdminTable>
+        </section>
+      ) : null}
 
       <section className="admin-card">
         {error ? (
@@ -144,6 +200,15 @@ export default async function LeadsPage({
                   </td>
                   <td style={{ color: "var(--ink)" }}>
                     {lead.name}
+                    {lead.origin === "booking" ? (
+                      <span
+                        className="admin-pill"
+                        data-tone="success"
+                        style={{ marginLeft: "8px" }}
+                      >
+                        Booked call
+                      </span>
+                    ) : null}
                     <div>
                       <a href={`mailto:${lead.email}`}>{lead.email}</a>
                     </div>

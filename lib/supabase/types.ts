@@ -40,6 +40,72 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_intents: {
+        Row: {
+          attribution: Json
+          claimed_at: string | null
+          created_at: string
+          landing_page: string | null
+          ref: string
+          referrer: string | null
+        }
+        Insert: {
+          attribution?: Json
+          claimed_at?: string | null
+          created_at?: string
+          landing_page?: string | null
+          ref: string
+          referrer?: string | null
+        }
+        Update: {
+          attribution?: Json
+          claimed_at?: string | null
+          created_at?: string
+          landing_page?: string | null
+          ref?: string
+          referrer?: string | null
+        }
+        Relationships: []
+      }
+      lead_rejections: {
+        Row: {
+          answers: Json
+          attribution: Json
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          platform: string | null
+          reason: string
+          reviewed_at: string | null
+        }
+        Insert: {
+          answers?: Json
+          attribution?: Json
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          platform?: string | null
+          reason: string
+          reviewed_at?: string | null
+        }
+        Update: {
+          answers?: Json
+          attribution?: Json
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          platform?: string | null
+          reason?: string
+          reviewed_at?: string | null
+        }
+        Relationships: []
+      }
       case_studies: {
         Row: {
           body: string
@@ -436,6 +502,12 @@ export type Database = {
           gbraid: string | null
           first_seen_at: string | null
           attribution_status: string
+          origin: string
+          canceled_at: string | null
+          cancel_reason: string | null
+          calendly_invitee_uri: string | null
+          calendly_event_uri: string | null
+          booked_at: string | null
           company: string | null
           consent: Json
           content: string | null
@@ -475,6 +547,12 @@ export type Database = {
           gbraid?: string | null
           first_seen_at?: string | null
           attribution_status?: string
+          origin?: string
+          canceled_at?: string | null
+          cancel_reason?: string | null
+          calendly_invitee_uri?: string | null
+          calendly_event_uri?: string | null
+          booked_at?: string | null
           company?: string | null
           consent?: Json
           content?: string | null
@@ -514,6 +592,12 @@ export type Database = {
           gbraid?: string | null
           first_seen_at?: string | null
           attribution_status?: string
+          origin?: string
+          canceled_at?: string | null
+          cancel_reason?: string | null
+          calendly_invitee_uri?: string | null
+          calendly_event_uri?: string | null
+          booked_at?: string | null
           company?: string | null
           consent?: Json
           content?: string | null
@@ -918,6 +1002,34 @@ export type Database = {
       set_destination_secret: { Args: { p_key: string; p_secret: string }; Returns: undefined }
       clear_destination_secret: { Args: { p_key: string }; Returns: undefined }
       get_destination_secret: { Args: { p_key: string }; Returns: string }
+      record_lead_rejection: {
+        Args: {
+          p_answers?: Json
+          p_attribution?: Json
+          p_company?: string
+          p_email?: string
+          p_name?: string
+          p_platform?: string
+          p_reason: string
+        }
+        Returns: string
+      }
+      record_booking: {
+        Args: {
+          p_answers?: Json
+          p_booked_at?: string
+          p_email: string
+          p_event_uri: string
+          p_invitee_uri: string
+          p_name: string
+          p_ref?: string
+        }
+        Returns: string
+      }
+      record_booking_cancellation: {
+        Args: { p_canceled_at?: string; p_invitee_uri: string; p_reason?: string }
+        Returns: string
+      }
       submit_lead: {
         Args: {
           p_attribution?: Json
