@@ -45,6 +45,7 @@ export type Database = {
           attribution: Json
           claimed_at: string | null
           created_at: string
+          expires_at: string
           landing_page: string | null
           ref: string
           referrer: string | null
@@ -53,6 +54,7 @@ export type Database = {
           attribution?: Json
           claimed_at?: string | null
           created_at?: string
+          expires_at?: string
           landing_page?: string | null
           ref: string
           referrer?: string | null
@@ -61,6 +63,7 @@ export type Database = {
           attribution?: Json
           claimed_at?: string | null
           created_at?: string
+          expires_at?: string
           landing_page?: string | null
           ref?: string
           referrer?: string | null
