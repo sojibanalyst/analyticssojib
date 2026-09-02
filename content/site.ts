@@ -300,18 +300,34 @@ export const hero = {
 /* Proof — every number here is verifiable on the Upwork profile               */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The two figures that appear in more than one place, so they can only be
+ * wrong in one place.
+ *
+ * Read from the Upwork API on 2 Sep 2026: profileAggregates reported
+ * totalFeedback 27 and totalJobs 53 (33 fixed-price plus 20 hourly). The site
+ * had been saying 26 and 51, which is what the profile said whenever these
+ * were first typed in.
+ *
+ * The JOB SUCCESS SCORE and the 4.9 rating are deliberately NOT here: the API
+ * does not expose either, so neither has been re-verified and neither has been
+ * changed. If you update them, update them from the profile page.
+ */
+export const upworkReviewCount = "27";
+export const upworkJobCount = "53";
+
 export const proof = {
   attribution: "AS OF UPWORK PROFILE",
   badge: "TOP RATED",
   chip: "TOP RATED · 97% JSS · 4.9★",
-  contactChip: "UPWORK · TOP RATED · 4.9★ · 51 JOBS",
+  contactChip: `UPWORK · TOP RATED · 4.9★ · ${upworkJobCount} JOBS`,
   rate: "$30/hr",
 } as const;
 
 export const stats: Stat[] = [
   { value: "97", unit: "%", label: "JOB SUCCESS SCORE" },
-  { value: "4.9", unit: "★", label: "FROM 26 REVIEWS" },
-  { value: "51", label: "JOBS COMPLETED" },
+  { value: "4.9", unit: "★", label: `FROM ${upworkReviewCount} REVIEWS` },
+  { value: upworkJobCount, label: "JOBS COMPLETED" },
   { value: "384", unit: "hrs", label: "HOURS WORKED" },
 ];
 
@@ -731,7 +747,7 @@ export const process = {
 
 export const about = {
   title: "I only do measurement.",
-  body: "No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 51 projects.",
+  body: "No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 53 projects.",
   pullquote:
     "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it — so you can check it without taking my word for anything.",
   pullquoteAttribution: "SOJIB H. · DHAKA, BANGLADESH · UTC+6",

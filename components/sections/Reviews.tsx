@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   reviews,
+  upworkReviewCount,
   upworkUrl,
   type Testimonial,
   type WrittenReview,
@@ -207,7 +208,7 @@ export function Reviews({
       >
         MORE REVIEWS ·{" "}
         <a href={upworkUrl} target="_blank" rel="noopener">
-          26 ON UPWORK
+          {upworkReviewCount} ON UPWORK
         </a>
       </p>
     </section>
