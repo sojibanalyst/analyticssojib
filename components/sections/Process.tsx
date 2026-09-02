@@ -3,7 +3,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export function Process() {
   return (
-    <section id="process" className="section" aria-labelledby="process-title">
+    <section id="process" className="section section--sunk" aria-labelledby="process-title">
       <SectionHeading
         eyebrow={process.eyebrow}
         title={process.title}
@@ -23,7 +23,7 @@ export function Process() {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "28px",
+                fontSize: "var(--text-h3)",
                 fontWeight: 800,
                 color: "var(--ink)",
                 letterSpacing: "-0.03em",
@@ -35,7 +35,7 @@ export function Process() {
               style={{
                 margin: 0,
                 fontFamily: "var(--font-prose)",
-                fontSize: "15px",
+                fontSize: "var(--text-body)",
                 fontWeight: 700,
                 letterSpacing: "0.04em",
                 textTransform: "uppercase",
@@ -46,7 +46,7 @@ export function Process() {
             <p
               style={{
                 margin: 0,
-                fontSize: "14px",
+                fontSize: "var(--text-small)",
                 lineHeight: 1.6,
                 color: "var(--muted)",
               }}

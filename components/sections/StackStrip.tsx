@@ -5,12 +5,7 @@ export function StackStrip() {
   return (
     <section
       aria-label="Tools and platforms"
-      style={{
-        paddingBlock: "18px",
-        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
-        borderBottom: "1px solid var(--border)",
-        background: "var(--surface)",
-      }}
+      className="section section--band section--raised"
     >
       <div
         style={{
@@ -24,7 +19,7 @@ export function StackStrip() {
           style={{
             flex: "0 0 auto",
             fontFamily: "var(--font-prose)",
-            fontSize: "11px",
+            fontSize: "var(--text-label)",
             letterSpacing: "0.14em",
             color: "var(--ink)",
           }}
@@ -45,7 +40,7 @@ export function StackStrip() {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "11px",
+                fontSize: "var(--text-label)",
                 fontWeight: 500,
                 letterSpacing: "0.1em",
                 whiteSpace: "nowrap",

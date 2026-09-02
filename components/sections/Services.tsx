@@ -5,7 +5,7 @@ export function Services() {
   return (
     <section
       id="services"
-      className="section section--surface"
+      className="section section--raised"
       aria-labelledby="services-title"
     >
       <SectionHeading
@@ -28,7 +28,7 @@ export function Services() {
                 alignItems: "baseline",
                 gap: "12px",
                 fontFamily: "var(--font-prose)",
-                fontSize: "11px",
+                fontSize: "var(--text-label)",
                 letterSpacing: "0.1em",
                 whiteSpace: "nowrap",
                 color: "var(--muted)",
@@ -55,7 +55,7 @@ export function Services() {
               style={{
                 margin: 0,
                 fontFamily: "var(--font-prose)",
-                fontSize: "20px",
+                fontSize: "var(--text-lead)",
                 fontWeight: 700,
                 letterSpacing: "-0.015em",
                 textTransform: "uppercase",
@@ -67,7 +67,7 @@ export function Services() {
             <p
               style={{
                 margin: 0,
-                fontSize: "14.5px",
+                fontSize: "var(--text-body)",
                 lineHeight: 1.6,
                 color: "var(--muted)",
                 textWrap: "pretty",
@@ -84,7 +84,7 @@ export function Services() {
                 flexDirection: "column",
                 gap: "6px",
                 fontFamily: "var(--font-prose)",
-                fontSize: "12px",
+                fontSize: "var(--text-small)",
                 color: "var(--muted)",
                 borderTop: "1px solid var(--border)",
                 padding: "14px 0 0",
@@ -108,7 +108,7 @@ export function Services() {
         style={{
           margin: 0,
           fontFamily: "var(--font-prose)",
-          fontSize: "11.5px",
+          fontSize: "var(--text-label)",
           letterSpacing: "0.06em",
           color: "var(--faint)",
         }}

@@ -18,8 +18,38 @@ export function getTheme(): Theme {
   return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
 
+/**
+ * How long the cross-fade between themes runs. Kept in step with the
+ * [data-theme-anim] rule in app/components.css by hand — the CSS cannot read
+ * this constant, and a timer that outlives the transition would leave every
+ * element on the page carrying a transition it does not need.
+ */
+const SWITCH_MS = 240;
+let switchTimer: ReturnType<typeof setTimeout> | undefined;
+
 export function setTheme(theme: Theme): void {
-  document.documentElement.dataset.theme = theme;
+  const root = document.documentElement;
+
+  /**
+   * The whole page changes colour at once, so without this the switch is a
+   * hard cut. The transition is applied for the length of the switch and then
+   * removed, rather than living permanently on every element: a standing
+   * `transition: background-color` would also animate hover states, reveals
+   * and anything else that happens to change a colour.
+   *
+   * Reduced motion is handled HERE, by not opting in, rather than by letting
+   * the global reduce block fight this rule with duelling !important
+   * declarations. If the setting is on, the theme simply switches.
+   */
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    root.dataset.themeAnim = "";
+    clearTimeout(switchTimer);
+    switchTimer = setTimeout(() => {
+      delete root.dataset.themeAnim;
+    }, SWITCH_MS);
+  }
+
+  root.dataset.theme = theme;
   try {
     localStorage.setItem(STORAGE_KEY, theme);
   } catch {

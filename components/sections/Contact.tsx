@@ -9,15 +9,8 @@ export function Contact() {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      style={{
-        paddingBlock: "64px",
-        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
-        borderBottom: "1px solid var(--border)",
-        background: "var(--surface)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-      }}
+      className="section section--major"
+      style={{ gap: "20px" }}
     >
       <span className="eyebrow">{contact.eyebrow}</span>
 
@@ -29,7 +22,7 @@ export function Contact() {
         style={{
           margin: 0,
           maxWidth: "58ch",
-          fontSize: "16px",
+          fontSize: "var(--text-body)",
           lineHeight: 1.65,
           color: "var(--muted)",
           textWrap: "pretty",
@@ -70,7 +63,7 @@ export function Contact() {
         style={{
           margin: 0,
           fontFamily: "var(--font-prose)",
-          fontSize: "11.5px",
+          fontSize: "var(--text-label)",
           letterSpacing: "0.06em",
           color: "var(--faint)",
         }}

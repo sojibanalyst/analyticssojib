@@ -15,7 +15,7 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
         flexWrap: "wrap",
         gap: "14px",
         fontFamily: "var(--font-prose)",
-        fontSize: "11px",
+        fontSize: "var(--text-label)",
         letterSpacing: "0.08em",
         color: "var(--muted)",
       }}
@@ -74,7 +74,7 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
         ))}
       </nav>
 
-      <span style={{ flexBasis: "100%", color: "var(--faint)", fontSize: "10.5px" }}>
+      <span style={{ flexBasis: "100%", color: "var(--faint)", fontSize: "var(--text-label)" }}>
         © {year} {site.fullName} · {footer.builtWith}
       </span>
     </footer>

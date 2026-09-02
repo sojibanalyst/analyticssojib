@@ -54,6 +54,31 @@
   --hero-soft: #3a342c;
   --hero-edge: rgba(0, 0, 0, 0.32);
 
+  /* --- elevation, light ---------------------------------------------------
+     Three levels and no more: 1 rests, 2 is hovered or active, 3 genuinely
+     floats above the page.
+
+     Each level is TWO tokens, because the two themes carry elevation with
+     different means. In light the whole lift is the shadow; --raise-* stays
+     #ffffff at every level, since nothing can be brighter than white and
+     faking it with a tint would introduce a colour the palette does not have.
+
+     Two stacked shadows per level rather than one: the short offset draws the
+     contact edge, the longer one the ambient falloff. A single large blur is
+     what makes a card read as a grey halo instead of a raised surface.
+
+     The first values tried here were 0.04/0.05 and they were invisible — a
+     white card on a white section, where the 1px border was still doing all
+     the separating. These are the numbers that actually show up in a
+     screenshot. Tight is a ratio, not an opacity: blur stays within about
+     2.5x the offset at every level, which is what keeps it looking precise
+     rather than puffy. */
+  --raise-1: #ffffff;
+  --raise-2: #ffffff;
+  --raise-3: #ffffff;
+  --elev-1: 0 1px 2px rgba(10, 10, 11, 0.06), 0 4px 10px rgba(10, 10, 11, 0.08);
+  --elev-2: 0 2px 4px rgba(10, 10, 11, 0.07), 0 8px 22px rgba(10, 10, 11, 0.12);
+  --elev-3: 0 4px 8px rgba(10, 10, 11, 0.08), 0 18px 44px rgba(10, 10, 11, 0.16);
 
   /* Light theme keeps a light code surface: an inverted dark block would be
      the only dark element on the page and would fight the palette.
@@ -90,9 +115,39 @@
   --code-key: #7a3e9d;
   --code-str: #0f7a3d;
   --code-num: #8a5200;
+
+  /* --- section tones, light -----------------------------------------------
+     The page had two section backgrounds, #ffffff and #f4f4f2, which measure
+     1.05:1 apart — a difference you cannot see, which is why eleven sections
+     read as one colour.
+
+     --tone-raised and --tone-sunk are 1.20:1 apart instead. That is a step
+     you can actually perceive across a full-width band, and it is what turns
+     a scroll into chapters.
+
+     --tone-sunk is capped by the eyebrow, not by taste: --ink (#0f7a3d) at
+     11.5px measures 4.51:1 on #eceae6. One shade deeper and the green labels
+     fall below AA. */
+  --tone-raised: #ffffff;
+  --tone-sunk: #eceae6;
+  --tone-ink: #0b0c0d;
 }
 
-[data-theme="dark"] {
+/* The dark palette, applied to the document — and to ONE SECTION inside the
+   light theme.
+ *
+ * The case studies section is the page's strongest proof and it is rendered
+ * dark on purpose (see .section--ink). Rather than duplicating twenty-odd
+ * colour values to do that, the light theme's dark section takes this exact
+ * block. One set of declarations, two scopes, no chance of the two drifting
+ * apart when a token changes.
+ *
+ * :root:not([data-theme="dark"]) .section--ink scores higher than the light
+ * block above, so it wins inside that subtree without depending on order.
+ * The tone tokens are deliberately NOT in here — a light-theme ink section
+ * still wants #0b0c0d rather than the dark theme's true black. */
+[data-theme="dark"],
+:root:not([data-theme="dark"]) .section--ink {
   color-scheme: dark;
 
   --bg: #0a0a0b;
@@ -127,6 +182,36 @@
   --hero-soft: #c9ccd3;
   --hero-edge: rgba(255, 255, 255, 0.34);
 
+  /* --- elevation, dark ----------------------------------------------------
+     Inverted responsibilities. A drop shadow on a #0a0a0b page has almost no
+     contrast to spend, so here the lift is SURFACE LIGHTNESS and the shadow
+     only seats the edge.
+
+     The ladder starts ABOVE --surface, not at it. A card has to sit on a
+     --bg section and a --surface section both, so pinning level 1 to
+     --surface would make every card on a surface section invisible except
+     for its border — which is the flatness being fixed, reproduced in the
+     dark theme. The rungs: #0a0a0b page → #101114 surface → #191a1f →
+     #212329 → #26282f, luminance ratios of 1.087, 1.106 and 1.067 between
+     neighbours. Perceptible on an area the size of a card, and small enough
+     that three of them still land well short of grey.
+
+     Level 3 stops at #26282f rather than continuing the step, because the
+     faintest text token (--faint #8c8f97) measures 4.55:1 there and 4.43:1
+     one rung higher. The ladder is capped by AA, not by taste.
+
+     The inset top hairline on 2 and 3 is the other half of the illusion —
+     light falls from above, so a raised edge catches it. It is doing the work
+     the shadow does in light, and it is why level 3 reads as floating rather
+     than merely paler. */
+  --raise-1: #191a1f;
+  --raise-2: #212329;
+  --raise-3: #26282f;
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.55);
+  --elev-2: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 2px 6px rgba(0, 0, 0, 0.6),
+    0 8px 20px rgba(0, 0, 0, 0.4);
+  --elev-3: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 10px rgba(0, 0, 0, 0.7),
+    0 18px 40px rgba(0, 0, 0, 0.55);
 
   /* code blocks (/tracking-plan). Dark theme sits below --surface so the
      block reads as inset rather than raised. */
@@ -153,6 +238,49 @@
   --code-key: #c99be8;
   --code-str: #35c97b;
   --code-num: #f2b44c;
+}
+
+/* --- section tones, dark ---------------------------------------------------
+   Separate from the block above because that block is shared with the light
+   theme's one dark section, and these three values are the part that must
+   NOT be shared.
+
+   The dark palette has almost no room below the ground: #0a0a0b to true black
+   is 1.06:1, so alternating downward is invisible. The alternation therefore
+   runs the other way — --tone-raised lifts to #101114, 1.08:1 above the sunk
+   tone, and the cards lift again above that. Same argument as the elevation
+   scale: in dark, hierarchy is carried by lightness going up, not by shadow
+   going down.
+
+   --tone-ink is true black, which in a dark theme is the one direction still
+   available and makes the proof section unmistakably the odd one out: 1.11:1
+   against the sections either side of it. Those neighbours are both
+   --tone-raised on purpose; against a sunk section it would be 1.03:1 and the
+   whole point would be lost. */
+[data-theme="dark"] {
+  --tone-raised: #101114;
+  --tone-sunk: #050507;
+  --tone-ink: #000000;
+}
+
+/* --- vertical rhythm ------------------------------------------------------
+   Not colours, so not theme-dependent, but they belong with the other tokens.
+   The measured "before" was 0/0, 22/40, 18/18, 56/56 seven times and 64/64 —
+   five values, four of them arrived at by whoever wrote that section.
+
+   Three, and each one means something:
+
+     --pad-band     a strip that belongs to the section above it rather than
+                    standing on its own
+     --pad-section  an ordinary chapter break
+     --pad-major    a new movement: the proof, and the ask
+
+   The two larger ones are fluid, because 96px of air above the fold on a
+   390px phone is not rhythm, it is scrolling. */
+:root {
+  --pad-band: 20px;
+  --pad-section: clamp(44px, 5vw, 64px);
+  --pad-major: clamp(60px, 7.5vw, 96px);
 }
 
 /* --------------------------------------------------------------------------
@@ -203,32 +331,42 @@
   --font-prose: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-data: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* type scale, verbatim from the design's inline styles */
-  --text-2xs: 10.5px;
-  --text-xs: 11px;
-  --text-xs-plus: 11.5px;
-  --text-sm: 12px;
-  --text-sm-plus: 12.5px;
-  --text-base: 13px;
-  --text-base-plus: 14px;
-  --text-md: 14.5px;
-  --text-md-plus: 15px;
-  --text-lg: 15.5px;
-  --text-lg-plus: 16px;
-  --text-xl: 16.5px;
-  --text-xl-plus: 17px;
-  --text-2xl: 20px;
-  --text-3xl: 28px;
+  /* --- type scale ----------------------------------------------------------
+     What was here before was not a scale. It was twenty-three tokens named
+     after the values the design happened to contain — 2xs, xs, xs-plus, sm,
+     sm-plus, base, base-plus, md, md-plus, lg, lg-plus, xl, xl-plus — and,
+     like the radius tokens, not one of them was ever referenced. The page
+     rendered 21 distinct sizes.
 
-  /* fluid heading sizes */
-  --text-h1: clamp(28px, 5.2vw, 46px);
-  --text-h2: clamp(25px, 4.4vw, 34px);
-  --text-h2-alt: clamp(28px, 3.4vw, 34px);
-  --text-h3: clamp(26px, 3vw, 30px);
-  --text-h4: clamp(24px, 3.6vw, 30px);
-  --text-lead: clamp(21px, 2.4vw, 24px);
-  --text-sub: clamp(18px, 2.2vw, 21px);
-  --text-sub-sm: clamp(17px, 2vw, 21px);
+     Nine steps, in two families, because a marketing page genuinely needs two
+     ramps and pretending otherwise is what produces 14.5px:
+
+       TEXT     12.5 → 14 → 16. Fine steps, because the difference between a
+                label, dense prose and body copy is small and functional.
+       DISPLAY  20 → 25 → 31 → 39 → 49 → 61. A 1.25 ratio, because the
+                difference between a subhead and a hero is supposed to be
+                obvious.
+
+     WHAT MOVED AND WHY. 164 elements rendered at 11px or 12px, which is
+     correct for a console and too much for a homepage. The label size goes UP
+     to 12.5 and consolidates four values (10, 10.5, 11, 11.5) into one. More
+     importantly the count comes down: the service bullet lists, the defect
+     table and the navigation were never labels, they were prose set in label
+     clothing, and they move to --text-small and --text-body.
+
+     The hero was 47.6px at 1536. It is 61px now. */
+  --text-label: 12.5px;
+  --text-small: 14px;
+  --text-body: 16px;
+
+  --text-lead: clamp(17px, 1.4vw, 20px);
+  --text-h4: clamp(20px, 1.8vw, 25px);
+  --text-h3: clamp(23px, 2.2vw, 31px);
+  --text-h2: clamp(25px, 2.8vw, 39px);
+  /* Between h2 and h1: the contact heading, which is the page's second-most
+     important thing to say and was previously the same size as the hero. */
+  --text-display: clamp(28px, 3.4vw, 49px);
+  --text-h1: clamp(32px, 4.3vw, 61px);
 
   /* tracking */
   --tracking-tightest: -0.03em;
@@ -243,14 +381,30 @@
   --tracking-label-lg: 0.12em;
   --tracking-caps: 0.14em;
 
-  /* radii */
-  --radius-xs: 3px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
-  --radius-2xl: 16px;
-  --radius-pill: 999px;
+  /* --- radii ---------------------------------------------------------------
+     Four, down from fourteen distinct values across the four stylesheets and
+     the inline styles: 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 50% and 999px.
+     Nine of those reached the homepage. None of them was a decision; each was
+     whatever the component in front of somebody happened to need that day.
+
+     The seven tokens that used to live here were never referenced once — not
+     in a stylesheet, not as a Tailwind utility. A scale nothing uses is not a
+     scale.
+
+       sm    inputs, buttons, tags, and the wells cut into a card
+       md    cards
+       lg    feature panels — the case studies, the review slides
+       full  things that are actually round
+
+     md stays at 14px so the most common element on the page does not move.
+     lg goes 16 → 20 to put real daylight between a card and a panel; at 16
+     the two were within two pixels of each other and the hierarchy was not
+     legible. Nesting stays correct: an 8px well inside a 20px panel with 22px
+     of padding is about where the inner curve should sit. */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
 }
 
 /* --------------------------------------------------------------------------
@@ -308,10 +462,19 @@ p a {
 
 /* Visible focus ring in the design's accent. --accent clears 3:1 against
    both --bg and --surface in both themes, so it is safe as a UI indicator. */
+/* No border-radius here, and that is a fix rather than an omission.
+ *
+ * This rule used to set `border-radius: 2px`, which does not shape the ring —
+ * it reshapes the ELEMENT. Measured with :focus-visible forced on: a button
+ * went 8px → 2px and a pill went 999px → 2px, so every control on the site
+ * visibly squared off the moment somebody reached it with the Tab key. Only
+ * keyboard users ever saw it, which is why it survived this long.
+ *
+ * Every current browser draws an outline following the element's own radius,
+ * so removing the declaration is all that is needed. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
 [data-track]::-webkit-scrollbar {

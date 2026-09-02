@@ -118,7 +118,7 @@ export function CaseGallery({ shots, label }: { shots: CaseShot[]; label: string
               onClick={() => go(index - 1)}
               aria-label="Previous screenshot"
               className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "13px" }}
+              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
             >
               ←
             </button>
@@ -127,7 +127,7 @@ export function CaseGallery({ shots, label }: { shots: CaseShot[]; label: string
               onClick={() => go(index + 1)}
               aria-label="Next screenshot"
               className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "13px" }}
+              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
             >
               →
             </button>

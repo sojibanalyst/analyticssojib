@@ -78,7 +78,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
         <span
           style={{
             fontFamily: "var(--font-prose)",
-            fontSize: "11px",
+            fontSize: "var(--text-label)",
             letterSpacing: "0.14em",
             color: "var(--muted)",
           }}
@@ -114,7 +114,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
                   style={{
                     width: "14px",
                     height: "6px",
-                    borderRadius: "3px",
+                    borderRadius: "var(--radius-full)",
                     background: i === index ? "var(--accent)" : "var(--border)",
                   }}
                 />
@@ -126,7 +126,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
             aria-live="polite"
             style={{
               fontFamily: "var(--font-prose)",
-              fontSize: "11px",
+              fontSize: "var(--text-label)",
               letterSpacing: "0.08em",
               whiteSpace: "nowrap",
               color: "var(--muted)",
@@ -142,7 +142,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
               onClick={() => go(index - 1)}
               aria-label="Previous written review"
               className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "13px" }}
+              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
             >
               ←
             </button>
@@ -151,7 +151,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
               onClick={() => go(index + 1)}
               aria-label="Next written review"
               className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "13px" }}
+              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
             >
               →
             </button>
@@ -198,7 +198,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
               <span
                 style={{
                   fontFamily: "var(--font-prose)",
-                  fontSize: "11px",
+                  fontSize: "var(--text-label)",
                   letterSpacing: "0.1em",
                   color: "var(--faint)",
                 }}
@@ -209,7 +209,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
               <span
                 style={{
                   fontFamily: "var(--font-prose)",
-                  fontSize: "11px",
+                  fontSize: "var(--text-label)",
                   letterSpacing: "0.1em",
                   color: "var(--result)",
                 }}
@@ -222,7 +222,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
               <blockquote
                 style={{
                   margin: 0,
-                  fontSize: "15px",
+                  fontSize: "var(--text-body)",
                   lineHeight: 1.6,
                   color: "var(--text)",
                   textWrap: "pretty",
@@ -234,7 +234,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
             <figcaption
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "11px",
+                fontSize: "var(--text-label)",
                 letterSpacing: "0.08em",
                 color: "var(--muted)",
                 borderTop: "1px solid var(--border)",

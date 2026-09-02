@@ -24,7 +24,7 @@ export function Reviews({
   return (
     <section
       id="reviews"
-      className="section section--surface"
+      className="section section--raised"
       aria-labelledby="reviews-title"
     >
       <div className="section-head">
@@ -52,7 +52,7 @@ export function Reviews({
         <span
           style={{
             fontFamily: "var(--font-prose)",
-            fontSize: "11px",
+            fontSize: "var(--text-label)",
             letterSpacing: "0.14em",
             color: "var(--muted)",
           }}
@@ -86,7 +86,7 @@ export function Reviews({
                   style={{
                     width: "24px",
                     height: "6px",
-                    borderRadius: "3px",
+                    borderRadius: "var(--radius-full)",
                     background: i === index ? "var(--accent)" : "var(--border)",
                   }}
                 />
@@ -98,7 +98,7 @@ export function Reviews({
             aria-live="polite"
             style={{
               fontFamily: "var(--font-prose)",
-              fontSize: "11px",
+              fontSize: "var(--text-label)",
               letterSpacing: "0.08em",
               whiteSpace: "nowrap",
               color: "var(--muted)",
@@ -114,7 +114,7 @@ export function Reviews({
               onClick={() => go(index - 1)}
               aria-label="Previous review"
               className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "13px" }}
+              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
             >
               ←
             </button>
@@ -123,7 +123,7 @@ export function Reviews({
               onClick={() => go(index + 1)}
               aria-label="Next review"
               className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "13px" }}
+              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
             >
               →
             </button>
@@ -154,7 +154,7 @@ export function Reviews({
                 <span
                   style={{
                     fontFamily: "var(--font-prose)",
-                    fontSize: "11px",
+                    fontSize: "var(--text-label)",
                     letterSpacing: "0.1em",
                     color: "var(--result)",
                   }}
@@ -167,7 +167,7 @@ export function Reviews({
                 <p
                   style={{
                     margin: 0,
-                    fontSize: "clamp(17px, 2vw, 21px)",
+                    fontSize: "var(--text-lead)",
                     fontWeight: 600,
                     lineHeight: 1.4,
                     textWrap: "pretty",
@@ -178,7 +178,7 @@ export function Reviews({
                 <span
                   style={{
                     fontFamily: "var(--font-prose)",
-                    fontSize: "11px",
+                    fontSize: "var(--text-label)",
                     letterSpacing: "0.08em",
                     color: "var(--muted)",
                     borderTop: "1px solid var(--border)",
@@ -201,7 +201,7 @@ export function Reviews({
         style={{
           margin: 0,
           fontFamily: "var(--font-prose)",
-          fontSize: "10.5px",
+          fontSize: "var(--text-label)",
           letterSpacing: "0.1em",
           color: "var(--faint)",
         }}
