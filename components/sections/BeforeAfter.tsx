@@ -36,9 +36,20 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           </span>
         </div>
 
+        {/* The two bars fill from the left as they arrive. This is the one
+            piece of motion on the site that is an argument rather than a
+            flourish: the whole case is "this number moved", and watching the
+            second bar overtake the first is that sentence, drawn.
+
+            data-inview is the same contract the scroll reveal uses — the fill
+            is complete by default and only starts empty once Motion.tsx has
+            confirmed motion is allowed, so with JavaScript off or reduced
+            motion on, the bars are simply full. */}
         <div style={{ flex: "1 1 110px", display: "flex", flexDirection: "column", gap: "6px" }}>
           <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
             <div
+              className="metric-fill"
+              data-inview="pending"
               style={{
                 position: "absolute",
                 inset: `0 ${100 - metric.beforePct}% 0 0`,
@@ -48,11 +59,16 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           </div>
           <div style={{ height: "9px", background: "var(--border)", position: "relative" }}>
             <div
+              className="metric-fill"
+              data-inview="pending"
+              /* The "after" bar starts a beat later, so the two read as a
+                 sequence rather than a pair moving in lockstep. */
               style={{
                 position: "absolute",
                 inset: `0 ${100 - metric.afterPct}% 0 0`,
                 background: "var(--accent)",
-              }}
+                "--bar-delay": "160ms",
+              } as React.CSSProperties}
             />
           </div>
         </div>

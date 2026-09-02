@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ctaLabel, nav, site, type NavLink } from "@/content/site";
+import { SocialIcon } from "@/components/ui/Icon";
+import { ctaLabel, nav, site, whatsappUrl, type NavLink } from "@/content/site";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
 import { toggleTheme, useTheme } from "@/lib/theme";
 
@@ -121,6 +122,19 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
         </nav>
 
         <div className="header-actions">
+          {/* Instant channel beside the scheduled one. Icon only: the header row
+              is already carrying a nav, a theme toggle and a CTA. */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener"
+            className="header-wa"
+            aria-label="Message me on WhatsApp"
+            title="WhatsApp"
+          >
+            <SocialIcon name="whatsapp" size={18} />
+          </a>
+
           <button
             type="button"
             onClick={toggleTheme}
@@ -182,6 +196,17 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
             <CalendlyPopupButton className="menu-cta" placement="mobile-menu">
               {ctaLabel} →
             </CalendlyPopupButton>
+
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener"
+              className="menu-link menu-link--wa"
+              onClick={closeMenu}
+            >
+              <SocialIcon name="whatsapp" size={17} />
+              WHATSAPP
+            </a>
 
             <button
               type="button"

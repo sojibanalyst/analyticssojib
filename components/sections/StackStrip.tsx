@@ -1,6 +1,36 @@
 import { stack } from "@/content/site";
 import { StackIcon } from "@/components/ui/Icon";
 
+/**
+ * The tools band, full-bleed and moving.
+ *
+ * The "STACK /" label is gone. On a band that now runs to the edge of the
+ * screen it sat cramped against the left margin, and a row of named tool marks
+ * does not need to be told what it is.
+ *
+ * The set is rendered TWICE. The second copy is aria-hidden and exists only so
+ * the marquee has something to run into — translating the pair by exactly -50%
+ * lands the copy where the original started, which is what makes the loop
+ * seamless rather than a jump. Under reduced motion the copy is display:none
+ * and the row goes back to being a plain scrollable line, so nobody is read
+ * the same twelve tools twice.
+ */
+function StackSet({ copy = false }: { copy?: boolean }) {
+  return (
+    <div
+      className={copy ? "stack-strip__set stack-strip__set--copy" : "stack-strip__set"}
+      aria-hidden={copy || undefined}
+    >
+      {stack.map((item) => (
+        <span key={item.label} className="stack-strip__item">
+          <StackIcon item={item} />
+          <span className="stack-strip__label">{item.label}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function StackStrip() {
   return (
     <section
@@ -8,41 +38,10 @@ export function StackStrip() {
       className="section section--band section--raised stack-strip"
     >
       <div className="stack-strip__row">
-        <span
-          style={{
-            flex: "0 0 auto",
-            fontFamily: "var(--font-prose)",
-            fontSize: "var(--text-label)",
-            letterSpacing: "0.14em",
-            color: "var(--ink)",
-          }}
-        >
-          STACK /
-        </span>
-        {stack.map((item) => (
-          <span
-            key={item.label}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              flex: "0 0 auto",
-            }}
-          >
-            <StackIcon item={item} />
-            <span
-              style={{
-                fontFamily: "var(--font-prose)",
-                fontSize: "var(--text-label)",
-                fontWeight: 500,
-                letterSpacing: "0.1em",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {item.label}
-            </span>
-          </span>
-        ))}
+        <div className="stack-strip__marquee">
+          <StackSet />
+          <StackSet copy />
+        </div>
       </div>
     </section>
   );

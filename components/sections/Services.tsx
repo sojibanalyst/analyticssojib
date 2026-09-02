@@ -9,7 +9,6 @@ export function Services() {
       aria-labelledby="services-title"
     >
       <SectionHeading
-        eyebrow={services.eyebrow}
         title={services.title}
         titleId="services-title"
       />

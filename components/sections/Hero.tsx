@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { hero, linkedinUrl, proof, upworkUrl } from "@/content/site";
+import { hero, linkedinUrl, proof, upworkUrl, whatsappUrl } from "@/content/site";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
 import { SocialIcon } from "@/components/ui/Icon";
 
@@ -66,6 +66,10 @@ export function Hero() {
           <a href={upworkUrl} target="_blank" rel="noopener">
             <SocialIcon name="upwork" size={16} />
             {proof.chip}
+          </a>
+          <a href={whatsappUrl} target="_blank" rel="noopener">
+            <SocialIcon name="whatsapp" size={16} />
+            WHATSAPP
           </a>
           <a href={linkedinUrl} target="_blank" rel="noopener">
             <SocialIcon name="linkedin" size={16} />
