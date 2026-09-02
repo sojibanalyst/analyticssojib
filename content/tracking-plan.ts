@@ -35,8 +35,8 @@ export const trackingPlanMeta = {
   eyebrow: "SAMPLE DELIVERABLE",
   h1: "The plan comes before the tag.",
   standfirst: [
-    "Most broken analytics setups aren’t broken because someone wrote a bad tag. They’re broken because nobody wrote down what was supposed to be measured — so three people implemented three different versions of `purchase` over two years, and now nobody can say which number is real.",
-    "This is the document I write before I touch anything. It’s generic — no client, no real figures — but the structure, the naming rules and the QA criteria are exactly what I use. If you’ve never been handed one of these, this is what you should be asking for.",
+    "Most broken analytics setups aren’t broken because someone wrote a bad tag. They’re broken because nobody wrote down what was supposed to be measured, so three people implemented three different versions of `purchase` over two years, and now nobody can say which number is real.",
+    "This is the document I write before I touch anything. It’s generic: no client, no real figures. But the structure, the naming rules and the QA criteria are exactly what I use. If you’ve never been handed one of these, this is what you should be asking for.",
   ],
   stack: "GA4 · GTM · SERVER-SIDE GTM · META CAPI · GOOGLE ADS EC · CONSENT MODE V2",
   downloadLabel: "DOWNLOAD AS PDF →",
@@ -87,7 +87,7 @@ export const planSections: PlanSection[] = [
     blocks: [
       {
         kind: "lead",
-        text: "Every event traces back to at least one business question. Anything that answers no question gets left out — which is most of what comes bundled in a template.",
+        text: "Every event traces back to at least one business question. Anything that answers no question gets left out. That is most of what comes bundled in a template.",
       },
       {
         kind: "table",
@@ -129,7 +129,7 @@ export const planSections: PlanSection[] = [
            v
    [ GTM WEB CONTAINER ]
            |  consent state (Consent Mode v2)
-           |  generates event_id — shared downstream
+           |  generates event_id, shared downstream
            |
            v   first-party HTTPS  ->  sgtm.yourdomain.com
    [ GTM SERVER CONTAINER ]
@@ -202,8 +202,8 @@ export const planSections: PlanSection[] = [
             text: "Recommended events unlock built-in reports. Custom names don’t.",
           },
           {
-            term: "`currency` is always a three-letter ISO code. `value` is always a number",
-            text: "— never a string, never with a symbol.",
+            term: "`currency` is always a three-letter ISO code. `value` is always a number.",
+            text: "Never a string, never with a symbol.",
           },
           {
             term: "Every new event needs a row in this document before it gets built.",
@@ -259,7 +259,7 @@ export const planSections: PlanSection[] = [
           ["`user_data`", "Identity becomes known", "`user_id`, hashed identifiers", "Q4, Q6"],
         ],
       },
-      { kind: "subhead", text: "`purchase` — the one that matters" },
+      { kind: "subhead", text: "`purchase`, the one that matters" },
       { kind: "para", text: "If this is wrong, every number downstream is wrong." },
       {
         kind: "code",
@@ -290,7 +290,7 @@ window.dataLayer.push({
   }
 });`,
       },
-      { kind: "subhead", text: "`user_data` — identity, hashed before it leaves the browser" },
+      { kind: "subhead", text: "`user_data`: identity, hashed before it leaves the browser" },
       { kind: "para", text: "Raw email never enters the dataLayer." },
       {
         kind: "code",
@@ -355,7 +355,7 @@ window.dataLayer.push({
       {
         kind: "list",
         items: [
-          "Data retention at 14 months on event and user data — the maximum, and not the default.",
+          "Data retention at 14 months on event and user data. The maximum, and not the default.",
           "Google Signals on, reporting identity Blended.",
           "Internal traffic filter active and set to **Exclude**, with an override for remote staff.",
           "Unwanted referrals covering the payment gateway and checkout subdomain, so PayPal stops appearing as the source of your revenue.",
@@ -391,7 +391,7 @@ window.dataLayer.push({
       {
         kind: "list",
         items: [
-          "The default command fires from the CMP **before** the container loads. Order matters — if GTM loads first, the defaults mean nothing.",
+          "The default command fires from the CMP **before** the container loads. Order matters: if GTM loads first, the defaults mean nothing.",
           "`url_passthrough` and `ads_data_redaction` both enabled.",
           "The server container re-checks consent on arrival and drops any destination the user hasn’t consented to. Client-side consent is never the only gate.",
           "Consent state is recorded as a parameter, so you can measure your consent rate and size the modelled gap instead of guessing at it.",
@@ -408,7 +408,7 @@ window.dataLayer.push({
       { kind: "subhead", text: "Meta Conversions API" },
       {
         kind: "para",
-        text: "The browser pixel and the server event are both sent deliberately. Meta reconciles them into one conversion because they share an identifier — and that only works if the ID is generated once and reused.",
+        text: "The browser pixel and the server event are both sent deliberately. Meta reconciles them into one conversion because they share an identifier, and that only works if the ID is generated once and reused.",
       },
       {
         kind: "table",
@@ -427,7 +427,7 @@ window.dataLayer.push({
         kind: "list",
         items: [
           "Conversion linker on all pages so the GCLID lands in a first-party cookie.",
-          "Enhanced conversions sent through the server container using the hashed identifiers from `user_data` — not by scraping the DOM of the confirmation page.",
+          "Enhanced conversions sent through the server container using the hashed identifiers from `user_data`, not by scraping the DOM of the confirmation page.",
           "Deduplicated by order ID so a refreshed confirmation page can’t inflate conversions.",
           "Customer Data Terms accepted in the Google Ads account before go-live. Enhanced conversions silently do nothing until they are.",
         ],
@@ -443,7 +443,7 @@ window.dataLayer.push({
         rows: [
           ["GA4 purchases vs backend orders", "≤ 2%", "Consent denial, ad blockers, bots"],
           ["GA4 revenue vs backend revenue", "≤ 2%", "Currency rounding, refund timing"],
-          ["Meta reported vs GA4 last-click", "Materially higher", "View-through attribution and a 7-day click window — not an error"],
+          ["Meta reported vs GA4 last-click", "Materially higher", "View-through attribution and a 7-day click window, not an error"],
           ["Google Ads vs GA4 conversions", "≤ 10%", "Attribution model and conversion-window differences"],
         ],
       },
@@ -473,7 +473,7 @@ window.dataLayer.push({
           ["Server", "`GA4 - Server`", "`Client - GA4`", "`analytics_storage`"],
           ["Server", "`Meta - CAPI - Purchase`", "`Client - GA4`, event = purchase", "`ad_storage`, `ad_user_data`"],
           ["Server", "`Google Ads - Enhanced Conversion`", "`Client - GA4`, event = purchase", "`ad_storage`, `ad_user_data`"],
-          ["Server", "`BigQuery - Raw Event Sink`", "`Client - GA4`, all events", "none — no marketing identifiers written"],
+          ["Server", "`BigQuery - Raw Event Sink`", "`Client - GA4`, all events", "none, and no marketing identifiers written"],
         ],
       },
     ],
@@ -493,7 +493,7 @@ window.dataLayer.push({
         kind: "table",
         head: ["#", "Check", "Tool"],
         rows: [
-          ["1", "Fires exactly once per action — no duplicates on refresh or back-navigation", "GTM Preview, GA4 DebugView"],
+          ["1", "Fires exactly once per action, no duplicates on refresh or back-navigation", "GTM Preview, GA4 DebugView"],
           ["2", "Every required parameter present and correctly typed", "GTM Preview"],
           ["3", "`items[]` populated with real IDs matching the merchant feed", "GTM Preview"],
           ["4", "`value` equals `sum(price × quantity)` for the items in the event", "Manual calculation"],
@@ -503,7 +503,7 @@ window.dataLayer.push({
           ["8", "Behaves correctly on mobile Safari and in an ad-blocked session", "Real device, uBlock Origin"],
         ],
       },
-      { kind: "subhead", text: "Reconciliation — the real test" },
+      { kind: "subhead", text: "Reconciliation: the real test" },
       {
         kind: "list",
         items: [
@@ -512,7 +512,7 @@ window.dataLayer.push({
           "After 72 hours, GA4 purchase count and revenue compared against backend orders for the same window, inside the tolerances in section 08.",
           "Meta shows the purchase event as deduplicated, with a browser and server share, and a match-quality score reported.",
           "Google Ads reports enhanced conversions as active with a matched-conversion rate.",
-          "No orphan rows in BigQuery — every purchase has a matching order.",
+          "No orphan rows in BigQuery. Every purchase has a matching order.",
         ],
       },
       { kind: "subhead", text: "Definition of done" },
@@ -525,7 +525,7 @@ window.dataLayer.push({
           "Google Ads enhanced conversions live and reporting a match rate.",
           "Consent Mode v2 verified in both granted and denied states.",
           "This document updated to as-built, and the container annotated to match.",
-          "Handover session recorded — container walkthrough, plus how to add a new event without breaking the plan.",
+          "Handover session recorded, covering the container walkthrough, plus how to add a new event without breaking the plan.",
         ],
       },
     ],
@@ -543,7 +543,7 @@ window.dataLayer.push({
           ["Google Tag Manager", "Publish", "Web container build"],
           ["Google Analytics 4", "Editor / Administrator", "Property configuration, custom definitions"],
           ["Google Ads", "Standard", "Conversion actions, enhanced conversions"],
-          ["Meta Business Manager", "Partner — pixel and dataset", "Pixel and CAPI configuration"],
+          ["Meta Business Manager", "Partner, pixel and dataset", "Pixel and CAPI configuration"],
           ["Google Cloud project", "Editor", "Server container hosting, BigQuery export"],
           ["DNS", "Record creation only", "`sgtm` subdomain CNAME"],
           ["Site / theme code", "Staging plus a deploy path", "dataLayer implementation"],
