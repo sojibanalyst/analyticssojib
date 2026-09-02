@@ -5,7 +5,6 @@ export function Symptoms() {
   return (
     <section className="section section--sunk" aria-labelledby="symptoms-title">
       <SectionHeading
-        eyebrow={symptoms.eyebrow}
         title={symptoms.title}
         titleId="symptoms-title"
       />

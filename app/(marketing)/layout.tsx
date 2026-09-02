@@ -1,6 +1,7 @@
 import { ContactDock } from "@/components/ContactDock";
 import { Header } from "@/components/Header";
 import { Motion } from "@/components/Motion";
+import { ScrollProgress } from "@/components/ScrollProgress";
 import { Footer } from "@/components/sections/Footer";
 import { Tracker } from "@/components/Tracker";
 import { nav, footerNav } from "@/content/site";
@@ -37,6 +38,8 @@ export default async function MarketingLayout({
 
   return (
     <>
+      <ScrollProgress />
+
       <a href="#main" className="skip-link">
         SKIP TO CONTENT
       </a>

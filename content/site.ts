@@ -362,7 +362,6 @@ export const stack: StackItem[] = [
 /* -------------------------------------------------------------------------- */
 
 export const symptoms = {
-  eyebrow: "DIAGNOSTIC",
   title: "Does this look familiar?",
   items: [
     {
@@ -394,7 +393,6 @@ export const symptoms = {
 /* -------------------------------------------------------------------------- */
 
 export const services = {
-  eyebrow: "SERVICES",
   title: "Four ways in",
   footnote:
     "Scope-dependent. Fixed price agreed before any work starts. No hourly billing, no surprise invoices.",

@@ -72,8 +72,22 @@ export function Motion() {
       });
     });
 
+    /**
+     * A second, separate list: elements that animate themselves on arrival
+     * rather than being faded in. The case-study metric bars are the only ones
+     * so far. They are marked in their own markup rather than discovered by
+     * position, because they are nested deep inside a card and are nothing to
+     * do with the section-level rhythm above.
+     */
+    const marks = [...document.querySelectorAll<HTMLElement>('[data-inview="pending"]')];
+    const stopMarks = observeInView(marks, (batch) => {
+      for (const el of batch) el.dataset.inview = "shown";
+    });
+
     return () => {
       stop();
+      stopMarks();
+      for (const el of marks) el.dataset.inview = "pending";
       delete document.documentElement.dataset.motion;
       for (const el of targets) {
         delete el.dataset.reveal;

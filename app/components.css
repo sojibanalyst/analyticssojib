@@ -1672,11 +1672,44 @@ a.wordmark:hover {
 .stack-strip__row {
   display: flex;
   align-items: center;
-  gap: 22px;
   flex-wrap: nowrap;
   overflow-x: auto;
   scrollbar-width: none;
   padding-inline: 18px;
+}
+
+.stack-strip__marquee {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.stack-strip__set {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex: 0 0 auto;
+  padding-inline-end: 22px;
+}
+
+/* Only exists so the marquee has somewhere to land. */
+.stack-strip__set--copy {
+  display: none;
+}
+
+.stack-strip__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.stack-strip__label {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
 }
 
 .stack-strip__row::-webkit-scrollbar {
@@ -1723,3 +1756,134 @@ a.wordmark:hover {
 
 /* 3. NO HEADING. See components/sections/Process.tsx — nothing to style, the
       break is the absence. */
+
+/* WhatsApp, beside the scheduled channel rather than instead of it ---------
+   Icon only in the header: that row already carries navigation, a theme
+   toggle and the booking CTA, and a fourth worded control would crowd it. The
+   accessible name is on the link, so nothing is lost to a screen reader. */
+.header-wa {
+  display: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  transition: color 150ms ease, border-color 150ms ease, background-color 180ms ease,
+    box-shadow 180ms ease, transform 180ms ease;
+}
+
+.header-wa:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header-wa:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@media (min-width: 768px) {
+  .header-wa {
+    display: inline-flex;
+  }
+}
+
+.menu-link--wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Motion, second pass ======================================================
+   Three additions, all of which mean something. Nothing here runs for a
+   visitor who has asked for reduced motion, and nothing here is required for
+   the page to be complete — every element is in its finished state by default
+   and only starts from somewhere else once Motion.tsx has confirmed motion is
+   allowed.
+   ========================================================================= */
+
+/* 1. THE METRIC BARS FILL AS THEY ARRIVE.
+      The one piece of motion that is an argument rather than a flourish: the
+      case is "this number moved", and the second bar overtaking the first is
+      that sentence drawn. scaleX from the left, so it composites rather than
+      relaying out. */
+@keyframes bar-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.metric-fill {
+  transform-origin: left center;
+}
+
+[data-motion="on"] .metric-fill[data-inview="pending"] {
+  transform: scaleX(0);
+}
+
+[data-motion="on"] .metric-fill[data-inview="shown"] {
+  animation: bar-fill 820ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--bar-delay, 0ms) both;
+}
+
+/* 2. SCROLL DEPTH. See components/ScrollProgress.tsx for why this one is not
+      behind the reduced-motion query. Above the header's z-index 50, because
+      it is a reading of the whole document rather than part of the chrome. */
+.scroll-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.scroll-progress__bar {
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* 3. THE TOOLS BAND RUNS. Continuous rather than static, which is the one
+      place a marquee earns its keep: the list is longer than any screen, so
+      something has to move for all of it to be seen. It pauses on hover and
+      on keyboard focus, so it can be read rather than chased. */
+@keyframes stack-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stack-strip__row {
+    overflow-x: hidden;
+  }
+
+  .stack-strip__set--copy {
+    display: flex;
+  }
+
+  .stack-strip__marquee {
+    animation: stack-marquee 46s linear infinite;
+    will-change: transform;
+  }
+
+  .stack-strip__row:hover .stack-strip__marquee,
+  .stack-strip__row:focus-within .stack-strip__marquee {
+    animation-play-state: paused;
+  }
+}
