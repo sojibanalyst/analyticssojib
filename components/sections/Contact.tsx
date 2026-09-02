@@ -1,4 +1,12 @@
-import { contact, linkedinUrl, proof, site, upworkUrl } from "@/content/site";
+import {
+  contact,
+  linkedinUrl,
+  proof,
+  site,
+  upworkUrl,
+  whatsappDisplay,
+  whatsappUrl,
+} from "@/content/site";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
 import { LeadForm } from "@/components/sections/LeadForm";
 import { SocialIcon } from "@/components/ui/Icon";
@@ -12,7 +20,6 @@ export function Contact() {
       className="section section--major"
       style={{ gap: "20px" }}
     >
-      <span className="eyebrow">{contact.eyebrow}</span>
 
       <h2 id="contact-title" className="contact-title">
         {contact.title}
@@ -50,6 +57,10 @@ export function Contact() {
         <a href={upworkUrl} target="_blank" rel="noopener" className="pill">
           <SocialIcon name="upwork" size={16} />
           {proof.contactChip}
+        </a>
+        <a href={whatsappUrl} target="_blank" rel="noopener" className="pill">
+          <SocialIcon name="whatsapp" size={16} />
+          {whatsappDisplay}
         </a>
         <a href={linkedinUrl} target="_blank" rel="noopener" className="pill">
           <SocialIcon name="linkedin" size={16} />

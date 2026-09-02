@@ -64,7 +64,7 @@ export default async function BlogIndex() {
             }}
           >
             Nothing finished yet. What is in progress is not listed here until
-            it is worth your time — there is enough half-written analytics
+            it is worth your time. There is enough half-written analytics
             writing on the internet already.
           </p>
         ) : null}

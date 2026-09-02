@@ -17,6 +17,7 @@ import {
   SnapchatIcon,
   TiktokIcon,
   UpworkIcon,
+  WhatsappIcon,
   XIcon,
 } from "@/components/ui/icons";
 
@@ -27,6 +28,7 @@ const SOCIAL = {
   facebook: FacebookIcon,
   instagram: InstagramIcon,
   github: GithubIcon,
+  whatsapp: WhatsappIcon,
 } as const;
 
 const STACK = {

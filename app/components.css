@@ -1652,3 +1652,74 @@ a.wordmark:hover {
     padding: 0 14px;
   }
 }
+
+/* Breaking the template ===================================================
+   Every section had the same shape — eyebrow, heading, one-line subtitle,
+   grid of cards — eleven times over. Three sections now deliberately do not.
+   These rules come after .section on purpose: they override the shared shell
+   rather than fighting it with specificity.
+   ========================================================================= */
+
+/* 1. FULL-BLEED. The stack band is the only row on the page that ignores the
+      1280px measure. It runs to within 18px of both edges at every width and
+      scrolls rather than wrapping, so at narrow widths it reads as a line
+      that continues past the screen instead of a block that reflows. */
+.stack-strip {
+  position: relative;
+  padding-inline: 0;
+}
+
+.stack-strip__row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-inline: 18px;
+}
+
+.stack-strip__row::-webkit-scrollbar {
+  height: 0;
+}
+
+.stack-strip__row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* The fade is the affordance: without it a row that runs off the edge looks
+   like a clipping bug rather than something you can push. */
+.stack-strip::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 56px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--tone-raised));
+}
+
+/* 2. ASYMMETRIC. Deliberately not halves and deliberately not level: the
+      pull-quote column is narrower than the prose and starts 64px lower, so
+      the section does not read as two matching boxes. */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 34px;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .about-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    column-gap: clamp(40px, 5vw, 88px);
+  }
+
+  .about-grid > :last-child {
+    margin-top: 64px;
+  }
+}
+
+/* 3. NO HEADING. See components/sections/Process.tsx — nothing to style, the
+      break is the absence. */
