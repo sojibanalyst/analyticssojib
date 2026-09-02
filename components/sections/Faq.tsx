@@ -14,7 +14,7 @@ export function Faq({ items }: { items: FaqItem[] }) {
       className="section"
       aria-labelledby="faq-title"
     >
-      <SectionHeading eyebrow={faq.eyebrow} title={faq.title} titleId="faq-title" />
+      <SectionHeading title={faq.title} titleId="faq-title" />
 
       <div data-stagger>
         {items.map((item) => (

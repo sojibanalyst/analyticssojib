@@ -5,16 +5,9 @@ export function StackStrip() {
   return (
     <section
       aria-label="Tools and platforms"
-      className="section section--band section--raised"
+      className="section section--band section--raised stack-strip"
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "14px 22px",
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="stack-strip__row">
         <span
           style={{
             flex: "0 0 auto",

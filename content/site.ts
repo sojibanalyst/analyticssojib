@@ -142,6 +142,7 @@ export type SocialLink = {
     | "x"
     | "facebook"
     | "instagram"
+    | "whatsapp"
     | "github";
 };
 
@@ -214,6 +215,16 @@ export const socials: SocialLink[] = [
     href: "https://www.linkedin.com/in/analyticssojib/",
     icon: "linkedin",
   },
+  /**
+   * wa.me wants the number with no plus and no separators, so the displayed
+   * form and the link form are kept apart rather than one being derived from
+   * the other with a regex nobody would look at again.
+   */
+  {
+    label: "WhatsApp",
+    href: "https://wa.me/8801304095126",
+    icon: "whatsapp",
+  },
   { label: "Twitter / X", href: "https://x.com/analyticssojib", icon: "x" },
   {
     label: "Facebook",
@@ -230,6 +241,11 @@ export const socials: SocialLink[] = [
 
 export const upworkUrl = socials[0].href;
 export const linkedinUrl = socials[1].href;
+
+/** Written out rather than indexed off socials, which would break the moment
+ *  somebody reorders that array. */
+export const whatsappUrl = "https://wa.me/8801304095126";
+export const whatsappDisplay = "+880 1304 095126";
 
 /* -------------------------------------------------------------------------- */
 /* Navigation                                                                  */
@@ -330,7 +346,7 @@ export const stack: StackItem[] = [
 /* -------------------------------------------------------------------------- */
 
 export const symptoms = {
-  eyebrow: "01 / DIAGNOSTIC",
+  eyebrow: "DIAGNOSTIC",
   title: "Does this look familiar?",
   items: [
     {
@@ -341,7 +357,7 @@ export const symptoms = {
     {
       tag: "▲ OVER-REPORTING",
       title: "Meta claims ROAS you can’t bank",
-      body: "Duplicate events and loose attribution windows inflate ad platforms — so you scale spend on a number that isn’t real.",
+      body: "Duplicate events and loose attribution windows inflate ad platforms. You scale spend on a number that isn’t real.",
     },
     {
       tag: "▲ SIGNAL LOSS",
@@ -362,17 +378,17 @@ export const symptoms = {
 /* -------------------------------------------------------------------------- */
 
 export const services = {
-  eyebrow: "02 / SERVICES",
+  eyebrow: "SERVICES",
   title: "Four ways in",
   footnote:
-    "Scope-dependent. Fixed price agreed before any work starts — no hourly billing, no surprise invoices.",
+    "Scope-dependent. Fixed price agreed before any work starts. No hourly billing, no surprise invoices.",
   items: [
     {
       code: "S-01",
       duration: "5–7 DAYS",
       price: "from $850",
       title: "Tracking audit",
-      body: "Every tag, trigger, event and data layer mapped against what your store actually sells. You get a prioritised defect list with revenue impact per item.",
+      body: "I map every tag, trigger, event and data layer against what your store actually sells. Then you get a defect list, prioritised, with the revenue impact written next to each item.",
       bullets: [
         "GA4 event taxonomy and key events",
         "Event-to-order reconciliation",
@@ -385,7 +401,7 @@ export const services = {
       duration: "2–3 WEEKS",
       price: "from $2,400",
       title: "Server-side tagging",
-      body: "A server GTM container on your own subdomain: fewer blocked hits, longer cookie life, one clean event stream feeding every platform.",
+      body: "A server GTM container on your own subdomain. Fewer blocked hits, longer cookie life. One clean event stream, feeding every platform.",
       bullets: [
         "Web container + dataLayer spec",
         "sGTM on custom domain",
@@ -398,7 +414,7 @@ export const services = {
       duration: "1–2 WEEKS",
       price: "from $1,600",
       title: "Ad platform parity",
-      body: "Meta CAPI, Google Ads enhanced conversions, TikTok Events API — matched to GA4 and to your order table, then held there.",
+      body: "Meta CAPI, Google Ads enhanced conversions, TikTok Events API. Each one matched to GA4 and to your order table, then checked every week so it stays matched.",
       bullets: [
         "Event match quality lift",
         "Google Ads enhanced conversions",
@@ -411,7 +427,7 @@ export const services = {
       duration: "ONGOING",
       price: "from $900/mo",
       title: "Reporting you trust",
-      body: "GA4 into BigQuery, blended with orders and ad cost, surfaced in Looker Studio — one page your team stops arguing with.",
+      body: "GA4 into BigQuery, blended with orders and ad cost. One page your team stops arguing with.",
       bullets: [
         "BigQuery export + models",
         "Looker Studio dashboards",
@@ -427,10 +443,10 @@ export const services = {
 /* -------------------------------------------------------------------------- */
 
 export const work = {
-  eyebrow: "03 / CASE FILES",
+  eyebrow: "CASE FILES",
   title: "Fixed, and provable",
   intro:
-    "Two engagements, written up in full. Each one reconciles against the client's own order data — click through for the detail.",
+    "Two engagements, written up in full. Each reconciles against the client's own order data; click through for the detail.",
   readMore: "READ THE FULL CASE →",
   screenshotPending: "Case screenshot pending",
   cases: [
@@ -478,7 +494,7 @@ export const work = {
         {
           src: "/case-shopify-accuracy.png",
           alt: "GA4 DebugView showing a purchase and an add_payment_info event firing once each on a live session, beside the running event counts for the last 30 minutes.",
-          caption: "One purchase, one event — no duplicate on refresh",
+          caption: "One purchase, one event, no duplicate on refresh",
           section: "How it was verified",
         },
       ],
@@ -491,7 +507,7 @@ export const work = {
             heading: "What was broken",
             paras: [
               "The theme's default checkout fired the purchase event on the thank-you page. A second, app-driven checkout path never fired it at all, so an entire segment of orders was invisible in GA4.",
-              "Where the event did fire, a thank-you page refresh fired it again — the same order counted two, sometimes three times.",
+              "Where the event did fire, a thank-you page refresh fired it again. The same order counted two, sometimes three times.",
               "The consent banner was set to deny-by-default with no Consent Mode v2 configuration, so tags for non-consenting visitors were blocked outright rather than sending cookieless pings. That removed a further slice of purchases with no error anywhere to show for it.",
             ],
           },
@@ -507,7 +523,7 @@ export const work = {
           {
             heading: "How it was verified",
             paras: [
-              "For 90 days after go-live, GA4 purchases were reconciled against the Shopify order export daily. Sign-off was not a screenshot of a dashboard — it was the two tables agreeing within a tolerance the client set.",
+              "For 90 days after go-live, GA4 purchases were reconciled against the Shopify order export daily. Sign-off was not a screenshot of a dashboard. It was the two tables agreeing within a tolerance the client set.",
             ],
           },
         ],
@@ -545,7 +561,7 @@ export const work = {
         {
           src: "/case-meta-roas.png",
           alt: "Meta Events Manager showing one purchase arriving twice from the browser and once from the server under a shared event ID, with the server event marked Deduplicated.",
-          caption: "Shared event ID — the server event resolves as Deduplicated",
+          caption: "Shared event ID: the server event resolves as Deduplicated",
           section: "What I changed",
         },
       ],
@@ -564,7 +580,7 @@ export const work = {
           {
             heading: "What I changed",
             paras: [
-              "Pixel and CAPI now share one event ID per order, so Meta deduplicates reliably — every event in the window resolved to a single sale.",
+              "Pixel and CAPI now share one event ID per order, so Meta deduplicates reliably: every event in the window resolved to a single sale.",
               "Renewals were split from acquisition into their own event, so new-customer ROAS and total revenue stopped being the same number.",
               "Customer parameters were normalised and hashed correctly before sending, lifting event match quality to 9.3 out of 10.",
               "Ad cost, GA4 events and the order ledger were blended in BigQuery and surfaced in a single Looker Studio page, so the number in the meeting is the number in the accounts.",
@@ -631,7 +647,6 @@ export const work = {
 /* -------------------------------------------------------------------------- */
 
 export const reviews = {
-  eyebrow: "04 / REVIEWS",
   kicker: "CLIENT VIDEO + WRITTEN REVIEWS",
   title: "Clients on the record",
   note: "Recorded by clients on Upwork engagements.",
@@ -685,7 +700,6 @@ export const reviews = {
 /* -------------------------------------------------------------------------- */
 
 export const process = {
-  eyebrow: "05 / METHOD",
   title: "How the work runs",
   steps: [
     {
@@ -706,7 +720,7 @@ export const process = {
     {
       step: "04",
       title: "QA & handover",
-      body: "Parity checks against your orders, plus the documentation — so the fix outlives the engagement.",
+      body: "Parity checks against your orders, plus the documentation, so the fix outlives the engagement.",
     },
   ] satisfies ProcessStep[],
 };
@@ -716,9 +730,8 @@ export const process = {
 /* -------------------------------------------------------------------------- */
 
 export const about = {
-  eyebrow: "06 / ABOUT",
   title: "I only do measurement.",
-  body: "No websites, no ads management, no growth retainers. Two years on tracking alone — which is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 51 projects.",
+  body: "No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 51 projects.",
   pullquote:
     "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it — so you can check it without taking my word for anything.",
   pullquoteAttribution: "SOJIB H. · DHAKA, BANGLADESH · UTC+6",
@@ -746,7 +759,6 @@ export const about = {
 /* -------------------------------------------------------------------------- */
 
 export const faq = {
-  eyebrow: "08 / FAQ",
   title: "Questions I get asked",
   items: [
     {
@@ -759,15 +771,15 @@ export const faq = {
     },
     {
       q: "Do you work with Shopify and WordPress?",
-      a: "Yes — Shopify, WooCommerce on WordPress, and custom stacks. On Shopify that includes the checkout extensibility path and post-purchase pages; on WooCommerce it usually means fixing a plugin that half-implements the dataLayer. The approach is the same either way: reconcile events against the order table before calling anything done.",
+      a: "Yes. Shopify, WooCommerce on WordPress, and custom stacks. On Shopify that includes the checkout extensibility path and post-purchase pages; on WooCommerce it usually means fixing a plugin that half-implements the dataLayer. The approach is the same either way: reconcile events against the order table before calling anything done.",
     },
     {
       q: "Will this fix my Meta ads attribution?",
-      a: "It fixes the measurement side of it, which is usually where the problem is. Deduplicated event IDs across pixel and Conversions API stop the same sale being counted twice, and better customer-data matching raises event match quality so Meta can optimise properly. What it can’t do is change Meta’s attribution model — the platform will still credit itself differently to GA4, and I’ll show you why.",
+      a: "It fixes the measurement side of it, which is usually where the problem is. Deduplicated event IDs across pixel and Conversions API stop the same sale being counted twice, and better customer-data matching raises event match quality so Meta can optimise properly. What it can’t do is change Meta’s attribution model. The platform will still credit itself differently to GA4, and I’ll show you why.",
     },
     {
       q: "What access do you need from me?",
-      a: "Admin on Google Tag Manager and GA4, and read access to whatever your orders live in — Shopify, WooCommerce or a spreadsheet export is fine. For ad platform work, partner access to Meta Business Manager and Google Ads. For server-side, the ability to add a DNS record on a subdomain. I ask for the minimum that lets me verify the fix, and I document everything I change.",
+      a: "Admin on Google Tag Manager and GA4, and read access to whatever your orders live in: Shopify, WooCommerce or a spreadsheet export is fine. For ad platform work, partner access to Meta Business Manager and Google Ads. For server-side, the ability to add a DNS record on a subdomain. I ask for the minimum that lets me verify the fix, and I document everything I change.",
     },
     {
       q: "How do you charge?",
@@ -781,7 +793,6 @@ export const faq = {
 /* -------------------------------------------------------------------------- */
 
 export const contact = {
-  eyebrow: "09 / CONTACT",
   title: "Send me your GA4 and your order total. I’ll tell you the gap.",
   body: "A 30-minute call, no deck. If your tracking is fine I’ll say so and you’ve lost half an hour.",
   /**

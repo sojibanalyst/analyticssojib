@@ -28,7 +28,6 @@ export function Reviews({
       aria-labelledby="reviews-title"
     >
       <div className="section-head">
-        <span className="eyebrow">{reviews.eyebrow}</span>
         <span className="eyebrow eyebrow--muted">{reviews.kicker}</span>
       </div>
 

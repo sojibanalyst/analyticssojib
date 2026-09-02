@@ -57,9 +57,16 @@ export default async function OpengraphImage() {
           <div style={{ display: "flex" }}>
             SOJIB<span style={{ color: ACCENT }}>_</span>ANALYTICS
           </div>
+          {/* The square is DRAWN, not typed. As a "■" character it rendered as
+              a tofu box on the share card: Satori fetches a font per glyph and
+              the request for that one returns 400, which is the "Failed to
+              load dynamic font for ■" line in the build output. Nobody sees a
+              build warning; everybody who shares the link sees the box. */}
           <div
             style={{
               display: "flex",
+              alignItems: "center",
+              gap: 10,
               background: ACCENT,
               color: ON_ACCENT,
               fontSize: 18,
@@ -68,7 +75,8 @@ export default async function OpengraphImage() {
               borderRadius: 8,
             }}
           >
-            ■ TRACKING INTEGRITY
+            <div style={{ display: "flex", width: 10, height: 10, background: ON_ACCENT }} />
+            TRACKING INTEGRITY
           </div>
         </div>
 

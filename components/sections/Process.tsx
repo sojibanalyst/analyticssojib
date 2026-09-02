@@ -1,15 +1,22 @@
 import { process } from "@/content/site";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 
+/**
+ * The section with no heading. It opens on 01 AUDIT and simply runs.
+ *
+ * One of three deliberate breaks in the page's template — every section had
+ * the same shape, eyebrow then heading then subtitle then grid, eleven times
+ * over, and a page where every chapter is built to the same jig reads as
+ * generated because it was. Four numbered steps do not need to be told they
+ * are a method; a person writing this section would have looked at
+ * "05 / METHOD — HOW THE WORK RUNS" sitting above "01 AUDIT" and deleted it.
+ *
+ * The name is not lost, only unprinted: aria-label carries process.title, so
+ * a screen reader still announces the section and the landmark list is intact.
+ * Breaking a visual template is not a licence to break the semantics under it.
+ */
 export function Process() {
   return (
-    <section id="process" className="section section--sunk" aria-labelledby="process-title">
-      <SectionHeading
-        eyebrow={process.eyebrow}
-        title={process.title}
-        titleId="process-title"
-      />
-
+    <section id="process" className="section section--sunk" aria-label={process.title}>
       <ol
         className="grid4"
         style={{ listStyle: "none", margin: 0, padding: 0 }}

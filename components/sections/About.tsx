@@ -60,13 +60,7 @@ export function About() {
     <section
       id="about"
       aria-labelledby="about-title"
-      className="section section--raised"
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        gap: "34px",
-        alignItems: "start",
-      }}
+      className="section section--raised about-grid"
     >
       <div
         style={{
@@ -76,7 +70,6 @@ export function About() {
           gap: "16px",
         }}
       >
-        <span className="eyebrow">{about.eyebrow}</span>
         <h2
           id="about-title"
           style={{
