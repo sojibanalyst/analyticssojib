@@ -1,4 +1,6 @@
+import { ContactDock } from "@/components/ContactDock";
 import { Header } from "@/components/Header";
+import { Motion } from "@/components/Motion";
 import { Footer } from "@/components/sections/Footer";
 import { Tracker } from "@/components/Tracker";
 import { nav, footerNav } from "@/content/site";
@@ -45,6 +47,13 @@ export default async function MarketingLayout({
       {/* Public pages only. The console must not appear in the analytics it
           exists to inspect, so this is not in the (admin) group. */}
       <Tracker />
+
+      {/* Scroll reveal. Renders nothing; hides nothing unless it runs. */}
+      <Motion />
+
+      {/* Last in the DOM on purpose: it is a shortcut, so a keyboard user
+          reaches it after the page's own content rather than before it. */}
+      <ContactDock />
 
       <script
         type="application/ld+json"

@@ -3,7 +3,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export function Symptoms() {
   return (
-    <section className="section" aria-labelledby="symptoms-title">
+    <section className="section section--sunk" aria-labelledby="symptoms-title">
       <SectionHeading
         eyebrow={symptoms.eyebrow}
         title={symptoms.title}
@@ -20,7 +20,7 @@ export function Symptoms() {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "11px",
+                fontSize: "var(--text-label)",
                 fontWeight: 700,
                 letterSpacing: "0.12em",
                 color: "var(--warn)",
@@ -31,7 +31,7 @@ export function Symptoms() {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "16.5px",
+                fontSize: "var(--text-lead)",
                 fontWeight: 700,
                 letterSpacing: "-0.01em",
               }}
@@ -40,7 +40,7 @@ export function Symptoms() {
             </span>
             <span
               style={{
-                fontSize: "14.5px",
+                fontSize: "var(--text-body)",
                 lineHeight: 1.6,
                 color: "var(--muted)",
                 textWrap: "pretty",

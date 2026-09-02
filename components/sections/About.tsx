@@ -7,10 +7,10 @@ const docStyle: React.CSSProperties = {
   alignSelf: "flex-start",
   boxSizing: "border-box",
   border: "1px solid var(--border)",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   padding: "14px 16px",
   fontFamily: "var(--font-prose)",
-  fontSize: "12px",
+  fontSize: "var(--text-small)",
   letterSpacing: "0.06em",
   color: "var(--text)",
 };
@@ -60,11 +60,8 @@ export function About() {
     <section
       id="about"
       aria-labelledby="about-title"
+      className="section section--raised"
       style={{
-        paddingBlock: "56px",
-        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
-        borderBottom: "1px solid var(--border)",
-        background: "var(--surface)",
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
         gap: "34px",
@@ -85,7 +82,7 @@ export function About() {
           style={{
             margin: 0,
             fontFamily: "var(--font-prose)",
-            fontSize: "clamp(24px, 3.6vw, 30px)",
+            fontSize: "var(--text-h3)",
             fontWeight: 700,
             letterSpacing: "-0.02em",
             textTransform: "uppercase",
@@ -97,7 +94,7 @@ export function About() {
         <p
           style={{
             margin: 0,
-            fontSize: "16px",
+            fontSize: "var(--text-body)",
             lineHeight: 1.7,
             color: "var(--muted)",
             textWrap: "pretty",
@@ -131,7 +128,7 @@ export function About() {
         <p
           style={{
             margin: 0,
-            fontSize: "clamp(18px, 2.2vw, 21px)",
+            fontSize: "var(--text-lead)",
             lineHeight: 1.5,
             fontWeight: 500,
             letterSpacing: "-0.01em",
@@ -143,7 +140,7 @@ export function About() {
         <span
           style={{
             fontFamily: "var(--font-prose)",
-            fontSize: "11px",
+            fontSize: "var(--text-label)",
             letterSpacing: "0.08em",
             color: "var(--muted)",
           }}

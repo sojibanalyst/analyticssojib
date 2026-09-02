@@ -16,7 +16,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           <span
             style={{
               fontFamily: "var(--font-prose)",
-              fontSize: "11px",
+              fontSize: "var(--text-label)",
               letterSpacing: "0.1em",
               color: "var(--muted)",
             }}
@@ -26,7 +26,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           <span
             style={{
               fontFamily: "var(--font-prose)",
-              fontSize: "clamp(28px, 3.4vw, 34px)",
+              fontSize: "var(--text-h2)",
               fontWeight: 500,
               color: "var(--faint)",
               letterSpacing: "-0.03em",
@@ -61,7 +61,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           <span
             style={{
               fontFamily: "var(--font-prose)",
-              fontSize: "11px",
+              fontSize: "var(--text-label)",
               letterSpacing: "0.1em",
               color: "var(--ink)",
             }}
@@ -71,7 +71,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           <span
             style={{
               fontFamily: "var(--font-prose)",
-              fontSize: "clamp(28px, 3.4vw, 34px)",
+              fontSize: "var(--text-h2)",
               fontWeight: 800,
               letterSpacing: "-0.03em",
             }}
@@ -84,7 +84,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
       <span
         style={{
           fontFamily: "var(--font-prose)",
-          fontSize: "11px",
+          fontSize: "var(--text-label)",
           letterSpacing: "0.08em",
           color: "var(--muted)",
         }}

@@ -109,13 +109,13 @@ export function LiteYouTube({ id, label, orientation, badge }: Props) {
               pointerEvents: "none",
               width: "58px",
               height: "58px",
-              borderRadius: "50%",
+              borderRadius: "var(--radius-full)",
               background: "var(--accent)",
               color: "var(--on-accent)",
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "16px",
+              fontSize: "var(--text-body)",
               paddingLeft: "3px",
             }}
           >
@@ -130,13 +130,13 @@ export function LiteYouTube({ id, label, orientation, badge }: Props) {
                 left: "10px",
                 pointerEvents: "none",
                 fontFamily: "var(--font-prose)",
-                fontSize: "10.5px",
+                fontSize: "var(--text-label)",
                 letterSpacing: "0.1em",
                 whiteSpace: "nowrap",
                 background: "var(--bg)",
                 color: "var(--muted)",
                 border: "1px solid var(--border)",
-                borderRadius: "6px",
+                borderRadius: "var(--radius-sm)",
                 padding: "4px 8px",
               }}
             >

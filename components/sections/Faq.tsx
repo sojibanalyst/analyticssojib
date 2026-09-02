@@ -11,12 +11,12 @@ export function Faq({ items }: { items: FaqItem[] }) {
   return (
     <section
       id="faq"
-      className="section section--surface"
+      className="section"
       aria-labelledby="faq-title"
     >
       <SectionHeading eyebrow={faq.eyebrow} title={faq.title} titleId="faq-title" />
 
-      <div>
+      <div data-stagger>
         {items.map((item) => (
           <details key={item.q} className="faq-item">
             <summary>{item.q}</summary>

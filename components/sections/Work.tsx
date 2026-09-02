@@ -21,14 +21,14 @@ function Screenshot({ item }: { item: CaseStudy }) {
 
 export function Work({ cases }: { cases: CaseStudy[] }) {
   return (
-    <section id="work" className="section" aria-labelledby="work-title">
+    <section id="work" className="section section--major section--ink" aria-labelledby="work-title">
       <SectionHeading eyebrow={work.eyebrow} title={work.title} titleId="work-title" />
 
       <p
         style={{
           margin: 0,
           maxWidth: "62ch",
-          fontSize: "15px",
+          fontSize: "var(--text-body)",
           lineHeight: 1.65,
           color: "var(--muted)",
           textWrap: "pretty",
@@ -52,7 +52,7 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
               <h3
                 style={{
                   margin: 0,
-                  fontSize: "clamp(21px, 2.4vw, 24px)",
+                  fontSize: "var(--text-h4)",
                   fontWeight: 700,
                   letterSpacing: "-0.015em",
                 }}
@@ -62,7 +62,7 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
               <p
                 style={{
                   margin: 0,
-                  fontSize: "15px",
+                  fontSize: "var(--text-body)",
                   lineHeight: 1.65,
                   color: "var(--muted)",
                   textWrap: "pretty",
@@ -88,16 +88,16 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
               <div className="grid4">
                 {item.stats.map((stat) => (
                   <div key={stat.label} className="stat-tile">
-                    <span style={{ fontFamily: "var(--font-prose)", fontSize: "20px", fontWeight: 800 }}>
+                    <span style={{ fontFamily: "var(--font-prose)", fontSize: "var(--text-lead)", fontWeight: 800 }}>
                       {stat.value}
                       {stat.unit && (
-                        <span style={{ fontSize: "12px", color: "var(--muted)" }}>{stat.unit}</span>
+                        <span style={{ fontSize: "var(--text-label)", color: "var(--muted)" }}>{stat.unit}</span>
                       )}
                     </span>
                     <span
                       style={{
                         fontFamily: "var(--font-prose)",
-                        fontSize: "11px",
+                        fontSize: "var(--text-label)",
                         letterSpacing: "0.08em",
                         color: "var(--muted)",
                       }}
@@ -132,7 +132,7 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
             margin: 0,
             maxWidth: "72ch",
             fontFamily: "var(--font-prose)",
-            fontSize: "11.5px",
+            fontSize: "var(--text-label)",
             lineHeight: 1.6,
             letterSpacing: "0.04em",
             color: "var(--faint)",

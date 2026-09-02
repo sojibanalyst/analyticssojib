@@ -1,3 +1,4 @@
+import { StatValue } from "@/components/StatValue";
 import { proof, stats, upworkUrl } from "@/content/site";
 
 /**
@@ -8,16 +9,11 @@ export function StatBand() {
   return (
     <section
       aria-label="Upwork track record"
-      style={{
-        paddingBlock: "22px 40px",
-        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
-        borderBottom: "1px solid var(--border)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-      }}
+      className="section section--evidence section--sunk"
+      style={{ gap: "12px" }}
     >
       <div
+        data-stagger
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(148px, 1fr))",
@@ -33,14 +29,14 @@ export function StatBand() {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "clamp(26px, 3vw, 30px)",
+                fontSize: "var(--text-h3)",
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
               }}
             >
-              {stat.value}
+              <StatValue value={stat.value} />
               {stat.unit && (
-                <span style={{ fontSize: "16px", color: "var(--muted)" }}>
+                <span style={{ fontSize: "var(--text-body)", color: "var(--muted)" }}>
                   {stat.unit}
                 </span>
               )}
@@ -48,7 +44,7 @@ export function StatBand() {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "11px",
+                fontSize: "var(--text-label)",
                 letterSpacing: "0.1em",
                 color: "var(--muted)",
               }}
@@ -63,7 +59,7 @@ export function StatBand() {
         style={{
           margin: 0,
           fontFamily: "var(--font-prose)",
-          fontSize: "10.5px",
+          fontSize: "var(--text-label)",
           letterSpacing: "0.1em",
           color: "var(--faint)",
         }}

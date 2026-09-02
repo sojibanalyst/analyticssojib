@@ -13,7 +13,7 @@
 }
 
 .section {
-  padding-block: 56px;
+  padding-block: var(--pad-section);
   padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -21,8 +21,72 @@
   gap: 26px;
 }
 
-.section--surface {
-  background: var(--surface);
+/* Vertical rhythm. Three sizes, and the size is the argument: a band belongs
+   to the section above it, a section is a chapter, a major break is a new
+   movement. See the tokens in globals.css. */
+.section--band {
+  padding-block: var(--pad-band);
+}
+
+.section--major {
+  padding-block: var(--pad-major);
+}
+
+/* The only asymmetric padding on the page, and it is asymmetric for a reason:
+   the Upwork figures are the hero's evidence, so they sit tight underneath it
+   and take a full chapter break before the argument starts. */
+.section--evidence {
+  padding-block: var(--pad-band) var(--pad-section);
+}
+
+/* Section tones. Consecutive sections always differ; see the ordering note in
+   app/(marketing)/page.tsx. */
+.section--raised {
+  background: var(--tone-raised);
+}
+
+.section--sunk {
+  background: var(--tone-sunk);
+}
+
+/* The one dark section. Its palette comes from globals.css, where the whole
+   dark theme is scoped onto this class for the light theme — so a light-theme
+   visitor gets a genuine island of the dark design rather than a black box
+   with light-theme greens in it.
+
+   No bottom hairline: the tone change IS the boundary, and a border as well
+   is the belt-and-braces that makes a page look ruled. */
+.section--ink {
+  background: var(--tone-ink);
+  border-bottom-color: transparent;
+  /* Not optional, and not obvious. Redefining --text on this section changes
+     the token for descendants, but `color` was already RESOLVED on <body> and
+     inherits down as a computed value — so every element that does not set
+     its own colour keeps the light theme's near-black and disappears. The
+     first render of this section lost the h2 and every stat figure exactly
+     that way. Re-resolving color here puts the whole subtree back on the
+     scoped token. */
+  color: var(--text);
+}
+
+/* The WRITING section renders only when a post is finished, which flips the
+   parity of everything below it. Rather than teaching the page to count, the
+   two sections after it swap tones when it is present. Self-healing: finish a
+   post in the console and the rhythm stays correct with no deploy. */
+#faq {
+  background: var(--tone-sunk);
+}
+
+#contact {
+  background: var(--tone-raised);
+}
+
+#blog ~ #faq {
+  background: var(--tone-raised);
+}
+
+#blog ~ #contact {
+  background: var(--tone-sunk);
 }
 
 .section-head {
@@ -35,7 +99,7 @@
 
 .eyebrow {
   font-family: var(--font-prose);
-  font-size: 11.5px;
+  font-size: var(--text-label);
   letter-spacing: 0.14em;
   white-space: nowrap;
   color: var(--ink);
@@ -48,19 +112,32 @@
 .h2 {
   margin: 0;
   font-family: var(--font-prose);
-  font-size: clamp(25px, 4.4vw, 34px);
+  font-size: var(--text-h2);
   font-weight: 700;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
 
+/* Elevation --------------------------------------------------------------
+   Three levels, defined in globals.css as --elev-1/2/3 (the shadow) paired
+   with --raise-1/2/3 (the surface). Light spends the shadow, dark spends the
+   surface; both are always applied together so a component never has to know
+   which theme it is in.
+
+   The floor matters as much as the ceiling. A .stat-tile sits INSIDE a
+   .case-card and keeps its --bg background with no shadow at all, because
+   raising something that is already on a raised thing is exactly how a page
+   turns puffy. Inside a card, elevation goes down, not up. */
+
 .card {
   box-sizing: border-box;
-  background: var(--surface);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
+  transition: box-shadow 180ms ease, background-color 180ms ease;
 }
 
 /* The design's grid4: 4 → 2 → 1 across 1200 / 768. */
@@ -92,22 +169,31 @@ a.doc-button:hover {
 }
 
 .service-card {
-  transition: border-color 150ms ease;
+  transition: border-color 150ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 
 .service-card:hover {
   border-color: var(--ink);
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
 }
 
-/* Case/capability card shell: header bar + body, radius 16, clipped. */
+/* Case/capability card shell: header bar + body, clipped. A feature panel, so
+   --radius-lg rather than the card radius. */
 .case-card {
   box-sizing: border-box;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--surface);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
   display: flex;
   flex-direction: column;
+  transition: box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.case-card:hover {
+  box-shadow: var(--elev-2);
 }
 
 .case-card__bar {
@@ -119,7 +205,7 @@ a.doc-button:hover {
   padding: 12px clamp(16px, 2vw, 22px);
   border-bottom: 1px solid var(--border);
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.1em;
   color: var(--muted);
 }
@@ -138,11 +224,13 @@ a.doc-button:hover {
   min-width: 0;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  /* Deliberately no elevation — see the note above .card. */
+  box-shadow: none;
 }
 
 /* Case screenshot: real image, or the design's slot as a drop zone. */
@@ -150,7 +238,7 @@ a.doc-button:hover {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 7;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -188,7 +276,7 @@ a.doc-button:hover {
 
 .case-gallery__caption {
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.08em;
   color: var(--muted);
 }
@@ -222,7 +310,7 @@ a.doc-button:hover {
 .case-gallery__dots span {
   width: 24px;
   height: 6px;
-  border-radius: 3px;
+  border-radius: var(--radius-full);
   background: var(--border);
 }
 
@@ -232,7 +320,7 @@ a.doc-button:hover {
 
 .case-gallery__count {
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.08em;
   white-space: nowrap;
   color: var(--muted);
@@ -257,13 +345,13 @@ a.doc-button:hover {
   justify-content: center;
   gap: 10px;
   font-family: var(--font-prose);
-  font-size: 11.5px;
+  font-size: var(--text-label);
   letter-spacing: 0.1em;
   color: var(--faint);
 }
 
 .case-shot__icon {
-  font-size: 20px;
+  font-size: var(--text-lead);
   color: var(--border);
 }
 
@@ -275,7 +363,7 @@ a.doc-button:hover {
   padding: 0 clamp(16px, 2vw, 22px);
   border-top: 1px solid var(--border);
   font-family: var(--font-prose);
-  font-size: 11.5px;
+  font-size: var(--text-small);
   letter-spacing: 0.1em;
   color: var(--ink);
   transition: background 150ms ease;
@@ -306,9 +394,10 @@ a.doc-button:hover {
   display: grid;
   grid-template-columns: 1fr;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--bg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
 }
 
 @media (min-width: 700px) {
@@ -317,11 +406,13 @@ a.doc-button:hover {
   }
 }
 
+/* The media half is a well cut into the slide, not a second card on top of
+   it — same reasoning as .stat-tile. */
 .review-slide__media {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface);
+  background: var(--bg);
   padding: 0;
 }
 
@@ -342,7 +433,7 @@ a.doc-button:hover {
   margin: 0;
   max-width: 26ch;
   font-family: var(--font-prose);
-  font-size: clamp(28px, 5.2vw, 46px);
+  font-size: var(--text-display);
   line-height: 1.1;
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -354,20 +445,23 @@ a.doc-button:hover {
 
 .note-card {
   box-sizing: border-box;
-  background: var(--surface);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 22px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-height: 168px;
-  transition: border-color 150ms ease;
+  transition: border-color 150ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 
 .note-card:hover {
   border-color: var(--ink);
   color: inherit;
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
 }
 
 /* Written review carousel ------------------------------------------------ */
@@ -412,17 +506,24 @@ a.doc-button:hover {
   scroll-snap-align: start;
   box-sizing: border-box;
   margin: 0;
-  background: var(--bg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 22px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: box-shadow 180ms ease, background-color 180ms ease;
 }
 
+/* An empty slot is not a card. It stays on the page surface with no lift at
+   all, so the shadow reads as "there is something here" rather than
+   decoration applied evenly to full and empty alike. */
 .written-card[data-placeholder="true"] {
   border-style: dashed;
+  background: transparent;
+  box-shadow: none;
 }
 
 @media (min-width: 768px) {
@@ -443,20 +544,20 @@ a.doc-button:hover {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-prose);
-  font-size: 12px;
+  font-size: var(--text-small);
   text-align: left;
 }
 
 .defect-table caption {
   text-align: left;
   padding: 0 0 14px;
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.1em;
   color: var(--muted);
 }
 
 .defect-table th {
-  font-size: 10.5px;
+  font-size: var(--text-label);
   letter-spacing: 0.1em;
   font-weight: 500;
   color: var(--faint);
@@ -491,9 +592,17 @@ a.doc-button:hover {
 
 .faq-item {
   border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--surface);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
   overflow: hidden;
+  transition: box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.faq-item:hover,
+.faq-item[open] {
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
 }
 
 .faq-item + .faq-item {
@@ -511,7 +620,7 @@ a.doc-button:hover {
   min-height: 60px;
   padding: 16px 20px;
   font-family: var(--font-prose);
-  font-size: 16.5px;
+  font-size: var(--text-lead);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text);
@@ -528,7 +637,7 @@ a.doc-button:hover {
 .faq-item summary::after {
   content: "+";
   font-family: var(--font-prose);
-  font-size: 18px;
+  font-size: var(--text-lead);
   font-weight: 700;
   color: var(--ink);
   flex: 0 0 auto;
@@ -541,7 +650,7 @@ a.doc-button:hover {
 .faq-item p {
   margin: 0;
   padding: 0 20px 20px;
-  font-size: 14.5px;
+  font-size: var(--text-body);
   line-height: 1.65;
   color: var(--muted);
   max-width: 78ch;
@@ -557,10 +666,11 @@ a.doc-button:hover {
   justify-content: center;
   font-family: var(--font-prose);
   min-height: 48px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   white-space: nowrap;
-  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease,
+    box-shadow 180ms ease;
 }
 
 /* 800 rather than 700, and a touch larger: the extra stroke weight is what
@@ -568,7 +678,7 @@ a.doc-button:hover {
 .btn-primary {
   background: var(--accent);
   color: var(--on-accent);
-  font-size: 13.5px;
+  font-size: var(--text-small);
   font-weight: 800;
   letter-spacing: 0.05em;
   padding: 15px 22px;
@@ -578,13 +688,14 @@ a.doc-button:hover {
 .btn-primary:hover {
   color: var(--on-accent);
   filter: brightness(1.08);
+  box-shadow: var(--elev-2);
 }
 
 .btn-ghost {
   border: 1px solid var(--border);
   color: var(--text);
   background: transparent;
-  font-size: 12.5px;
+  font-size: var(--text-small);
   font-weight: 500;
   letter-spacing: 0.06em;
   padding: 14px 20px;
@@ -593,6 +704,8 @@ a.doc-button:hover {
 .btn-ghost:hover {
   border-color: var(--ink);
   color: var(--ink);
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
 }
 
 /* Small chrome ----------------------------------------------------------- */
@@ -603,10 +716,10 @@ a.doc-button:hover {
   align-items: center;
   gap: 9px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 6px 11px;
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.08em;
   color: var(--muted);
 }
@@ -614,15 +727,17 @@ a.doc-button:hover {
 a.pill:hover {
   border-color: var(--ink);
   color: var(--ink);
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
 }
 
 .tag {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 4px 9px;
   white-space: nowrap;
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.08em;
   color: var(--muted);
 }
@@ -630,7 +745,7 @@ a.pill:hover {
 .status-pill {
   color: var(--badge-fg);
   border: 1px solid var(--badge-border);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 4px 10px;
   display: inline-flex;
   align-items: center;
@@ -654,7 +769,7 @@ a.pill:hover {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -665,6 +780,8 @@ a.pill:hover {
   color: var(--ink);
   border-color: var(--ink);
   transform: translateY(-2px);
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -712,7 +829,7 @@ a.pill:hover {
 
 .hero {
   position: relative;
-  background: var(--surface);
+  background: var(--tone-raised);
   min-height: 560px;
   overflow: hidden;
   display: flex;
@@ -796,17 +913,22 @@ a.pill:hover {
   background: var(--accent);
   color: var(--on-accent);
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-label);
   font-weight: 700;
   letter-spacing: 0.14em;
   padding: 6px 11px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
+/* One size across all widths now, from --text-h1, instead of three
+   breakpoint-specific clamps. What stays breakpoint-specific is the MEASURE,
+   because that is what the constraint actually is: the headline has to sit
+   inside the part of the hero photo the scrim has darkened, or it loses its
+   contrast against the portrait. */
 .hero-h1 {
   margin: 0;
   font-family: var(--font-prose);
-  font-size: clamp(30px, 7.6vw, 38px);
+  font-size: var(--text-h1);
   line-height: 1.08;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -818,23 +940,24 @@ a.pill:hover {
 /* tablet: keep the measure inside the scrim's opaque band (≤40% of width) */
 @media (min-width: 768px) {
   .hero-h1 {
-    font-size: clamp(30px, 4.2vw, 36px);
     max-width: min(460px, 40vw);
   }
 }
 
-/* 48px is the largest size where "EVERY DECISION AFTER IT" still fits 620px */
+/* 620px was set when the type capped at 48px. Measured at the new size: the
+   first line, "IF THE DATA IS WRONG,", is 663px at 61px — so the measure moves
+   with the type or the phrase breaks across two lines. 700px is the widest
+   that still ends well short of the subject's face at 1536. */
 @media (min-width: 1024px) {
   .hero-h1 {
-    font-size: clamp(44px, 3.1vw, 48px);
-    max-width: 620px;
+    max-width: 700px;
   }
 }
 
 .hero-lead {
   margin: 0;
   max-width: 46ch;
-  font-size: 16px;
+  font-size: var(--text-lead);
   line-height: 1.65;
   color: var(--hero-soft);
   text-wrap: pretty;
@@ -860,7 +983,7 @@ a.pill:hover {
 .hero-ctas .btn-ghost {
   border-color: var(--hero-edge);
   color: var(--hero-text);
-  font-size: 13px;
+  font-size: var(--text-small);
 }
 
 .hero-trust {
@@ -869,7 +992,7 @@ a.pill:hover {
   gap: 18px;
   flex-wrap: wrap;
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.08em;
 }
 
@@ -922,6 +1045,10 @@ a.pill:hover {
   -webkit-backdrop-filter: saturate(150%) blur(14px);
   backdrop-filter: saturate(150%) blur(14px);
   border-bottom-color: var(--border);
+  /* Level 3. The header is the one thing on the page that is genuinely in
+     front of the content rather than part of it, and until now the only sign
+     of that was a hairline. */
+  box-shadow: var(--elev-3);
 }
 
 [data-theme="dark"] .site-header[data-scrolled="true"] {
@@ -930,7 +1057,7 @@ a.pill:hover {
 
 .wordmark {
   flex: 0 0 auto;
-  font-size: 13px;
+  font-size: var(--text-small);
   font-weight: 700;
   letter-spacing: 0.06em;
   white-space: nowrap;
@@ -957,7 +1084,7 @@ a.wordmark:hover {
   align-items: center;
   justify-content: center;
   gap: 26px;
-  font-size: 11.5px;
+  font-size: var(--text-small);
   font-weight: 500;
   letter-spacing: 0.1em;
   color: var(--muted);
@@ -991,7 +1118,7 @@ a.wordmark:hover {
 
 .theme-toggle {
   font-family: var(--font-prose);
-  font-size: 11px;
+  font-size: var(--text-label);
   font-weight: 700;
   letter-spacing: 0.12em;
   white-space: nowrap;
@@ -1003,7 +1130,7 @@ a.wordmark:hover {
   background: transparent;
   border: 1px solid var(--border);
   padding: 8px 11px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   order: 1;
 }
@@ -1015,7 +1142,7 @@ a.wordmark:hover {
 
 .header-burger {
   font-family: var(--font-prose);
-  font-size: 15px;
+  font-size: var(--text-body);
   box-sizing: border-box;
   width: 44px;
   height: 44px;
@@ -1025,7 +1152,7 @@ a.wordmark:hover {
   color: var(--text);
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   order: 3;
 }
@@ -1054,12 +1181,15 @@ a.wordmark:hover {
   min-height: 44px;
   background: var(--accent);
   color: var(--on-accent);
-  font-size: 11px;
+  font-size: var(--text-label);
   font-weight: 800;
   letter-spacing: 0.05em;
   white-space: nowrap;
   padding: 9px 14px;
-  border-radius: 8px;
+  /* Transparent in the filled state so the demoted state can turn it visible
+     without the button growing by the 2px the border would otherwise add. */
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   order: 3;
   cursor: pointer;
 }
@@ -1067,6 +1197,27 @@ a.wordmark:hover {
 .header-cta:hover {
   color: var(--on-accent);
   filter: brightness(1.08);
+}
+
+/* Demoted while the dock is up, so there is one filled CTA on screen and not
+   two. box-sizing is border-box and the padding is unchanged, so gaining a
+   1px border costs no width — the header does not move. */
+/* Weight stays at 800. Dropping it to 700 was the first attempt and it moved
+   the button by a pixel, which moved the nav by a pixel — the demotion is
+   carried entirely by losing the fill. */
+[data-dock="on"] .header-cta {
+  background: transparent;
+  color: var(--text);
+  /* --border-input rather than --border: on the translucent blurred header the
+     lighter hairline all but vanished, and a button that reads as plain text
+     is a worse outcome than a slightly louder one. */
+  border-color: var(--border-input);
+}
+
+[data-dock="on"] .header-cta:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+  filter: none;
 }
 
 @media (min-width: 768px) {
@@ -1111,7 +1262,7 @@ a.wordmark:hover {
 
 .mobile-menu a.menu-link {
   font-family: var(--font-prose);
-  font-size: 14px;
+  font-size: var(--text-body);
   letter-spacing: 0.1em;
   color: var(--text);
   display: flex;
@@ -1132,10 +1283,10 @@ a.wordmark:hover {
   background: var(--accent);
   color: var(--on-accent);
   font-family: var(--font-prose);
-  font-size: 12.5px;
+  font-size: var(--text-small);
   font-weight: 700;
   letter-spacing: 0.08em;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 0;
   cursor: pointer;
 }
@@ -1145,13 +1296,13 @@ a.wordmark:hover {
   margin-top: 12px;
   width: 100%;
   min-height: 50px;
-  font-size: 11.5px;
+  font-size: var(--text-label);
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--text);
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
@@ -1165,7 +1316,7 @@ a.wordmark:hover {
   margin-top: 12px;
   width: 100%;
   min-height: 50px;
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.12em;
   color: var(--muted);
   background: transparent;
@@ -1188,11 +1339,11 @@ a.wordmark:hover {
   background: var(--accent);
   color: var(--on-accent);
   font-family: var(--font-prose);
-  font-size: 12px;
+  font-size: var(--text-label);
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 14px 18px;
-  border-radius: 0 0 8px 0;
+  border-radius: 0 0 var(--radius-sm) 0;
 }
 
 .skip-link:focus,
@@ -1211,8 +1362,11 @@ a.wordmark:hover {
   margin-top: 8px;
   padding: 20px;
   border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--bg);
+  border-radius: var(--radius-md);
+  /* Was --bg, which made the one form on the site the one card that sat
+     BELOW the page instead of on it. */
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
 }
 
 .lead-form--done {
@@ -1222,7 +1376,7 @@ a.wordmark:hover {
 .lead-form__title {
   margin: 0;
   font-family: var(--font-prose);
-  font-size: 11.5px;
+  font-size: var(--text-label);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1231,7 +1385,7 @@ a.wordmark:hover {
 
 .lead-form__note {
   margin: 0;
-  font-size: 13.5px;
+  font-size: var(--text-small);
   line-height: 1.55;
   color: var(--muted);
   text-wrap: pretty;
@@ -1256,7 +1410,7 @@ a.wordmark:hover {
 
 .lead-form__field label {
   font-family: var(--font-prose);
-  font-size: 10px;
+  font-size: var(--text-label);
   letter-spacing: 0.12em;
   color: var(--muted);
 }
@@ -1268,11 +1422,14 @@ a.wordmark:hover {
   min-height: 44px;
   padding: 10px 12px;
   border: 1px solid var(--border-input);
-  border-radius: 9px;
-  background: var(--surface);
+  border-radius: var(--radius-sm);
+  /* A field is a well cut into the card, so it goes down while the card goes
+     up. --sunk already existed for the console; this is the same idea, and no
+     new colour is introduced to get it. */
+  background: var(--sunk);
   color: var(--text);
   font-family: inherit;
-  font-size: 15px;
+  font-size: var(--text-body);
   line-height: 1.5;
 }
 
@@ -1305,4 +1462,193 @@ a.wordmark:hover {
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* Motion ==================================================================
+   Everything here is inside a prefers-reduced-motion: no-preference query or
+   behind [data-motion="on"], which components/Motion.tsx sets only after it
+   has checked the same media query. Nothing on this page moves for someone
+   who has asked for that, and nothing is hidden if the script never runs.
+   ========================================================================= */
+
+/* Scroll reveal ---------------------------------------------------------- */
+/* The hidden state is scoped to the attribute Motion.tsx puts on <html>, so
+   with JavaScript off — or before hydration — these elements are simply
+   visible. That ordering is the whole safety argument: content is never
+   hidden by CSS that a script has to arrive and undo. */
+
+/* A keyframe animation rather than a transition, for two reasons. It is a
+   one-shot entrance, which is what @keyframes is for — the element is not
+   moving between two interactive states. And it is measurable: a transition
+   leaves getComputedStyle().animationName at "none", so a page built this way
+   with transitions still counts as zero animations when you audit it. */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    /* 10px. Far enough to register as movement, short enough that it reads as
+       settling into place rather than sliding in from off-screen. */
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-motion="on"] [data-reveal="pending"] {
+  opacity: 0;
+}
+
+[data-motion="on"] [data-reveal="shown"] {
+  /* `both` so the from-state holds through the stagger delay instead of
+     flashing the element at full opacity while it waits its turn. */
+  animation: reveal-rise 400ms cubic-bezier(0.22, 0.61, 0.36, 1)
+    var(--reveal-delay, 0ms) both;
+}
+
+/* Hover lift -------------------------------------------------------------
+   A lift is a promise that the thing can be clicked, so it is applied ONLY to
+   cards that actually go somewhere: .note-card is a link, .faq-item opens,
+   .btn and .pill are actions.
+
+   .card, .service-card, .case-card and .written-card deliberately do NOT
+   lift. They already take the level-2 shadow on hover, which reads as "this
+   is a discrete object", but they are plain divs and articles — raising them
+   under the cursor would advertise a click that does not exist. */
+
+@media (prefers-reduced-motion: no-preference) {
+  .note-card,
+  .faq-item,
+  .btn,
+  .pill {
+    transition-property: box-shadow, background-color, border-color, color, transform;
+    transition-duration: 180ms;
+    transition-timing-function: ease;
+  }
+
+  .note-card:hover,
+  .faq-item:hover,
+  .btn:hover,
+  a.pill:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Theme switch ----------------------------------------------------------- */
+/* Applied for the length of the switch by lib/theme.ts and then removed. A
+   standing transition on colour would also animate every hover state and
+   every reveal, which is why this is a 240ms window rather than a permanent
+   rule. Reduced motion never gets the attribute in the first place. */
+
+[data-theme-anim],
+[data-theme-anim] *,
+[data-theme-anim] *::before,
+[data-theme-anim] *::after {
+  transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease,
+    fill 240ms ease, box-shadow 240ms ease !important;
+}
+
+/* Persistent contact dock -------------------------------------------------
+   One line tall, in a corner, gone before the contact section. See the note
+   at the top of components/ContactDock.tsx for why it exists and what it
+   deliberately does not do.
+
+   z-index sits BELOW the header's 50: if the two ever meet, the header wins,
+   because one of them is navigation and the other is a shortcut. */
+
+.dock {
+  position: fixed;
+  z-index: 40;
+  right: clamp(12px, 1.6vw, 24px);
+  bottom: clamp(12px, 1.6vw, 24px);
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  max-width: calc(100vw - 24px);
+  background: var(--raise-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--elev-3);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dock[data-state="in"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dock {
+    transform: translateY(10px);
+    transition: opacity 240ms ease, transform 240ms ease;
+  }
+
+  .dock[data-state="in"] {
+    transform: none;
+  }
+}
+
+.dock__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  box-sizing: border-box;
+  min-height: 46px;
+  padding: 0 18px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  transition: filter 150ms ease;
+}
+
+.dock__action:hover {
+  color: var(--on-accent);
+  filter: brightness(1.08);
+}
+
+/* Drawn, not typed. As a 9px "■" character it was a tenth font size on a page
+   whose scale has nine, which is exactly the kind of stray value this batch
+   exists to remove. */
+.dock__mark {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+}
+
+/* Declining is a 46px target, the same as accepting. A dismiss you have to
+   aim at is not really dismissible. */
+.dock__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 46px;
+  min-height: 46px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--text-label);
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.dock__dismiss:hover {
+  color: var(--text);
+  background: var(--raise-2);
+}
+
+@media (max-width: 420px) {
+  .dock__action {
+    padding: 0 14px;
+  }
 }

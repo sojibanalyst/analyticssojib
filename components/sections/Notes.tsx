@@ -27,10 +27,11 @@ export function Notes({ posts }: { posts: Post[] }) {
   if (finished.length === 0) return null;
 
   return (
-    <section id="blog" className="section" aria-labelledby="blog-title">
+    <section id="blog" className="section section--sunk" aria-labelledby="blog-title">
       <SectionHeading eyebrow={blog.eyebrow} title={blog.title} titleId="blog-title" />
 
       <div
+        data-stagger
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -42,7 +43,7 @@ export function Notes({ posts }: { posts: Post[] }) {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "11px",
+                fontSize: "var(--text-label)",
                 letterSpacing: "0.1em",
                 color: "var(--muted)",
               }}
@@ -54,7 +55,7 @@ export function Notes({ posts }: { posts: Post[] }) {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "16.5px",
+                fontSize: "var(--text-lead)",
                 fontWeight: 700,
                 letterSpacing: "-0.01em",
                 lineHeight: 1.35,
@@ -68,7 +69,7 @@ export function Notes({ posts }: { posts: Post[] }) {
             <span
               style={{
                 fontFamily: "var(--font-prose)",
-                fontSize: "11px",
+                fontSize: "var(--text-label)",
                 letterSpacing: "0.1em",
                 color: "var(--ink)",
                 marginTop: "auto",
