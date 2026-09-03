@@ -2438,3 +2438,12 @@ a.wordmark:hover {
       direct-children-only scan in Motion.tsx treated the whole carousel as
       one block and the cards inside it never animated. The track is a stagger
       group now; this is only here to say so. */
+
+/* While the evidence is being driven by scroll, mandatory snapping fights it —
+   the browser keeps yanking the track to the nearest slide mid-sweep. Snapping
+   returns the instant the visitor takes the gallery over, so their swipe still
+   lands on a screenshot rather than between two. */
+.case-gallery__track[data-autoscroll="on"] {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
