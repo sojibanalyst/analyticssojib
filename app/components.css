@@ -2361,3 +2361,80 @@ a.wordmark:hover {
 [data-motion="on"] .stack-strip__row--text[data-reveal="shown"] {
   animation: none;
 }
+
+/* Motion, 2026 pass =======================================================
+   Three changes, and the first one is the whole character of the site.
+   ========================================================================= */
+
+/* 1. CARDS ARRIVE OUT OF FOCUS, NOT JUST FROM BELOW.
+      Blur-to-sharp plus a spring. The blur is what makes it read as depth of
+      field rather than a slide, and the spring's small overshoot is what
+      makes the card feel like it has weight. Both are cheap on the
+      compositor and both are what separates current motion from 2020's
+      ease-out translate.
+
+      Scoped to grouped items — cards — on purpose. A .case-card is 900px
+      tall; blurring something that size every frame is a real cost for an
+      effect nobody reads at that scale. Section-level blocks keep the plain
+      rise. */
+@keyframes reveal-focus {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    filter: blur(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+[data-motion="on"] .grid4 > [data-reveal="pending"],
+[data-motion="on"] [data-stagger] > [data-reveal="pending"] {
+  opacity: 0;
+}
+
+[data-motion="on"] .grid4 > [data-reveal="shown"],
+[data-motion="on"] [data-stagger] > [data-reveal="shown"] {
+  animation: reveal-focus 720ms var(--ease-spring) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* Section-level blocks: same spring, no blur. */
+[data-motion="on"] [data-reveal="shown"] {
+  animation-timing-function: var(--ease-spring);
+  animation-duration: 620ms;
+}
+
+/* 2. THE TOOLS BAND IS SCROLL-LINKED, NOT FIRED ONCE.
+      animation-timeline: view() ties each tool's progress to where the band
+      actually is in the viewport, so it resolves as you scroll rather than
+      playing a canned sequence the moment it arrives. Scrub back up and it
+      un-resolves. That is the part that reads as current.
+
+      The per-item offset comes from --i, so they still cascade — but the
+      cascade is a position in the scroll, not a setTimeout.
+
+      Behind @supports, and the fallback below is the one-shot version. Where
+      scroll-driven animations are not supported the band simply arrives. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-motion="on"] .stack-strip__row[data-reveal="shown"] .stack-strip__item,
+    [data-motion="on"] .stack-strip__row[data-reveal="shown"] .stack-strip__chip,
+    .stack-strip__item,
+    .stack-strip__chip {
+      animation: reveal-focus 1s linear both;
+      animation-timeline: view();
+      animation-range: entry 12% cover calc(6% + var(--i, 0) * 2.4%);
+      animation-delay: 0s;
+    }
+  }
+}
+
+/* 3. THE WRITTEN REVIEWS NOW MOVE AT ALL.
+      They sit two levels inside the reviews section, so the old
+      direct-children-only scan in Motion.tsx treated the whole carousel as
+      one block and the cards inside it never animated. The track is a stagger
+      group now; this is only here to say so. */

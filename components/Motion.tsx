@@ -45,18 +45,39 @@ export function Motion() {
     if (!main) return;
 
     const targets: HTMLElement[] = [];
+    const GROUP = ".grid4, [data-stagger]";
 
     // Skip the first section. It is the hero: on screen before a visitor can
     // scroll, so fading it in is an animation that plays to nobody and delays
     // the one thing the page has to say.
-    for (const section of [...main.children].slice(1) as HTMLElement[]) {
+    const sections = [...main.children].slice(1) as HTMLElement[];
+
+    // A group of cards reveals as cards, not as one block — and the group can
+    // sit at any depth. The written-review carousel is two levels down inside
+    // the reviews section, so a direct-children-only scan animated the whole
+    // carousel as a single lump and the cards inside it never moved.
+    // ...but a grid INSIDE a card is a layout, not a group of things to
+    // stagger. The stat tiles in a case card matched .grid4, which promoted
+    // them to targets and demoted the card itself — so the tiles animated
+    // inside a card that never moved. A group only counts if no card contains
+    // it.
+    const groups = sections
+      .flatMap((s) => [...s.querySelectorAll<HTMLElement>(GROUP)])
+      .filter((g) => !g.closest(".card, .case-card"));
+
+    for (const group of groups) targets.push(...([...group.children] as HTMLElement[]));
+
+    // Everything else at section level, as long as it is not a qualifying
+    // group and does not contain one — animating an ancestor and its group
+    // children both is how nested elements end up with two animations running
+    // over each other.
+    const isGroup = new Set(groups);
+    const containsGroup = (el: HTMLElement) => groups.some((g) => el.contains(g));
+
+    for (const section of sections) {
       for (const child of [...section.children] as HTMLElement[]) {
-        // A grid of cards reveals as cards, not as one block.
-        if (child.matches(".grid4, [data-stagger]")) {
-          targets.push(...([...child.children] as HTMLElement[]));
-        } else {
-          targets.push(child);
-        }
+        if (isGroup.has(child) || containsGroup(child)) continue;
+        targets.push(child);
       }
     }
 

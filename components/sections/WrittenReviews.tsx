@@ -168,6 +168,7 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
         aria-label="Client written reviews"
         data-track="1"
         className="written-track"
+        data-stagger
       >
         {items.map((item, i) => (
           <figure key={i} className="written-card" data-placeholder={item.placeholder}>
