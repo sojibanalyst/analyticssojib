@@ -2266,3 +2266,60 @@ a.wordmark:hover {
   background: var(--accent-strong);
   color: var(--on-accent-strong);
 }
+
+/* Parallax on the evidence ================================================
+   The screenshot drifts slower than the page, so it reads as sitting behind
+   its frame rather than pasted onto it. 22px over a full screen of travel:
+   parallax you notice as parallax has stopped being depth.
+
+   The scale is what buys the room to move. At 16/7 and 1120px wide the frame
+   is about 490px tall, so 1.14 leaves ~34px of slack each way — comfortably
+   more than the 22px this ever asks for, which is why nothing ever shows an
+   edge.
+
+   Only under [data-parallax="on"], which components/Parallax.tsx sets after
+   checking the media query. Reduced motion, no JavaScript, or pre-hydration:
+   the image sits exactly where it always did. */
+
+[data-parallax="on"] [data-par] img {
+  transform: translate3d(0, var(--par, 0px), 0) scale(1.14);
+  will-change: transform;
+}
+
+/* Headings wipe open from the centre ======================================
+   A left-to-right wipe is for left-aligned type. These headings are centred
+   now, so the reveal opens from the middle outwards and finishes at both
+   edges at once.
+
+   The section head no longer fades and rises as a block — the wipe replaces
+   it. Running both put two animations on nested elements, which is what makes
+   a page feel busy rather than composed. */
+
+@keyframes h2-wipe {
+  from {
+    clip-path: inset(0 50% 0 50%);
+    opacity: 0;
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+[data-motion="on"] .section-head[data-reveal="pending"] {
+  opacity: 1;
+}
+
+[data-motion="on"] .section-head[data-reveal="shown"] {
+  animation: none;
+}
+
+[data-motion="on"] .section-head[data-reveal="pending"] .h2 {
+  opacity: 0;
+  clip-path: inset(0 50% 0 50%);
+}
+
+[data-motion="on"] .section-head[data-reveal="shown"] .h2 {
+  animation: h2-wipe 760ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
