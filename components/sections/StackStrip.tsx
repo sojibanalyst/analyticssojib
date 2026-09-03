@@ -2,35 +2,22 @@ import { stack } from "@/content/site";
 import { StackIcon } from "@/components/ui/Icon";
 
 /**
- * The tools band, full-bleed and moving.
+ * The tools band.
  *
- * The "STACK /" label is gone. On a band that now runs to the edge of the
- * screen it sat cramped against the left margin, and a row of named tool marks
- * does not need to be told what it is.
+ * This was a full-bleed marquee and the marquee was a mistake. A loop needs
+ * two copies of the set to run seamlessly, and with only twelve tools the set
+ * is narrower than a desktop viewport — so both copies were on screen at once
+ * and every tool appeared twice. Sojib spotted it before I did.
  *
- * The set is rendered TWICE. The second copy is aria-hidden and exists only so
- * the marquee has something to run into — translating the pair by exactly -50%
- * lands the copy where the original started, which is what makes the loop
- * seamless rather than a jump. Under reduced motion the copy is display:none
- * and the row goes back to being a plain scrollable line, so nobody is read
- * the same twelve tools twice.
+ * So: one set, centred inside the page measure, wrapping instead of running.
+ * The movement it lost comes back as an arrival — each tool fades and scales
+ * up in sequence when the band is scrolled to, which reads as the row
+ * assembling itself rather than sliding past.
+ *
+ * The index goes to CSS as a custom property so the cascade can run across all
+ * twelve. The shared stagger in Motion.tsx caps at four steps, which is right
+ * for a four-card grid and wrong for a list this long.
  */
-function StackSet({ copy = false }: { copy?: boolean }) {
-  return (
-    <div
-      className={copy ? "stack-strip__set stack-strip__set--copy" : "stack-strip__set"}
-      aria-hidden={copy || undefined}
-    >
-      {stack.map((item) => (
-        <span key={item.label} className="stack-strip__item">
-          <StackIcon item={item} />
-          <span className="stack-strip__label">{item.label}</span>
-        </span>
-      ))}
-    </div>
-  );
-}
-
 export function StackStrip() {
   return (
     <section
@@ -38,10 +25,16 @@ export function StackStrip() {
       className="section section--band section--raised stack-strip"
     >
       <div className="stack-strip__row">
-        <div className="stack-strip__marquee">
-          <StackSet />
-          <StackSet copy />
-        </div>
+        {stack.map((item, i) => (
+          <span
+            key={item.label}
+            className="stack-strip__item"
+            style={{ "--i": i } as React.CSSProperties}
+          >
+            <StackIcon item={item} />
+            <span className="stack-strip__label">{item.label}</span>
+          </span>
+        ))}
       </div>
     </section>
   );
