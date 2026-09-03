@@ -77,7 +77,7 @@ export function CaseGallery({ shots, label }: { shots: CaseShot[]; label: string
       >
         {shots.map((shot, i) => (
           <figure key={shot.src} className="case-gallery__item">
-            <div className="case-shot">
+            <div className="case-shot" data-par>
               <Image
                 src={shot.src}
                 alt={shot.alt}
