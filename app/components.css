@@ -9,12 +9,12 @@
 
 /* Horizontal rhythm: gutter that collapses into a centred 1280px measure. */
 .shell {
-  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
+  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2));
 }
 
 .section {
   padding-block: var(--pad-section);
-  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
+  padding-inline: max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2));
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -903,7 +903,7 @@ a.pill:hover {
 
 @media (min-width: 768px) {
   .hero-body {
-    padding: 72px max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
+    padding: 72px max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2));
   }
 }
 
@@ -1032,7 +1032,7 @@ a.pill:hover {
 @media (min-width: 768px) {
   .site-header {
     height: 72px;
-    padding: 0 max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2));
+    padding: 0 max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2));
   }
 }
 
@@ -1885,5 +1885,191 @@ a.wordmark:hover {
   .stack-strip__row:hover .stack-strip__marquee,
   .stack-strip__row:focus-within .stack-strip__marquee {
     animation-play-state: paused;
+  }
+}
+
+/* The proof line ==========================================================
+   Replaces the four-tile stat grid. Centred, one line, one link.
+   ========================================================================= */
+
+.proofline {
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.proofline__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: var(--text-lead);
+  color: var(--muted);
+}
+
+.proofline__stars {
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.proofline__figure {
+  font-weight: 800;
+  font-size: var(--text-h4);
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.proofline__text {
+  color: var(--muted);
+}
+
+/* The numbers inside the sentence are the point, so they carry the text
+   colour and the weight while the words around them stay quiet. */
+.proofline__text .sr-only + *,
+.proofline__text span[aria-hidden="true"] {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.proofline__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--border);
+  align-self: center;
+}
+
+.proofline__badge {
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  align-self: center;
+}
+
+.proofline__verify {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.proofline__verify:hover {
+  color: var(--ink);
+}
+
+/* Centred composition =====================================================
+   Measured on the reference before copying it: nine of its H2s are centred
+   and only one is not, while 78 of its paragraphs are left-aligned against 12
+   centred. So the "everything down the middle" feeling does NOT come from
+   centred body copy — it comes from centred HEADINGS inside a narrow measure.
+   Centred paragraphs are harder to read and that site does not use them
+   either.
+
+   So: section heads centre, the measure narrows to 1120, and running text
+   stays left where it belongs.
+   ========================================================================= */
+
+.section-head {
+  justify-content: center;
+  text-align: center;
+}
+
+/* One-line section intros sit under a centred head, so they centre with it
+   and take a narrow measure of their own. Anything longer than a line or two
+   is a paragraph and keeps its left edge. */
+.section-intro {
+  margin: -8px auto 0;
+  max-width: 62ch;
+  text-align: center;
+}
+
+/* About is the asymmetric section — the deliberate break — so it is exempt.
+   Centring it would undo the one thing that makes it different. */
+.about-grid .section-head {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+#contact .contact-title,
+#contact > p {
+  margin-inline: auto;
+  text-align: center;
+}
+
+#contact > div {
+  justify-content: center;
+}
+
+/* The form is not centred text. A label above a field reads left, always. */
+#contact .lead-form {
+  margin-inline: auto;
+  text-align: left;
+}
+
+/* Deeper motion ===========================================================
+   The entrance now carries a small scale as well as a rise, so a card reads
+   as coming forward rather than sliding up a track. 0.985 is deliberately
+   almost nothing: at 0.95 it reads as a pop, which is a different and much
+   cheaper effect.
+   ========================================================================= */
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Section heads take longer than the cards under them, so the chapter title
+   settles first and the content arrives into it. */
+[data-motion="on"] .section-head[data-reveal="shown"] {
+  animation-duration: 620ms;
+}
+
+/* THE HERO ENTRANCE.
+   Not gated on [data-motion] — that attribute only appears after hydration,
+   and an animation that starts then would flash the hero at full opacity
+   first and then hide it. This is plain CSS behind the media query, so it
+   starts at first paint and needs no JavaScript at all.
+
+   The H1 and the portrait are deliberately excluded. The headline is almost
+   certainly the Largest Contentful Paint element, and animating its opacity
+   from zero delays the moment the browser records that paint. On a site that
+   sells measurement, spending a real Core Web Vitals number on a flourish
+   would be the wrong trade. The supporting elements assemble around a
+   headline that is simply there. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge,
+  .hero-lead,
+  .hero-ctas,
+  .hero-trust {
+    animation: reveal-rise 560ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .hero-badge {
+    animation-delay: 60ms;
+  }
+
+  .hero-lead {
+    animation-delay: 160ms;
+  }
+
+  .hero-ctas {
+    animation-delay: 250ms;
+  }
+
+  .hero-trust {
+    animation-delay: 330ms;
   }
 }

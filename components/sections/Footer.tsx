@@ -8,7 +8,7 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
     <footer
       style={{
         paddingBlock: "24px 40px",
-        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
+        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2))",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",

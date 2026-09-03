@@ -288,7 +288,7 @@ export const hero = {
     c: "after it",
     accent2: "is a guess.",
   },
-  lead: "I’m Sojib — a web analytics and tracking specialist. GA4, Google Tag Manager, server-side tagging, Meta CAPI and Google Ads enhanced conversions. I find where your conversions leak, close it, and hand you a report you can verify yourself.",
+  lead: "I’m Sojib, a web analytics and tracking specialist. GA4, Google Tag Manager, server-side tagging, Meta CAPI and Google Ads enhanced conversions. I find where your conversions leak, close it, and hand you a report you can verify yourself.",
   primaryCta: "BOOK A FREE 30-MIN CALL →",
   secondaryCta: "SEE HOW I WORK",
   secondaryHref: "#services",
@@ -316,20 +316,30 @@ export const hero = {
 export const upworkReviewCount = "27";
 export const upworkJobCount = "53";
 
+/**
+ * ONE LINE, NOT A DASHBOARD.
+ *
+ * This used to be four tiles: JOB SUCCESS SCORE, a rating, JOBS COMPLETED and
+ * HOURS WORKED. Two of those are marketplace-internal. A job success score
+ * means nothing away from Upwork, and "384 hrs worked" reads as a timesheet
+ * rather than an outcome. Together they made the top of the page look like a
+ * profile page instead of a practice.
+ *
+ * What survives are the two figures that would still be true anywhere: how
+ * many people have reviewed the work, and how many projects there have been.
+ * The platform stays as ONE small verification link, because a rating with
+ * nothing behind it is a number I typed.
+ */
 export const proof = {
-  attribution: "AS OF UPWORK PROFILE",
+  rating: "4.9",
+  reviews: upworkReviewCount,
+  projects: upworkJobCount,
   badge: "TOP RATED",
-  chip: "TOP RATED · 97% JSS · 4.9★",
-  contactChip: `UPWORK · TOP RATED · 4.9★ · ${upworkJobCount} JOBS`,
+  verifyLabel: "VERIFIED ON UPWORK",
+  chip: "TOP RATED · 4.9★",
+  contactChip: `TOP RATED · 4.9★ · ${upworkJobCount} PROJECTS`,
   rate: "$30/hr",
 } as const;
-
-export const stats: Stat[] = [
-  { value: "97", unit: "%", label: "JOB SUCCESS SCORE" },
-  { value: "4.9", unit: "★", label: `FROM ${upworkReviewCount} REVIEWS` },
-  { value: upworkJobCount, label: "JOBS COMPLETED" },
-  { value: "384", unit: "hrs", label: "HOURS WORKED" },
-];
 
 /* -------------------------------------------------------------------------- */
 /* Stack strip                                                                 */
@@ -747,7 +757,7 @@ export const about = {
   title: "I only do measurement.",
   body: "No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 53 projects.",
   pullquote:
-    "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it — so you can check it without taking my word for anything.",
+    "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it, so you can check it without taking my word for anything.",
   pullquoteAttribution: "SOJIB H. · DHAKA, BANGLADESH · UTC+6",
   /**
    * "Read a real tracking plan" button. Set `url` once Sojib has published the

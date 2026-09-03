@@ -277,7 +277,11 @@
 
    The two larger ones are fluid, because 96px of air above the fold on a
    390px phone is not rhythm, it is scrolling. */
+/* The content measure. 1280 was wide enough that a centred heading still
+   read as left-aligned at 1536 — the eye cannot see a centre it never
+   reaches. 1120 is narrow enough for the composition to register. */
 :root {
+  --measure: 1120px;
   --pad-band: 20px;
   --pad-section: clamp(44px, 5vw, 64px);
   --pad-major: clamp(60px, 7.5vw, 96px);
