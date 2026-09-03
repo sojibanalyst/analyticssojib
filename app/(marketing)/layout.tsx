@@ -1,3 +1,4 @@
+import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { ContactDock } from "@/components/ContactDock";
 import { Header } from "@/components/Header";
 import { Motion } from "@/components/Motion";
@@ -39,6 +40,8 @@ export default async function MarketingLayout({
   return (
     <>
       <ScrollProgress />
+
+      <AnnouncementBar />
 
       <a href="#main" className="skip-link">
         SKIP TO CONTENT

@@ -2073,3 +2073,196 @@ a.wordmark:hover {
     animation-delay: 330ms;
   }
 }
+
+/* Announcement bar ========================================================
+   Above the header in the document, so it scrolls away. A second fixed strip
+   would eat 40px of every screen for a sentence worth reading once. */
+
+.announce {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  box-sizing: border-box;
+  min-height: 40px;
+  padding: 8px 44px 8px 20px;
+  position: relative;
+  background: var(--tone-ink);
+  color: #fafafa;
+  text-align: center;
+}
+
+.announce__text {
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  color: #c3c6cd;
+}
+
+.announce__text a {
+  color: var(--accent-strong);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.announce__text a:hover {
+  color: #fafafa;
+}
+
+.announce__dismiss {
+  position: absolute;
+  inset-inline-end: 4px;
+  inset-block: 0;
+  width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #8c8f97;
+  font-size: var(--text-label);
+  cursor: pointer;
+}
+
+.announce__dismiss:hover {
+  color: #fafafa;
+}
+
+/* Client row ==============================================================
+   Centred under the proof line. Wordmarks in the site's own type, not fetched
+   artwork — see content/site.ts for who is on it and why. */
+
+.clientrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.clientrow__label {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  color: var(--faint);
+}
+
+.clientrow__list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clientrow__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  box-sizing: border-box;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
+  font-family: var(--font-prose);
+  font-size: var(--text-small);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* Stape is a platform Sojib is certified on, not a client. Saying so on the
+   chip is the difference between a credential and a borrowed one. */
+.clientrow__note {
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+
+/* The loud green, as a fill only ==========================================
+   Applied to the three filled buttons and nothing else. --accent keeps doing
+   the text work; see globals.css for the contrast numbers behind the split. */
+
+.btn-primary,
+.header-cta,
+.dock__action {
+  background: var(--accent-strong);
+  color: var(--on-accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.btn-primary:hover,
+.header-cta:hover,
+.dock__action:hover {
+  color: var(--on-accent-strong);
+}
+
+/* Floating pill header ====================================================
+   The reference's centred pill, in this site's materials: level-3 elevation,
+   the border token, the full radius. It stays a real sticky element rather
+   than a fixed one, so it cannot cover the top of the page on a short screen.
+   ========================================================================= */
+
+.site-header {
+  position: sticky;
+  top: 10px;
+  width: min(var(--measure), calc(100% - 24px));
+  margin-inline: auto;
+  height: 62px;
+  padding: 0 8px 0 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--raise-3);
+  box-shadow: var(--elev-2);
+  transition: box-shadow 180ms ease, background-color 180ms ease;
+}
+
+@media (min-width: 768px) {
+  .site-header {
+    height: 62px;
+    padding: 0 8px 0 22px;
+  }
+}
+
+/* Scrolled: it lifts rather than changing colour. A translucent pill over
+   moving content was the first attempt and the blur made the wordmark crawl. */
+.site-header[data-scrolled="true"] {
+  background: var(--raise-3);
+  box-shadow: var(--elev-3);
+  border-bottom-color: var(--border);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[data-theme="dark"] .site-header[data-scrolled="true"] {
+  background: var(--raise-3);
+}
+
+.header-actions {
+  gap: 8px;
+}
+
+/* The page starts under a floating header now, so the hero needs the room the
+   old full-width bar used to occupy in flow. */
+.hero {
+  margin-top: -72px;
+  padding-top: 72px;
+}
+
+/* The hero badge is a filled pill, so it belongs to the loud green with the
+   buttons. Left on --accent it put two different greens on one screen, which
+   reads as an inconsistency rather than a hierarchy. */
+.hero-badge {
+  background: var(--accent-strong);
+  color: var(--on-accent-strong);
+}

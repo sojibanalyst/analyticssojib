@@ -1,5 +1,5 @@
 import { StatValue } from "@/components/StatValue";
-import { proof, upworkUrl } from "@/content/site";
+import { clients, clientsLabel, proof, upworkUrl } from "@/content/site";
 
 /**
  * The proof line.
@@ -36,6 +36,21 @@ export function StatBand() {
       <a className="proofline__verify" href={upworkUrl} target="_blank" rel="noopener">
         {proof.verifyLabel}
       </a>
+
+      {/* The client row. Set in the site's own type rather than with fetched
+          artwork — see the note above `clients` in content/site.ts for who is
+          on it and why nobody else is. */}
+      <div className="clientrow">
+        <span className="clientrow__label">{clientsLabel}</span>
+        <ul className="clientrow__list">
+          {clients.map((client) => (
+            <li key={client.name} className="clientrow__item">
+              {client.name}
+              {client.note && <span className="clientrow__note">{client.note}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
