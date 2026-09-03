@@ -1,4 +1,5 @@
 import { AnnouncementBar } from "@/components/AnnouncementBar";
+import { CaseScroll } from "@/components/CaseScroll";
 import { ContactDock } from "@/components/ContactDock";
 import { Header } from "@/components/Header";
 import { Motion } from "@/components/Motion";
@@ -58,6 +59,7 @@ export default async function MarketingLayout({
       {/* Scroll reveal. Renders nothing; hides nothing unless it runs. */}
       <Motion />
       <Parallax />
+      <CaseScroll />
 
       {/* Last in the DOM on purpose: it is a shortcut, so a keyboard user
           reaches it after the page's own content rather than before it. */}
