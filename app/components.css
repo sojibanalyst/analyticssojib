@@ -2294,3 +2294,70 @@ a.wordmark:hover {
     transform: translateY(-2px);
   }
 }
+
+/* The second row: CRMs and automation, as text -----------------------------
+   Set in the site's own type rather than with logos, and grouped under its own
+   label so it reads as a different kind of thing from the marks above it. */
+
+.stack-strip {
+  gap: 14px;
+}
+
+.stack-strip__row--text {
+  gap: 8px 10px;
+}
+
+.stack-strip__group {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  color: var(--faint);
+  margin-inline-end: 4px;
+}
+
+.stack-strip__chip {
+  box-sizing: border-box;
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color 150ms ease, border-color 150ms ease, transform 180ms ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stack-strip__chip:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+    transform: translateY(-2px);
+  }
+}
+
+/* The chips join the same cascade as the marks above them — their --i picks
+   up where the icon row left off, so the whole band assembles as one run
+   rather than two. */
+[data-motion="on"] .stack-strip__row--text[data-reveal="pending"] .stack-strip__chip,
+[data-motion="on"] .stack-strip__row--text[data-reveal="pending"] .stack-strip__group {
+  opacity: 0;
+}
+
+[data-motion="on"] .stack-strip__row--text[data-reveal="shown"] .stack-strip__chip {
+  animation: tool-in 460ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 42ms);
+}
+
+[data-motion="on"] .stack-strip__row--text[data-reveal="shown"] .stack-strip__group {
+  animation: tool-in 460ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+[data-motion="on"] .stack-strip__row--text[data-reveal="pending"] {
+  opacity: 1;
+}
+
+[data-motion="on"] .stack-strip__row--text[data-reveal="shown"] {
+  animation: none;
+}

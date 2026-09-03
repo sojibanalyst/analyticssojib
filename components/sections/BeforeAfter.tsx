@@ -1,3 +1,4 @@
+import { ScrambleValue } from "@/components/ScrambleValue";
 import { type CaseStudy } from "@/content/site";
 
 /**
@@ -32,7 +33,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
               letterSpacing: "-0.03em",
             }}
           >
-            {metric.before}
+            <ScrambleValue value={metric.before} />
           </span>
         </div>
 
@@ -92,7 +93,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
               letterSpacing: "-0.03em",
             }}
           >
-            {metric.after}
+            <ScrambleValue value={metric.after} />
           </span>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { stack } from "@/content/site";
+import { integrations, integrationsLabel, stack } from "@/content/site";
 import { StackIcon } from "@/components/ui/Icon";
 
 /**
@@ -33,6 +33,23 @@ export function StackStrip() {
           >
             <StackIcon item={item} />
             <span className="stack-strip__label">{item.label}</span>
+          </span>
+        ))}
+      </div>
+
+      {/* CRMs and automation, as text. No marks: I do not have official
+          artwork for any of them, and a logo drawn from memory is worse than a
+          name set properly — it is a claim about somebody's brand made in the
+          wrong shape. */}
+      <div className="stack-strip__row stack-strip__row--text">
+        <span className="stack-strip__group">{integrationsLabel}</span>
+        {integrations.map((name, i) => (
+          <span
+            key={name}
+            className="stack-strip__chip"
+            style={{ "--i": i + stack.length } as React.CSSProperties}
+          >
+            {name}
           </span>
         ))}
       </div>

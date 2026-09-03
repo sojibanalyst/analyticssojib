@@ -44,6 +44,9 @@ const STACK = {
   snapchat: SnapchatIcon,
   claude: ClaudeIcon,
   openai: OpenaiIcon,
+  /* Shared with the social row. One mark, one component — LinkedIn Ads is a
+     tracking destination as well as a profile link. */
+  linkedin: LinkedInIcon,
 } as const;
 
 export function SocialIcon({
