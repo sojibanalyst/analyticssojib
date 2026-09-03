@@ -160,7 +160,8 @@ export type StackItem = {
     | "tiktok"
     | "snapchat"
     | "claude"
-    | "openai";
+    | "openai"
+    | "linkedin";
   /**
    * Brand colour, verbatim from the design. `themed` marks the three marks the
    * design flips per theme (TikTok, Snapchat, ChatGPT) — the component resolves
@@ -382,27 +383,57 @@ export const proof = {
 /* Stack strip                                                                 */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * TWO ICONS APPEARED TWICE AND READ AS A MISTAKE.
+ *
+ * "TAG MANAGER" and "SERVER-SIDE GTM" are genuinely different products, and so
+ * are "META PIXEL" and "META CAPI" — but they share a mark, so the row showed
+ * the Google Tag Manager diamond twice and the Meta infinity twice. A logo
+ * repeating in a strip of logos looks like a bug, whatever the labels say.
+ *
+ * Merged rather than dropped: the label carries both, so nothing is claimed
+ * less than before.
+ */
 export const stack: StackItem[] = [
   { label: "GA4", icon: "googleanalytics", fill: "#E37400", size: 17 },
-  { label: "TAG MANAGER", icon: "googletagmanager", fill: "#246FDB", size: 18 },
-  {
-    label: "SERVER-SIDE GTM",
-    icon: "googletagmanager",
-    fill: "#246FDB",
-    size: 18,
-  },
-  { label: "META CAPI", icon: "meta", fill: "#0467DF", size: 16 },
-  { label: "META PIXEL", icon: "meta", fill: "#0467DF", size: 16 },
+  { label: "GTM WEB + SERVER", icon: "googletagmanager", fill: "#246FDB", size: 18 },
+  { label: "META PIXEL + CAPI", icon: "meta", fill: "#0467DF", size: 16 },
   { label: "GOOGLE ADS", icon: "googleads", fill: "#4285F4", size: 18 },
+  { label: "LINKEDIN ADS", icon: "linkedin", fill: "#0A66C2", size: 17 },
   { label: "BIGQUERY", icon: "googlebigquery", fill: "#669DF6", size: 18 },
   { label: "LOOKER STUDIO", icon: "looker", fill: "#4285F4", size: 18 },
   { label: "SHOPIFY", icon: "shopify", fill: "#7AB55C", size: 17 },
-  { label: "REDDIT", icon: "reddit", fill: "#FF4500", size: 18 },
   { label: "TIKTOK", icon: "tiktok", fill: "#FFFFFF", themed: "tiktok", size: 17 },
   { label: "SNAPCHAT", icon: "snapchat", fill: "#FFFC00", themed: "snapchat", size: 17 },
+  { label: "REDDIT", icon: "reddit", fill: "#FF4500", size: 18 },
   { label: "CLAUDE", icon: "claude", fill: "#D97757", size: 18 },
   { label: "CHATGPT", icon: "openai", fill: "#FFFFFF", themed: "openai", size: 17 },
 ];
+
+/**
+ * The CRMs and automation platforms, as TEXT rather than logos.
+ *
+ * Every name is one Sojib lists himself on his Upwork profile — the CRMs he
+ * connects to Google Ads Offline Conversion Import and Meta Offline Events,
+ * plus the automation tools and the server-side host he is certified on.
+ *
+ * No marks, deliberately. I do not have official artwork for any of them, and
+ * a logo drawn from memory is worse than a name set properly: it is a claim
+ * about a brand made with the wrong shape.
+ */
+export const integrations = [
+  "HubSpot",
+  "GoHighLevel",
+  "Salesforce",
+  "Zoho",
+  "Pipedrive",
+  "Stape",
+  "Zapier",
+  "Make",
+  "n8n",
+];
+
+export const integrationsLabel = "CRM + AUTOMATION";
 
 /* -------------------------------------------------------------------------- */
 /* 01 — Symptoms (copy is the design's own, no invented claims)                */
