@@ -131,6 +131,18 @@
   --tone-raised: #ffffff;
   --tone-sunk: #eceae6;
   --tone-ink: #0b0c0d;
+
+  /* --- the loud green ------------------------------------------------------
+     --accent stays #0f7a3d because it is TEXT in thirty places and has to
+     clear AA on white, which it does at 5.42:1. The reference site uses a much
+     brighter green, #12b33f, and it can only do that because it never sets it
+     as text: as text on white that green measures 2.78:1 and fails.
+
+     So the brightness arrives the way that site actually gets it, and the way
+     this site already does it in dark mode: as a FILL with dark text on top.
+     #0a0a0b on #12b33f measures 7.11:1. */
+  --accent-strong: #12b33f;
+  --on-accent-strong: #0a0a0b;
 }
 
 /* The dark palette, applied to the document — and to ONE SECTION inside the
@@ -261,6 +273,10 @@
   --tone-raised: #101114;
   --tone-sunk: #050507;
   --tone-ink: #000000;
+
+  /* Dark already worked this way: a bright fill with black on it. */
+  --accent-strong: #35c97b;
+  --on-accent-strong: #000000;
 }
 
 /* --- vertical rhythm ------------------------------------------------------

@@ -330,6 +330,43 @@ export const upworkJobCount = "53";
  * The platform stays as ONE small verification link, because a rating with
  * nothing behind it is a number I typed.
  */
+/**
+ * WHO IS ON THIS ROW, AND WHY ONLY THESE.
+ *
+ * Every client here is already published on this site by their own choice:
+ * Maitea and Profibeauty.cz appear in the video reviews, CareerCapital in the
+ * written one. Nobody has been taken from the Upwork contract list. Those
+ * clients agreed to work, not to be named on a marketing page, and the two are
+ * not the same permission.
+ *
+ * Stape is flagged as a PARTNER rather than a client. It is the server-side
+ * hosting platform Sojib is certified on, and quietly mixing it into a client
+ * row would be exactly the kind of small lie this file exists to prevent.
+ *
+ * `mark` is where a real logo file goes once one is supplied. Until then the
+ * name is set in the site's own type — a wordmark nobody pretended was
+ * official artwork.
+ */
+export type ClientMark = { name: string; note?: string; mark?: string };
+
+export const clients: ClientMark[] = [
+  { name: "Maitea" },
+  { name: "Profibeauty.cz" },
+  { name: "CareerCapital" },
+  { name: "Stape", note: "PARTNER" },
+];
+
+export const clientsLabel = "WORKED WITH";
+
+/**
+ * The strip above the header. One sentence, in his own voice, and a channel
+ * that answers in minutes rather than days.
+ */
+export const announcement = {
+  text: "Tracking that disagrees with your order table is costing you money right now.",
+  linkLabel: "MESSAGE ME ON WHATSAPP",
+} as const;
+
 export const proof = {
   rating: "4.9",
   reviews: upworkReviewCount,
