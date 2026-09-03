@@ -25,9 +25,8 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
       <SectionHeading eyebrow={work.eyebrow} title={work.title} titleId="work-title" />
 
       <p
+        className="section-intro"
         style={{
-          margin: 0,
-          maxWidth: "62ch",
           fontSize: "var(--text-body)",
           lineHeight: 1.65,
           color: "var(--muted)",

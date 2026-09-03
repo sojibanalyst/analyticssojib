@@ -18,7 +18,7 @@ export default function NotFound() {
         justifyContent: "center",
         gap: "20px",
         paddingBlock: "64px",
-        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - 1280px) / 2))",
+        paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2))",
       }}
     >
       <span className="eyebrow">404 / NOT FOUND</span>

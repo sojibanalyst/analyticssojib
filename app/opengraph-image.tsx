@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { proof, site, stats } from "@/content/site";
+import { proof, site } from "@/content/site";
 
 export const alt = `${site.name} — ${site.role}`;
 export const size = { width: 1200, height: 630 };
@@ -9,7 +9,6 @@ export const contentType = "image/png";
 
 // Design tokens, dark theme.
 const BG = "#0A0A0B";
-const SURFACE = "#101114";
 const BORDER = "#24252A";
 const TEXT = "#FAFAFA";
 const MUTED = "#A7AAB2";
@@ -115,50 +114,32 @@ export default async function OpengraphImage() {
           </div>
         </div>
 
-        {/* verified Upwork stats */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ display: "flex", gap: 12 }}>
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 4,
-                  flex: 1,
-                  background: SURFACE,
-                  border: `1px solid ${BORDER}`,
-                  borderRadius: 14,
-                  padding: "16px 20px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    fontSize: 38,
-                    fontWeight: 800,
-                    letterSpacing: "-0.03em",
-                    color: TEXT,
-                  }}
-                >
-                  {stat.value}
-                  {stat.unit ? (
-                    <span style={{ fontSize: 18, color: MUTED }}>
-                      {/* Neither embedded font carries ★, and satori would try
-                          to fetch a fallback at build time. Spell it instead. */}
-                      {stat.unit === "★" ? "/5" : stat.unit}
-                    </span>
-                  ) : null}
-                </div>
-                <div style={{ display: "flex", fontSize: 15, letterSpacing: "0.1em", color: MUTED }}>
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+        {/* The proof line, matching the page: two figures that are true off
+            Upwork as well as on it, and one verification note. */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: 14,
+              fontSize: 34,
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              color: TEXT,
+            }}
+          >
+            <span style={{ color: ACCENT }}>{proof.rating}/5</span>
+            <span style={{ fontSize: 22, fontWeight: 500, color: MUTED }}>
+              from {proof.reviews} reviews
+            </span>
+            <span style={{ fontSize: 22, color: BORDER }}>|</span>
+            <span>{proof.projects}</span>
+            <span style={{ fontSize: 22, fontWeight: 500, color: MUTED }}>
+              projects delivered
+            </span>
           </div>
           <div style={{ display: "flex", fontSize: 15, letterSpacing: "0.1em", color: FAINT }}>
-            {site.domain.toUpperCase()} · {proof.badge} · {proof.attribution}
+            {site.domain.toUpperCase()} · {proof.badge} · {proof.verifyLabel}
           </div>
         </div>
       </div>
