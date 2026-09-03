@@ -1660,43 +1660,6 @@ a.wordmark:hover {
    rather than fighting it with specificity.
    ========================================================================= */
 
-/* 1. FULL-BLEED. The stack band is the only row on the page that ignores the
-      1280px measure. It runs to within 18px of both edges at every width and
-      scrolls rather than wrapping, so at narrow widths it reads as a line
-      that continues past the screen instead of a block that reflows. */
-.stack-strip {
-  position: relative;
-  padding-inline: 0;
-}
-
-.stack-strip__row {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-inline: 18px;
-}
-
-.stack-strip__marquee {
-  display: flex;
-  align-items: center;
-  flex: 0 0 auto;
-}
-
-.stack-strip__set {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  flex: 0 0 auto;
-  padding-inline-end: 22px;
-}
-
-/* Only exists so the marquee has somewhere to land. */
-.stack-strip__set--copy {
-  display: none;
-}
-
 .stack-strip__item {
   display: inline-flex;
   align-items: center;
@@ -1710,27 +1673,6 @@ a.wordmark:hover {
   font-weight: 500;
   letter-spacing: 0.1em;
   white-space: nowrap;
-}
-
-.stack-strip__row::-webkit-scrollbar {
-  height: 0;
-}
-
-.stack-strip__row:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-}
-
-/* The fade is the affordance: without it a row that runs off the edge looks
-   like a clipping bug rather than something you can push. */
-.stack-strip::after {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  inset-inline-end: 0;
-  width: 56px;
-  pointer-events: none;
-  background: linear-gradient(to right, transparent, var(--tone-raised));
 }
 
 /* 2. ASYMMETRIC. Deliberately not halves and deliberately not level: the
@@ -1852,40 +1794,6 @@ a.wordmark:hover {
   background: var(--accent);
   transform: scaleX(0);
   transform-origin: left center;
-}
-
-/* 3. THE TOOLS BAND RUNS. Continuous rather than static, which is the one
-      place a marquee earns its keep: the list is longer than any screen, so
-      something has to move for all of it to be seen. It pauses on hover and
-      on keyboard focus, so it can be read rather than chased. */
-@keyframes stack-marquee {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .stack-strip__row {
-    overflow-x: hidden;
-  }
-
-  .stack-strip__set--copy {
-    display: flex;
-  }
-
-  .stack-strip__marquee {
-    animation: stack-marquee 46s linear infinite;
-    will-change: transform;
-  }
-
-  .stack-strip__row:hover .stack-strip__marquee,
-  .stack-strip__row:focus-within .stack-strip__marquee {
-    animation-play-state: paused;
-  }
 }
 
 /* The proof line ==========================================================
@@ -2322,4 +2230,67 @@ a.wordmark:hover {
 
 [data-motion="on"] .section-head[data-reveal="shown"] .h2 {
   animation: h2-wipe 760ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Tools band, centred =====================================================
+   One set, inside the page measure, wrapping rather than running.
+
+   It was a full-bleed marquee and that was wrong. A seamless loop needs two
+   copies of the set, and with twelve tools the set is narrower than a desktop
+   viewport — so both copies were on screen together and every tool appeared
+   twice. The movement it loses comes back as an arrival.
+   ========================================================================= */
+
+.stack-strip__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+}
+
+@keyframes tool-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The row itself does not fade — only the tools inside it do, in sequence.
+   Animating both would put two animations on nested elements again. */
+[data-motion="on"] .stack-strip__row[data-reveal="pending"] {
+  opacity: 1;
+}
+
+[data-motion="on"] .stack-strip__row[data-reveal="shown"] {
+  animation: none;
+}
+
+[data-motion="on"] .stack-strip__row[data-reveal="pending"] .stack-strip__item {
+  opacity: 0;
+}
+
+/* The index arrives from the markup as --i, so the cascade runs across all
+   twelve. Motion.tsx's shared stagger caps at four steps, which is right for a
+   four-card grid and wrong for a list this long. 42ms apart: the last tool
+   lands about half a second after the first, which reads as one gesture
+   rather than twelve separate ones. */
+[data-motion="on"] .stack-strip__row[data-reveal="shown"] .stack-strip__item {
+  animation: tool-in 460ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 42ms);
+}
+
+.stack-strip__item {
+  transition: color 150ms ease, transform 180ms ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stack-strip__item:hover {
+    transform: translateY(-2px);
+  }
 }
