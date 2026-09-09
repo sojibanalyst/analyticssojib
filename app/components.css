@@ -2447,3 +2447,112 @@ a.wordmark:hover {
   scroll-snap-type: none;
   scroll-behavior: auto;
 }
+
+/* Long-form document (/privacy) ===========================================
+   Left-aligned on a narrow measure, deliberately against the centred headings
+   the rest of the site uses. A centred heading works above a grid you scan; it
+   works badly above a column somebody reads in order.
+   ========================================================================= */
+
+.doc {
+  gap: 0;
+}
+
+.doc__head {
+  max-width: 68ch;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc__title {
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: var(--text-display);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.doc__updated {
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  color: var(--faint);
+}
+
+.doc__intro {
+  margin: 0;
+  font-size: var(--text-lead);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.doc__section {
+  max-width: 68ch;
+  margin-inline: auto;
+  padding-block-start: 44px;
+}
+
+.doc__heading {
+  margin: 0 0 14px;
+  font-family: var(--font-prose);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.doc__para {
+  margin: 0 0 14px;
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.doc__list {
+  margin: 0 0 14px;
+  padding-inline-start: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doc__list li {
+  position: relative;
+  padding-inline-start: 20px;
+  font-size: var(--text-body);
+  line-height: 1.65;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* A drawn square rather than a bullet glyph — the same mark the hero badge
+   and the dock use, and one fewer font-dependent character. */
+.doc__list li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 2px;
+  inset-block-start: 0.62em;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+
+.doc__table {
+  margin-block: 4px 18px;
+}
+
+.doc__table td:first-child {
+  color: var(--text);
+  letter-spacing: 0;
+  white-space: normal;
+  font-weight: 700;
+}

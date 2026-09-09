@@ -74,8 +74,14 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
         ))}
       </nav>
 
+      {/* Privacy sits on the legal line rather than in the footer nav: it is
+          not somewhere a visitor is being sent, it is where they look when
+          they want to check something. */}
       <span style={{ flexBasis: "100%", color: "var(--faint)", fontSize: "var(--text-label)" }}>
-        © {year} {site.fullName} · {footer.builtWith}
+        © {year} {site.fullName} · {footer.builtWith} ·{" "}
+        <a href="/privacy" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+          PRIVACY
+        </a>
       </span>
     </footer>
   );
