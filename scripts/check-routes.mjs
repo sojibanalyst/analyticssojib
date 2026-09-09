@@ -22,6 +22,7 @@ const ROUTES = [
   ["/case-studies/meta-roas-deduplication", 200],
   ["/tracking-plan", 200],
   ["/privacy", 200],
+  ["/terms", 200],
   ["/sitemap.xml", 200],
   ["/robots.txt", 200],
   ["/manifest.webmanifest", 200],

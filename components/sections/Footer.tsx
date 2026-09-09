@@ -81,6 +81,9 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
         © {year} {site.fullName} · {footer.builtWith} ·{" "}
         <a href="/privacy" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
           PRIVACY
+        </a>{" "}·{" "}
+        <a href="/terms" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+          TERMS
         </a>
       </span>
     </footer>
