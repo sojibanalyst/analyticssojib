@@ -18,16 +18,7 @@
  * docs/consent-re-enable.md before that happens.
  */
 
-export type PrivacyBlock =
-  | { kind: "para"; text: string }
-  | { kind: "list"; items: string[] }
-  | { kind: "table"; head: string[]; rows: string[][] };
-
-export type PrivacySection = {
-  id: string;
-  heading: string;
-  blocks: PrivacyBlock[];
-};
+import type { DocSection } from "@/components/DocArticle";
 
 export const privacyMeta = {
   title: "Privacy",
@@ -39,7 +30,7 @@ export const privacyMeta = {
     "This page describes what analyticssojib.com actually does, taken from the code that does it. Where a lifetime or a retention window is given, it is the value the software enforces, not an intention.",
 };
 
-export const privacySections: PrivacySection[] = [
+export const privacySections: DocSection[] = [
   {
     id: "summary",
     heading: "The short version",
