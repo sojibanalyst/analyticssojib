@@ -2701,3 +2701,495 @@ a.wordmark:hover {
   background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
   background-size: 24px 24px;
 }
+
+/* ==========================================================================
+   Hero, 2026: copy on one side, the pipeline on the other
+   ==========================================================================
+
+   The rules further up this file were written for a full-bleed photograph
+   with a scrim over it. The photograph is gone, so the geometry that existed
+   to keep the headline inside the dark part of it goes too. These come last
+   on purpose: same specificity as the rules they replace, later in the file. */
+
+.hero {
+  display: block;
+  min-height: 0;
+  overflow: clip;
+  /* No tone of its own, so the body's dot grid shows through. */
+  background: transparent;
+}
+
+.hero-grid {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
+  padding: 40px 18px 56px;
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    padding: 64px max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2)) 72px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 4vw, 72px);
+    padding-block: 72px 88px;
+  }
+}
+
+.hero-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* An eyebrow, not a button: tinted, outlined, mono. The filled version put a
+   second loud green block directly above the primary action. */
+.hero-badge {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  color: var(--ink);
+  font-family: var(--font-data);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+}
+
+/* Smaller than --text-h1. That token is sized for a heading with the whole
+   measure to itself; this one has half of it, and at 68px the sentence broke
+   across four lines and pushed the name and the proof below the fold. */
+.hero-h1 {
+  max-width: none;
+  font-size: clamp(36px, 4.3vw, 58px);
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.hero-h1__accent {
+  color: var(--ink);
+}
+
+.hero-lead {
+  max-width: 52ch;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.hero-ctas .btn-ghost {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.hero-ctas .btn-ghost:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* Who is speaking: avatar, name, and the one line of proof. A link, because
+   the proof is checkable and this is where it is checked. */
+.hero-id {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 8px;
+  color: inherit;
+}
+
+.hero-id__avatar {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  object-fit: cover;
+}
+
+.hero-id__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.hero-id__name {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hero-id__trust {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.hero-id:hover .hero-id__trust {
+  color: var(--ink);
+}
+
+.hero-visual {
+  /* Written by components/hero/HeroParallax.tsx, each from -1 to 1. Zero
+     until it runs, and it only runs for a mouse on a wide screen. */
+  --px: 0;
+  --py: 0;
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-visual__glow {
+  position: absolute;
+  inset: -12% -6%;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent-2) 16%, transparent),
+    transparent 72%
+  );
+  transform: translate(calc(var(--px) * -14px), calc(var(--py) * -14px));
+  transition: transform 600ms var(--ease-out);
+}
+
+.hero-visual__legend {
+  position: relative;
+  margin: 0;
+  max-width: 100%;
+}
+
+/* Pipeline -----------------------------------------------------------------
+   The diagram in components/hero/PipelineSvg.tsx. Sizes below are SVG user
+   units, not CSS pixels: the drawing scales with its box.
+
+   Everything here is the STATIC drawing. The motion is in the
+   no-preference block underneath, so with reduced motion on there is nothing
+   to switch off: it was never switched on. */
+
+.pipe {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: translate(calc(var(--px) * 8px), calc(var(--py) * 8px));
+  transition: transform 600ms var(--ease-out);
+}
+
+/* Two layouts of the same nodes; see the note in the component. */
+.pipe--wide {
+  display: none;
+  max-width: 640px;
+}
+
+.pipe--tall {
+  max-width: 360px;
+}
+
+@media (min-width: 640px) {
+  .pipe--wide {
+    display: block;
+  }
+
+  .pipe--tall {
+    display: none;
+  }
+}
+
+.pipe-lines path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent-2) 55%, var(--border));
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  stroke-linecap: round;
+}
+
+.pipe-node rect {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.pipe-node .pipe-skel {
+  fill: var(--border);
+  stroke: none;
+}
+
+.pipe-rule {
+  fill: none;
+  stroke: var(--border);
+}
+
+.pipe-chrome {
+  fill: var(--border);
+}
+
+.pipe-node--server rect {
+  stroke: var(--accent);
+}
+
+.pipe-node--server .pipe-server-glow {
+  fill: color-mix(in srgb, var(--accent) 12%, transparent);
+  stroke: none;
+  opacity: 0.6;
+}
+
+.pipe-mono {
+  font-family: var(--font-data);
+  font-size: 12px;
+  fill: var(--text);
+}
+
+.pipe-mono--dim {
+  fill: var(--muted);
+}
+
+.pipe-host {
+  font-size: 10.5px;
+  fill: var(--ink);
+}
+
+.pipe-cap {
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--faint);
+}
+
+.pipe-cap--accent {
+  fill: var(--ink);
+}
+
+.pipe-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  fill: var(--text);
+}
+
+.pipe-title--sm {
+  font-size: 15px;
+}
+
+.pipe-row-dot {
+  fill: var(--accent);
+}
+
+.pipe-badge rect {
+  fill: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1;
+}
+
+.pipe-badge text {
+  font-size: 11px;
+  fill: var(--ink);
+}
+
+/* Invisible until the motion block gives them somewhere to go. */
+.pipe-dot {
+  opacity: 0;
+  offset-rotate: 0deg;
+  fill: var(--accent-2);
+}
+
+.pipe-dot--trunk {
+  fill: var(--accent);
+}
+
+/* One loop is 12s and an event starts every 4s. Each event's elements carry
+   --d, its offset into the loop. Within an event's own 12s:
+
+     0 to 9%     the dot crosses from the browser to the server
+     10 to 20%   three dots fan out to the platforms
+     22% on      (purchase only) the deduplicated badge appears on Meta
+
+   The server and the platforms are hit by every event, so their pulses run on
+   a 4s loop instead and need no offset. */
+@media (prefers-reduced-motion: no-preference) {
+  .pipe-row {
+    fill: var(--muted);
+    animation: pipe-row 12s linear var(--d, 0s) infinite;
+  }
+
+  .pipe-row-dot {
+    fill: var(--border);
+    animation: pipe-row-dot 12s linear var(--d, 0s) infinite;
+  }
+
+  .pipe-dot--trunk {
+    animation: pipe-trunk 12s linear var(--d, 0s) infinite;
+  }
+
+  .pipe-dot--branch {
+    animation: pipe-branch 12s linear var(--d, 0s) infinite;
+  }
+
+  .pipe-badge {
+    opacity: 0;
+    animation: pipe-badge 12s var(--ease-out) var(--d, 0s) infinite;
+  }
+
+  .pipe-node--server .pipe-server-glow {
+    animation: pipe-server 4s var(--ease-out) infinite;
+  }
+
+  .pipe-node--platform rect {
+    animation: pipe-hit 4s var(--ease-out) infinite;
+  }
+}
+
+@keyframes pipe-row {
+  0%,
+  22% {
+    fill: var(--text);
+  }
+
+  27%,
+  100% {
+    fill: var(--muted);
+  }
+}
+
+@keyframes pipe-row-dot {
+  0%,
+  22% {
+    fill: var(--accent);
+  }
+
+  27%,
+  100% {
+    fill: var(--border);
+  }
+}
+
+@keyframes pipe-trunk {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+
+  1% {
+    opacity: 1;
+  }
+
+  9% {
+    offset-distance: 100%;
+    opacity: 1;
+  }
+
+  10%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes pipe-branch {
+  0%,
+  9% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+
+  10% {
+    offset-distance: 0%;
+    opacity: 1;
+  }
+
+  20% {
+    offset-distance: 100%;
+    opacity: 1;
+  }
+
+  21%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes pipe-badge {
+  0%,
+  21% {
+    opacity: 0;
+  }
+
+  25%,
+  64% {
+    opacity: 1;
+  }
+
+  72%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The trunk dot arrives 1.08s into each 4s: 27%. */
+@keyframes pipe-server {
+  0%,
+  24% {
+    opacity: 0.35;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  60%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+/* The branch dots arrive 2.4s into each 4s: 60%. */
+@keyframes pipe-hit {
+  0%,
+  57% {
+    stroke: var(--border);
+  }
+
+  63%,
+  78% {
+    stroke: var(--accent);
+  }
+
+  100% {
+    stroke: var(--border);
+  }
+}
+
+/* About: the portrait ------------------------------------------------------ */
+
+.about-aside {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.about-photo {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center top;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}

@@ -1,4 +1,5 @@
-import { about } from "@/content/site";
+import Image from "next/image";
+import { about, hero } from "@/content/site";
 
 const docStyle: React.CSSProperties = {
   display: "inline-flex",
@@ -74,11 +75,8 @@ export function About() {
           id="about-title"
           style={{
             margin: 0,
-            fontFamily: "var(--font-prose)",
-            fontSize: "var(--text-h3)",
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-            textTransform: "uppercase",
+            fontSize: "var(--text-h2)",
+            lineHeight: 1.1,
             textWrap: "balance",
           }}
         >
@@ -105,6 +103,20 @@ export function About() {
           ))}
         </div>
       </div>
+
+      <div className="about-aside">
+        {/* The portrait that used to fill the hero. To change it, replace
+            public/about.jpg; the frame crops whatever it is given to 4:5 from
+            the top, so a head-and-shoulders photo of any size works. */}
+        <Image
+          src="/about.jpg"
+          alt={hero.imageAlt}
+          width={590}
+          height={635}
+          sizes="(min-width: 900px) 34vw, 100vw"
+          quality={75}
+          className="about-photo"
+        />
 
       {/* The design put a client pull-quote here. None was supplied, so this is
           Sojib's own positioning statement rather than an invented testimonial. */}
@@ -140,6 +152,7 @@ export function About() {
         >
           {about.pullquoteAttribution}
         </span>
+      </div>
       </div>
     </section>
   );

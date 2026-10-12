@@ -295,6 +295,30 @@ export const hero = {
   secondaryHref: "#services",
   imageAlt:
     "Sojib, web analytics and tracking specialist, in front of analytics dashboards",
+  /**
+   * The small round photo beside the name. To change it, replace
+   * public/avatar.jpg with a square image (192px or larger); nothing else
+   * needs to move. The large portrait lives in the About section and is
+   * public/about.jpg, swapped the same way.
+   */
+  avatar: { src: "/avatar.jpg", alt: "Sojib H." },
+  /**
+   * The pipeline diagram. What it draws is the service: events leave a
+   * browser, reach a server container on a first-party subdomain, and fan out
+   * to the platforms, with the purchase deduplicated on Meta.
+   *
+   * `server.host` is a PLACEHOLDER until the real server container exists.
+   * It is the conventional name for one on this domain, not a live endpoint.
+   */
+  pipeline: {
+    label:
+      "Diagram of a tracking pipeline. Events page_view, add_to_cart and purchase leave the browser, reach a server-side Google Tag Manager container on a first-party subdomain, and are forwarded to GA4, Meta and Google Ads. On Meta the purchase is marked deduplicated.",
+    browser: { title: "yourstore.com", caption: "BROWSER" },
+    server: { title: "Server GTM", host: "sgtm.analyticssojib.com", caption: "FIRST-PARTY" },
+    events: ["page_view", "add_to_cart", "purchase"],
+    platforms: ["GA4", "Meta", "Google Ads"],
+    dedupe: "Deduplicated ✓",
+  },
 } as const;
 
 /* -------------------------------------------------------------------------- */
@@ -314,8 +338,16 @@ export const hero = {
  * does not expose either, so neither has been re-verified and neither has been
  * changed. If you update them, update them from the profile page.
  */
-export const upworkReviewCount = "27";
-export const upworkJobCount = "53";
+/**
+ * 12 Oct 2026: every figure below was supplied by Sojib from the profile page
+ * on that date (100% Job Success, Top Rated, 54 jobs, 29 reviews, 5.0). This
+ * block and `proof` are the ONE place they are typed; everything on the site
+ * that shows a figure reads it from here.
+ */
+export const upworkReviewCount = "29";
+export const upworkJobCount = "54";
+export const upworkRating = "5.0";
+export const upworkJobSuccess = "100%";
 
 /**
  * ONE LINE, NOT A DASHBOARD.
@@ -369,13 +401,16 @@ export const announcement = {
 } as const;
 
 export const proof = {
-  rating: "4.9",
+  rating: upworkRating,
+  jobSuccess: upworkJobSuccess,
   reviews: upworkReviewCount,
   projects: upworkJobCount,
   badge: "TOP RATED",
   verifyLabel: "VERIFIED ON UPWORK",
-  chip: "TOP RATED · 4.9★",
-  contactChip: `TOP RATED · 4.9★ · ${upworkJobCount} PROJECTS`,
+  chip: `TOP RATED · ${upworkJobSuccess} JOB SUCCESS`,
+  /** The line beside the avatar in the hero. */
+  trustLine: `Top Rated · ${upworkJobSuccess} Job Success`,
+  contactChip: `TOP RATED · ${upworkRating}★ · ${upworkJobCount} PROJECTS`,
   rate: "$30/hr",
 } as const;
 
@@ -823,7 +858,7 @@ export const process = {
 
 export const about = {
   title: "I only do measurement.",
-  body: "No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 53 projects.",
+  body: `No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed ${upworkJobCount} projects.`,
   pullquote:
     "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it, so you can check it without taking my word for anything.",
   pullquoteAttribution: "SOJIB H. · DHAKA, BANGLADESH · UTC+6",

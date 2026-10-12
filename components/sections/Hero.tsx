@@ -1,82 +1,77 @@
 import Image from "next/image";
-import { hero, linkedinUrl, proof, upworkUrl, whatsappUrl } from "@/content/site";
+import { hero, proof, site, upworkUrl } from "@/content/site";
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
-import { SocialIcon } from "@/components/ui/Icon";
+import { HeroParallax } from "@/components/hero/HeroParallax";
+import { PipelineSvg } from "@/components/hero/PipelineSvg";
+import { EventChip } from "@/components/ui/EventChip";
 
+/**
+ * The hero. Copy on one side, the pipeline on the other.
+ *
+ * The portrait that used to fill this section is in About now. What is left of
+ * it here is a 44px avatar beside the name, because a face next to a claim is
+ * still worth having and a face the size of the screen was the claim's rival.
+ *
+ * With the photo gone the largest thing painted is the headline, which is
+ * text, so the LCP no longer waits on an image request at all.
+ */
 export function Hero() {
+  const { pipeline } = hero;
+
   return (
     <section className="hero" aria-labelledby="hero-title">
-      {/* Both photos ship; CSS shows the one matching the theme. The dark
-          variant is the priority image because dark is the default, so it is
-          the one that decides LCP. */}
-      <Image
-        src="/hero-light.jpg"
-        alt={hero.imageAlt}
-        width={1200}
-        height={675}
-        loading="lazy"
-        fetchPriority="low"
-        quality={62}
-        sizes="100vw"
-        className="hero-img hero-img--light"
-      />
-      {/* Hidden at opacity 0 until the theme flips. It sits inside the initial
-          viewport, so the browser still fetches it on the first layout pass —
-          the toggle stays instant — but at low priority, so it does not
-          compete with the LCP image over a slow connection. */}
-      <Image
-        src="/hero-dark.jpg"
-        alt=""
-        aria-hidden="true"
-        width={1440}
-        height={810}
-        priority
-        fetchPriority="high"
-        quality={62}
-        sizes="100vw"
-        className="hero-img hero-img--dark"
-      />
+      <div className="hero-grid">
+        <div className="hero-copy">
+          <span className="hero-badge">{hero.eyebrow}</span>
 
-      <div aria-hidden="true" className="hero-wash" />
+          <h1 id="hero-title" className="hero-h1">
+            {hero.headline.a} <span className="hero-h1__accent">{hero.headline.accent1}</span>{" "}
+            {hero.headline.b} {hero.headline.c}{" "}
+            <span className="hero-h1__accent">{hero.headline.accent2}</span>
+          </h1>
 
-      <div className="hero-body">
-        <span className="hero-badge">{hero.eyebrow}</span>
+          <p className="hero-lead">{hero.lead}</p>
 
-        <h1 id="hero-title" className="hero-h1">
-          {hero.headline.a}{" "}
-          <span style={{ color: "var(--ink)" }}>{hero.headline.accent1}</span>{" "}
-          {hero.headline.b} <span style={{ whiteSpace: "nowrap" }}>{hero.headline.c}</span>{" "}
-          <span style={{ color: "var(--ink)", whiteSpace: "nowrap" }}>
-            {hero.headline.accent2}
-          </span>
-        </h1>
+          <div className="hero-ctas">
+            <CalendlyPopupButton className="btn btn-primary" placement="hero">
+              {hero.primaryCta}
+            </CalendlyPopupButton>
+            <a href={hero.secondaryHref} className="btn btn-ghost">
+              {hero.secondaryCta}
+            </a>
+          </div>
 
-        <p className="hero-lead">{hero.lead}</p>
-
-        <div className="hero-ctas">
-          <CalendlyPopupButton className="btn btn-primary" placement="hero">
-            {hero.primaryCta}
-          </CalendlyPopupButton>
-          <a href={hero.secondaryHref} className="btn btn-ghost">
-            {hero.secondaryCta}
+          <a className="hero-id" href={upworkUrl} target="_blank" rel="noopener">
+            <Image
+              src={hero.avatar.src}
+              alt=""
+              width={44}
+              height={44}
+              sizes="44px"
+              className="hero-id__avatar"
+            />
+            <span className="hero-id__text">
+              <span className="hero-id__name">{site.name}</span>
+              <span className="hero-id__trust">{proof.trustLine}</span>
+            </span>
           </a>
         </div>
 
-        <div className="hero-trust">
-          <a href={upworkUrl} target="_blank" rel="noopener">
-            <SocialIcon name="upwork" size={16} />
-            {proof.chip}
-          </a>
-          <a href={whatsappUrl} target="_blank" rel="noopener">
-            <SocialIcon name="whatsapp" size={16} />
-            WHATSAPP
-          </a>
-          <a href={linkedinUrl} target="_blank" rel="noopener">
-            <SocialIcon name="linkedin" size={16} />
-            LINKEDIN
-          </a>
+        <div className="hero-visual" data-hero-parallax>
+          <div className="hero-visual__glow" aria-hidden="true" />
+          <PipelineSvg />
+          {/* The same story as the diagram, in one line of text. It is what a
+              reader gets if the drawing is too small to read. */}
+          <p className="hero-visual__legend">
+            <EventChip
+              name={pipeline.events[pipeline.events.length - 1]}
+              destinations={[...pipeline.platforms]}
+            />
+          </p>
         </div>
       </div>
+
+      <HeroParallax />
     </section>
   );
 }
