@@ -292,3 +292,22 @@ export async function getFaqs(): Promise<Faq[]> {
 
   return rows.map((row) => ({ q: row.question, a: row.answer }));
 }
+
+/* -------------------------------------------------------------------------- */
+/* Portfolio items: the "More work" grid                                       */
+/* -------------------------------------------------------------------------- */
+
+export type PortfolioItem = { title: string; url: string };
+
+export async function getPortfolioItems(): Promise<PortfolioItem[]> {
+  const rows = orThrow(
+    "portfolio items",
+    await contentClient()
+      .from("portfolio_items")
+      .select("title, url")
+      .eq("published", true)
+      .order("sort_order", { ascending: true }),
+  );
+
+  return rows.map((row) => ({ title: row.title, url: row.url }));
+}
