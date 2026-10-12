@@ -476,6 +476,29 @@ export const integrationsLabel = "CRM + AUTOMATION";
 
 export const symptoms = {
   title: "Does this look familiar?",
+  eyebrow: "The problem",
+  /**
+   * The mini dashboard beside the cards.
+   *
+   * THESE FIGURES ARE ILLUSTRATIVE, and the panel says so on screen. They are
+   * not a client's numbers. They exist to show the shape of the problem: one
+   * order table, and two platforms that each disagree with it in a different
+   * direction. `truth` is the figure all three settle on.
+   */
+  dashboard: {
+    title: "Revenue · last 30 days",
+    note: "Example data",
+    currency: "$",
+    truth: 48210,
+    tiles: [
+      { source: "Shopify", metric: "Order revenue", value: 48210 },
+      { source: "GA4", metric: "Purchase revenue", value: 39870 },
+      { source: "Meta Ads", metric: "Reported purchase value", value: 61450 },
+    ],
+    mismatched: "3 sources, 3 different numbers",
+    reconciled: "Reconciled",
+    reconciledNote: "Every source agrees with the order table.",
+  },
   items: [
     {
       tag: "▲ MISMATCH",

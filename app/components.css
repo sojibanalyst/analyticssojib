@@ -3193,3 +3193,309 @@ a.wordmark:hover {
   border-radius: var(--radius-lg);
   background: var(--surface);
 }
+
+/* ==========================================================================
+   The problem, as a scroll story
+   ==========================================================================
+
+   components/symptoms. A dashboard whose three numbers disagree, four cards
+   that say why, and the numbers settling on one at the end. */
+
+.story__pin {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.story__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .story__layout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px;
+    align-items: center;
+  }
+}
+
+.story__cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .story__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.story__card {
+  padding: 22px;
+  gap: 10px;
+}
+
+/* Red, and this is one of the few places it is allowed: these are the broken
+   states the rest of the page is about fixing. */
+.story__tag {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--danger);
+}
+
+.story__title {
+  margin: 0;
+  font-size: var(--text-lead);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.story__body {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* A card waits, then arrives. Only in the two moving modes, which only exist
+   once the component has run; before that, and under reduced motion, every
+   card is simply there. */
+.story:is([data-mode="pinned"], [data-mode="flow"]) .story__card {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+}
+
+.story:is([data-mode="pinned"], [data-mode="flow"]) .story__card[data-on="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* The pin. A sticky panel inside a tall section, and the height is here in
+   the stylesheet rather than added by a script, so it is part of the first
+   paint and nothing below it ever moves. The query is the same test the
+   component makes before it switches to pinned mode. */
+@media (min-width: 1024px) and (min-height: 680px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .story {
+    min-height: 300vh;
+    justify-content: flex-start;
+  }
+
+  .story__pin {
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+    min-height: 100vh;
+    /* Room for the floating header, which sits over the top of the panel. */
+    padding-block: 96px 32px;
+    justify-content: center;
+  }
+}
+
+/* The dashboard ------------------------------------------------------------ */
+
+.dash {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-2);
+}
+
+.dash__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Dashed, so the label reads as a note about the panel and not part of it. */
+.dash__note {
+  padding: 2px 10px;
+  border: 1px dashed var(--border-input);
+  border-radius: var(--radius-full);
+  color: var(--faint);
+}
+
+.dash__tiles {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.dash__tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "source value"
+    "source drift";
+  column-gap: 12px;
+  align-items: baseline;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  transition: border-color var(--dur-reveal) var(--ease-out);
+}
+
+.dash__source {
+  grid-area: source;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dash__metric {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.dash__value {
+  grid-area: value;
+  margin: 0;
+  justify-self: end;
+  font-family: var(--font-data);
+  font-size: var(--text-h4);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  transition: color var(--dur-reveal) var(--ease-out);
+}
+
+.dash__drift {
+  grid-area: drift;
+  margin: 0;
+  justify-self: end;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--muted);
+}
+
+.dash[data-reconciled="false"] .dash__tile[data-off="true"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+}
+
+.dash[data-reconciled="false"] .dash__tile[data-off="true"] :is(.dash__value, .dash__drift) {
+  color: var(--danger);
+}
+
+.dash[data-reconciled="true"] .dash__tile {
+  border-color: color-mix(in srgb, var(--ok) 40%, var(--border));
+}
+
+.dash[data-reconciled="true"] .dash__value {
+  color: var(--ok);
+}
+
+.dash__status {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--danger);
+}
+
+.dash__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.dash[data-reconciled="true"] .dash__status {
+  color: var(--ok);
+}
+
+.dash__status-label {
+  font-weight: 700;
+}
+
+.dash__status-note {
+  font-family: var(--font-prose);
+  font-size: var(--text-small);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+}
+
+/* The ending, repeated under the cards where nothing is pinned. On a wide
+   screen the dashboard is beside the cards the whole time, so it is not
+   needed there. */
+.story__end {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--ok) 40%, var(--border));
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--muted);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+}
+
+.story__end[data-on="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.story__end-label {
+  flex-basis: 100%;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ok);
+}
+
+.story__end-item b {
+  font-weight: 700;
+  color: var(--ok);
+}
+
+@media (min-width: 1024px) {
+  .story__end {
+    display: none;
+  }
+}
