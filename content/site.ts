@@ -42,7 +42,18 @@ export type Service = {
   title: string;
   body: string;
   bullets: string[];
+  /**
+   * The small event stream inside the card: what this service looks like in
+   * a debugger. Each line is a mark and a short string, 26 characters at most
+   * so it fits the narrowest card. `ok` is a check that passed or an event
+   * that arrived, `warn` is a defect found, `flow` is data moving.
+   *
+   * Illustrative of the work, not a log from a client.
+   */
+  stream: StreamLine[];
 };
+
+export type StreamLine = { mark: "ok" | "warn" | "flow"; text: string };
 
 export type CaseStat = { value: string; unit?: string; label: string };
 
@@ -411,7 +422,6 @@ export const proof = {
   /** The line beside the avatar in the hero. */
   trustLine: `Top Rated · ${upworkJobSuccess} Job Success`,
   contactChip: `TOP RATED · ${upworkRating}★ · ${upworkJobCount} PROJECTS`,
-  rate: "$30/hr",
 } as const;
 
 /* -------------------------------------------------------------------------- */
@@ -529,6 +539,7 @@ export const symptoms = {
 /* -------------------------------------------------------------------------- */
 
 export const services = {
+  eyebrow: "Services",
   title: "Four ways in",
   footnote:
     "Scope-dependent. Fixed price agreed before any work starts. No hourly billing, no surprise invoices.",
@@ -545,6 +556,13 @@ export const services = {
         "Consent Mode v2 check",
         "Loom walkthrough + fix plan",
       ],
+      stream: [
+        { mark: "ok", text: "purchase fires once" },
+        { mark: "warn", text: "duplicate event_id" },
+        { mark: "ok", text: "begin_checkout params" },
+        { mark: "warn", text: "ga4 revenue ≠ orders" },
+        { mark: "ok", text: "consent_mode_v2 set" },
+      ],
     },
     {
       code: "S-02",
@@ -557,6 +575,13 @@ export const services = {
         "sGTM on custom domain",
         "Deduplicated event IDs",
         "Shopify / WooCommerce / custom",
+      ],
+      stream: [
+        { mark: "flow", text: "page_view → sgtm" },
+        { mark: "flow", text: "add_to_cart → sgtm" },
+        { mark: "flow", text: "purchase → sgtm" },
+        { mark: "ok", text: "first-party cookie set" },
+        { mark: "flow", text: "sgtm → GA4 · Meta · Ads" },
       ],
     },
     {
@@ -571,6 +596,13 @@ export const services = {
         "Deduplication rules",
         "Parity report, weekly",
       ],
+      stream: [
+        { mark: "ok", text: "event_id shared" },
+        { mark: "ok", text: "Meta CAPI deduplicated" },
+        { mark: "ok", text: "enhanced_conversions on" },
+        { mark: "flow", text: "purchase → TikTok API" },
+        { mark: "ok", text: "events match orders" },
+      ],
     },
     {
       code: "S-04",
@@ -582,6 +614,13 @@ export const services = {
         "BigQuery export + models",
         "Looker Studio dashboards",
         "Anomaly alerts",
+      ],
+      stream: [
+        { mark: "flow", text: "ga4 → bigquery export" },
+        { mark: "flow", text: "join orders + ad_cost" },
+        { mark: "ok", text: "model daily_revenue" },
+        { mark: "ok", text: "looker_studio refreshed" },
+        { mark: "warn", text: "anomaly_check: 1 flag" },
       ],
     },
   ] satisfies Service[],

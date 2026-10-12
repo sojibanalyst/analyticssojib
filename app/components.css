@@ -3499,3 +3499,152 @@ a.wordmark:hover {
     display: none;
   }
 }
+
+/* ==========================================================================
+   Services
+   ========================================================================== */
+
+.svc-grid {
+  gap: 16px;
+}
+
+.service-card {
+  padding: 24px 22px;
+  gap: 14px;
+}
+
+.svc-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.svc-title {
+  margin: 0;
+  font-size: var(--text-h4);
+  line-height: 1.15;
+}
+
+/* The price gets a line of its own. In the meta row it shared a baseline with
+   the duration and wrapped under it on the narrowest cards. */
+.svc-price {
+  margin: -6px 0 0;
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.svc-body {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.svc-bullets {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.svc-bullets span {
+  color: var(--ok);
+}
+
+.svc-footnote {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--faint);
+  text-align: center;
+}
+
+/* The event stream. Three lines tall; the track is twice the list, and one
+   loop moves it by exactly half its own height. */
+.svc-stream {
+  --line: 24px;
+  height: calc(var(--line) * 3);
+  overflow: hidden;
+  padding-inline: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  /* Lines fade in and out at the edges instead of being cut by them. */
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+}
+
+.svc-stream__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.svc-stream__line {
+  height: var(--line);
+  line-height: var(--line);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  /* JetBrains Mono joins "→" to what follows it into one long arrow. Fine in
+     code, wrong here, where the arrow is a mark in its own column. */
+  font-variant-ligatures: none;
+  color: var(--muted);
+}
+
+.svc-stream__mark {
+  display: inline-block;
+  width: 1.4em;
+  font-weight: 700;
+  color: var(--ok);
+}
+
+.svc-stream__line[data-mark="warn"] .svc-stream__mark {
+  color: var(--danger);
+}
+
+.svc-stream__line[data-mark="flow"] .svc-stream__mark {
+  color: var(--accent-2);
+}
+
+@keyframes svc-stream {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .svc-stream__track {
+    animation: svc-stream 12s linear infinite paused;
+  }
+
+  /* A pointer that can hover: the stream runs while the card is hovered. */
+  @media (hover: hover) {
+    .service-card:hover .svc-stream__track {
+      animation-play-state: running;
+    }
+  }
+
+  /* Touch: there is no hover, so it runs once the card has been on screen.
+     data-inview is set by components/Motion.tsx. */
+  @media (hover: none) {
+    .svc-stream[data-inview="shown"] .svc-stream__track {
+      animation-play-state: running;
+    }
+  }
+}

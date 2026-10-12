@@ -1,119 +1,66 @@
-import { services } from "@/content/site";
+import { services, type StreamLine } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+
+const MARK: Record<StreamLine["mark"], string> = { ok: "✓", warn: "!", flow: "→" };
+
+/**
+ * The event stream inside a service card.
+ *
+ * A short window onto a list of mono lines that scrolls slowly: on hover where
+ * there is a pointer to hover with, and once the card is on screen where there
+ * is not. The list is rendered twice so the loop has no seam.
+ *
+ * Decoration. The card's own bullets say what the service includes, so this is
+ * hidden from screen readers rather than read out as five lines of jargon,
+ * twice. Under reduced motion it does not move and simply shows its first
+ * three lines.
+ */
+function EventStream({ lines }: { lines: StreamLine[] }) {
+  return (
+    <div className="svc-stream" aria-hidden="true" data-inview="pending">
+      <ul className="svc-stream__track">
+        {[...lines, ...lines].map((line, i) => (
+          <li key={i} className="svc-stream__line" data-mark={line.mark}>
+            <span className="svc-stream__mark">{MARK[line.mark]}</span>
+            {line.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export function Services() {
   return (
-    <section
-      id="services"
-      className="section section--raised"
-      aria-labelledby="services-title"
-    >
-      <SectionHeading
-        title={services.title}
-        titleId="services-title"
-      />
+    <section id="services" className="section section--raised" aria-labelledby="services-title">
+      <SectionHeading eyebrow={services.eyebrow} title={services.title} titleId="services-title" />
 
-      <div className="grid4" style={{ gap: "16px" }}>
+      <div className="grid4 svc-grid">
         {services.items.map((item) => (
-          <div
-            key={item.code}
-            className="card service-card"
-            style={{ padding: "24px 22px", gap: "14px" }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "baseline",
-                gap: "12px",
-                fontFamily: "var(--font-prose)",
-                fontSize: "var(--text-label)",
-                letterSpacing: "0.1em",
-                whiteSpace: "nowrap",
-                color: "var(--muted)",
-              }}
-            >
+          <article key={item.code} className="card service-card">
+            <div className="svc-meta">
               <span>{item.code}</span>
-              <span
-                style={{
-                  marginLeft: "auto",
-                  display: "inline-flex",
-                  gap: "14px",
-                  alignItems: "baseline",
-                  flexWrap: "wrap",
-                }}
-              >
-                <span>{item.duration}</span>
-                <span style={{ color: "var(--ink)", fontWeight: 700 }}>
-                  {item.price}
-                </span>
-              </span>
+              <span>{item.duration}</span>
             </div>
 
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: "var(--font-prose)",
-                fontSize: "var(--text-lead)",
-                fontWeight: 700,
-                letterSpacing: "-0.015em",
-                textTransform: "uppercase",
-              }}
-            >
-              {item.title}
-            </h3>
+            <h3 className="svc-title">{item.title}</h3>
+            <p className="svc-price">{item.price}</p>
+            <p className="svc-body">{item.body}</p>
 
-            <p
-              style={{
-                margin: 0,
-                fontSize: "var(--text-body)",
-                lineHeight: 1.6,
-                color: "var(--muted)",
-                textWrap: "pretty",
-              }}
-            >
-              {item.body}
-            </p>
+            <EventStream lines={item.stream} />
 
-            <ul
-              style={{
-                listStyle: "none",
-                margin: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                fontFamily: "var(--font-prose)",
-                fontSize: "var(--text-small)",
-                color: "var(--muted)",
-                borderTop: "1px solid var(--border)",
-                padding: "14px 0 0",
-                marginTop: "auto",
-              }}
-            >
+            <ul className="svc-bullets">
               {item.bullets.map((bullet) => (
                 <li key={bullet}>
-                  <span style={{ color: "var(--ok)" }} aria-hidden="true">
-                    +
-                  </span>{" "}
-                  {bullet}
+                  <span aria-hidden="true">+</span> {bullet}
                 </li>
               ))}
             </ul>
-          </div>
+          </article>
         ))}
       </div>
 
-      <p
-        style={{
-          margin: 0,
-          fontFamily: "var(--font-prose)",
-          fontSize: "var(--text-label)",
-          letterSpacing: "0.06em",
-          color: "var(--faint)",
-        }}
-      >
-        {services.footnote}
-      </p>
+      <p className="svc-footnote">{services.footnote}</p>
     </section>
   );
 }
