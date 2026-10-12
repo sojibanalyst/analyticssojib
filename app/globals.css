@@ -4,318 +4,253 @@
 @import "./admin.css";
 
 /* ==========================================================================
-   Design tokens — extracted verbatim from Claude Design
-   "Home - Signal Floor.dc.html" (project b8db6e0d-144d-4f0e-a9c0-586e313dccf1)
+   Design tokens, 2026 redesign.
 
-   The design shipped DARK as its default. This site inverts that: LIGHT is the
-   base theme and dark is opted into via [data-theme="dark"] on the root
-   element. The token values themselves are unchanged.
+   DARK IS THE BASE THEME. Light is opted into via [data-theme="light"] on the
+   root element. This is the reverse of what the file did before, and the block
+   order is reversed with it.
 
-   Do not re-order these two blocks. :root and [data-theme="dark"] have equal
-   specificity, so the dark block must stay second or it can never win.
+   Do not re-order the blocks. :root and [data-theme="light"] have equal
+   specificity, so the light block must stay AFTER the dark ones or it can
+   never win.
+
+   The palette is deliberately small. About 70% of any screen is --bg and its
+   tones, 20% is text and surfaces, 10% is accent. --accent is the signal
+   green and means "fired", "matched", "go". --accent-2 is for data in motion:
+   flow lines, links inside diagrams, charts. --danger is for broken and
+   "before" states only, never decoration.
    ========================================================================== */
 
-/* Native controls — <select> dropdowns, scrollbars, date pickers — are drawn
-   by the browser, not by us, and they follow color-scheme rather than our
-   tokens. Without it they render light-on-dark in dark mode.
+/* Native controls follow color-scheme rather than our tokens, so it is set
+   per theme. `light dark` would follow the operating system instead of the
+   theme the visitor actually chose. */
 
-   Set per theme rather than `light dark`, deliberately: `light dark` makes
-   the browser follow the OPERATING SYSTEM, so a visitor on a light OS who
-   switches this site to dark would still get a white dropdown. These follow
-   the theme actually chosen. */
+/* The dark palette, applied to the document, and to ONE SECTION inside the
+   light theme: the case studies (.section--ink) are rendered dark on purpose.
+   One set of declarations, two scopes, so the two cannot drift apart.
+
+   The tone tokens are deliberately NOT in this block. A light-theme ink
+   section wants its own near-black, not the dark theme's section tones. */
 :root,
-[data-theme="light"] {
-  color-scheme: light;
-
-  --bg: #f4f4f2;
-  --surface: #ffffff;
-  --border: #c4c5c1;
-  --text: #0a0a0b;
-  --muted: #545860;
-  --faint: #4c4f55;
-  --accent: #0f7a3d;
-  --ink: #0f7a3d;
-  --on-accent: #ffffff;
-  --ok: #0f7a3d;
-  --result: #0a0a0b;
-  --badge-fg: #4c4f55;
-  --badge-dot: #6e727a;
-  --badge-border: #a9aba6;
-  --logo: #6b6e74;
-  --chip-op: 0.28;
-  --warn: #6e4200;
-  --hero-rgb: 239, 237, 234;
-  --hero-veil: rgba(239, 237, 234, 0);
-  --hero-filter: contrast(1.04) saturate(0.94);
-  --hero-text: #17140f;
-  --hero-sub: #45403a;
-  --hero-line: #bdb8b0;
-  --hero-photo: #efedea;
-  --hero-soft: #3a342c;
-  --hero-edge: rgba(0, 0, 0, 0.32);
-
-  /* --- elevation, light ---------------------------------------------------
-     Three levels and no more: 1 rests, 2 is hovered or active, 3 genuinely
-     floats above the page.
-
-     Each level is TWO tokens, because the two themes carry elevation with
-     different means. In light the whole lift is the shadow; --raise-* stays
-     #ffffff at every level, since nothing can be brighter than white and
-     faking it with a tint would introduce a colour the palette does not have.
-
-     Two stacked shadows per level rather than one: the short offset draws the
-     contact edge, the longer one the ambient falloff. A single large blur is
-     what makes a card read as a grey halo instead of a raised surface.
-
-     The first values tried here were 0.04/0.05 and they were invisible — a
-     white card on a white section, where the 1px border was still doing all
-     the separating. These are the numbers that actually show up in a
-     screenshot. Tight is a ratio, not an opacity: blur stays within about
-     2.5x the offset at every level, which is what keeps it looking precise
-     rather than puffy. */
-  --raise-1: #ffffff;
-  --raise-2: #ffffff;
-  --raise-3: #ffffff;
-  --elev-1: 0 1px 2px rgba(10, 10, 11, 0.06), 0 4px 10px rgba(10, 10, 11, 0.08);
-  --elev-2: 0 2px 4px rgba(10, 10, 11, 0.07), 0 8px 22px rgba(10, 10, 11, 0.12);
-  --elev-3: 0 4px 8px rgba(10, 10, 11, 0.08), 0 18px 44px rgba(10, 10, 11, 0.16);
-
-  /* Light theme keeps a light code surface: an inverted dark block would be
-     the only dark element on the page and would fight the palette.
-     #1f2126 on #f2f2ef measures 13.6:1. */
-  --code-bg: #f2f2ef;
-  --code-fg: #1f2126;
-  --code-border: #c4c5c1;
-  --code-label: #4c4f55;
-  /* #6b6e74 cleared AA by 0.06 — this leaves real margin. */
-  --code-dim: #5f6268;
-
-  /* --- admin console additions (light) -------------------------------------
-     From "Sojib Admin Console.dc.html". Its --bg-page/--bg-surface/--ink/
-     --accent/--accent-fg already equal this site's --bg/--surface/--text/
-     --accent/--on-accent, so those are NOT redefined here — app/admin.css
-     aliases the design's names onto the existing tokens. Only what the site
-     genuinely lacks is added below.
-
-     Status colours are prefixed --status-* on purpose: the site already has a
-     --warn (#6e4200 light) used by the symptom cards, and the admin's warn is
-     a different value. Two meanings cannot share one name. */
-  --sunk: #efefec;
-  --border-input: rgba(0, 0, 0, 0.32);
-
-  --status-success: #0f7a3d;
-  --status-success-tint: rgba(15, 122, 61, 0.09);
-  --status-warn: #8a5200;
-  --status-warn-tint: rgba(138, 82, 0, 0.1);
-  --status-danger: #b01b12;
-  --status-danger-tint: rgba(176, 27, 18, 0.09);
-  --status-info: #4a5563;
-  --status-info-tint: rgba(74, 85, 99, 0.09);
-
-  --code-key: #7a3e9d;
-  --code-str: #0f7a3d;
-  --code-num: #8a5200;
-
-  /* --- section tones, light -----------------------------------------------
-     The page had two section backgrounds, #ffffff and #f4f4f2, which measure
-     1.05:1 apart — a difference you cannot see, which is why eleven sections
-     read as one colour.
-
-     --tone-raised and --tone-sunk are 1.20:1 apart instead. That is a step
-     you can actually perceive across a full-width band, and it is what turns
-     a scroll into chapters.
-
-     --tone-sunk is capped by the eyebrow, not by taste: --ink (#0f7a3d) at
-     11.5px measures 4.51:1 on #eceae6. One shade deeper and the green labels
-     fall below AA. */
-  --tone-raised: #ffffff;
-  --tone-sunk: #eceae6;
-  --tone-ink: #0b0c0d;
-
-  /* --- the loud green ------------------------------------------------------
-     --accent stays #0f7a3d because it is TEXT in thirty places and has to
-     clear AA on white, which it does at 5.42:1. The reference site uses a much
-     brighter green, #12b33f, and it can only do that because it never sets it
-     as text: as text on white that green measures 2.78:1 and fails.
-
-     So the brightness arrives the way that site actually gets it, and the way
-     this site already does it in dark mode: as a FILL with dark text on top.
-     #0a0a0b on #12b33f measures 7.11:1. */
-  --accent-strong: #12b33f;
-  --on-accent-strong: #0a0a0b;
-}
-
-/* The dark palette, applied to the document — and to ONE SECTION inside the
-   light theme.
- *
- * The case studies section is the page's strongest proof and it is rendered
- * dark on purpose (see .section--ink). Rather than duplicating twenty-odd
- * colour values to do that, the light theme's dark section takes this exact
- * block. One set of declarations, two scopes, no chance of the two drifting
- * apart when a token changes.
- *
- * :root:not([data-theme="dark"]) .section--ink scores higher than the light
- * block above, so it wins inside that subtree without depending on order.
- * The tone tokens are deliberately NOT in here — a light-theme ink section
- * still wants #0b0c0d rather than the dark theme's true black. */
 [data-theme="dark"],
-:root:not([data-theme="dark"]) .section--ink {
+[data-theme="light"] .section--ink {
   color-scheme: dark;
 
-  --bg: #0a0a0b;
-  --surface: #101114;
-  --border: #24252a;
-  --text: #fafafa;
-  --muted: #a7aab2;
-  --faint: #8c8f97;
-  /* Green accent in both themes — the design's red is retired. #35c97b is
-     already the palette's --ok, so this is a colour the system had, not a new
-     one. It measures 9.23:1 on --bg and 8.80:1 on --surface, well above the
-     red's 5.94:1, and black on it reaches 9.79:1 for button labels. */
-  --accent: #35c97b;
-  --ink: #35c97b;
-  --on-accent: #000000;
-  --ok: #35c97b;
-  --result: #35c97b;
-  --badge-fg: #35c97b;
-  --badge-dot: #35c97b;
-  --badge-border: #2b5f45;
-  --logo: #9ea1a9;
+  --bg: #0a0e14;
+  --surface: #121821;
+  --border: #1f2a37;
+  --text: #e6edf3;
+  /* 6.60:1 on --bg, 4.93:1 on --raise-3. */
+  --muted: #8b98a9;
+  /* The faintest text token. 4.56:1 on --raise-3, which is what caps it. */
+  --faint: #8492a3;
+  /* Signal green. 12.14:1 on --bg. Dark text on it measures 11.91:1. */
+  --accent: #34e89e;
+  --ink: #34e89e;
+  --on-accent: #06130d;
+  --accent-2: #38bdf8;
+  --danger: #f87171;
+  --ok: #34e89e;
+  --result: #34e89e;
+  --badge-fg: #34e89e;
+  --badge-dot: #34e89e;
+  --badge-border: #1e5a41;
+  --logo: #8b98a9;
   --chip-op: 0.32;
-  --warn: #ffc53d;
-  --hero-rgb: 10, 10, 11;
+  --warn: #f5b94a;
+  --hero-rgb: 10, 14, 20;
   --hero-veil: rgba(0, 0, 0, 0.18);
   --hero-filter: brightness(0.62) contrast(1.12) saturate(0.9);
-  --hero-text: #fafafa;
-  --hero-sub: #c3c6cd;
-  --hero-line: #34353b;
-  --hero-photo: #000000;
-  /* hero copy colours + border, from renderVals() in the design's logic */
-  --hero-soft: #c9ccd3;
-  --hero-edge: rgba(255, 255, 255, 0.34);
+  --hero-text: #e6edf3;
+  --hero-sub: #b6c2d0;
+  --hero-line: #2a3646;
+  --hero-photo: #05070a;
+  --hero-soft: #b6c2d0;
+  --hero-edge: rgba(230, 237, 243, 0.3);
 
   /* --- elevation, dark ----------------------------------------------------
-     Inverted responsibilities. A drop shadow on a #0a0a0b page has almost no
-     contrast to spend, so here the lift is SURFACE LIGHTNESS and the shadow
-     only seats the edge.
-
-     The ladder starts ABOVE --surface, not at it. A card has to sit on a
-     --bg section and a --surface section both, so pinning level 1 to
-     --surface would make every card on a surface section invisible except
-     for its border — which is the flatness being fixed, reproduced in the
-     dark theme. The rungs: #0a0a0b page → #101114 surface → #191a1f →
-     #212329 → #26282f, luminance ratios of 1.087, 1.106 and 1.067 between
-     neighbours. Perceptible on an area the size of a card, and small enough
-     that three of them still land well short of grey.
-
-     Level 3 stops at #26282f rather than continuing the step, because the
-     faintest text token (--faint #8c8f97) measures 4.55:1 there and 4.43:1
-     one rung higher. The ladder is capped by AA, not by taste.
-
-     The inset top hairline on 2 and 3 is the other half of the illusion —
-     light falls from above, so a raised edge catches it. It is doing the work
-     the shadow does in light, and it is why level 3 reads as floating rather
-     than merely paler. */
-  --raise-1: #191a1f;
-  --raise-2: #212329;
-  --raise-3: #26282f;
+     A drop shadow on a near-black page has almost no contrast to spend, so
+     the lift is SURFACE LIGHTNESS and the shadow only seats the edge. Three
+     rungs above --surface. Level 3 stops where --faint still clears AA. */
+  --raise-1: #151c27;
+  --raise-2: #1a2330;
+  --raise-3: #202a39;
   --elev-1: 0 1px 2px rgba(0, 0, 0, 0.55);
   --elev-2: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 2px 6px rgba(0, 0, 0, 0.6),
     0 8px 20px rgba(0, 0, 0, 0.4);
   --elev-3: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 10px rgba(0, 0, 0, 0.7),
     0 18px 40px rgba(0, 0, 0, 0.55);
 
-  /* code blocks (/tracking-plan). Dark theme sits below --surface so the
-     block reads as inset rather than raised. */
-  --code-bg: #08080a;
-  --code-fg: #e6e8ec;
-  --code-border: #24252a;
-  --code-label: #a7aab2;
-  /* #6f727a measured 4.15:1 on --code-bg — below AA for this 10.5px label. */
-  --code-dim: #8c8f97;
+  /* The soft glow under a primary button on hover. A token because it is a
+     colour, and colours live in this file only. */
+  --glow: 0 0 0 1px rgba(52, 232, 158, 0.35), 0 10px 32px -8px rgba(52, 232, 158, 0.5);
 
-  /* --- admin console additions (dark) — see the light block for rationale */
-  --sunk: #161719;
-  --border-input: #3a3c43;
+  /* The dot grid. 6% in dark; a dot is a pixel of --text at that alpha. */
+  --dot: rgba(230, 237, 243, 0.06);
 
-  --status-success: #35c97b;
-  --status-success-tint: rgba(53, 201, 123, 0.13);
-  --status-warn: #f2b44c;
-  --status-warn-tint: rgba(242, 180, 76, 0.13);
-  --status-danger: #ff6b60;
-  --status-danger-tint: rgba(255, 107, 96, 0.13);
-  --status-info: #9aa4b5;
-  --status-info-tint: rgba(154, 164, 181, 0.13);
+  /* code blocks (/tracking-plan). Sits below --surface so the block reads as
+     inset rather than raised. */
+  --code-bg: #070a0f;
+  --code-fg: #e6edf3;
+  --code-border: #1f2a37;
+  --code-label: #8b98a9;
+  --code-dim: #8492a3;
 
-  --code-key: #c99be8;
-  --code-str: #35c97b;
-  --code-num: #f2b44c;
+  /* --- admin console additions (dark) ------------------------------------- */
+  --sunk: #0e131b;
+  --border-input: #344152;
+
+  --status-success: #34e89e;
+  --status-success-tint: rgba(52, 232, 158, 0.13);
+  --status-warn: #f5b94a;
+  --status-warn-tint: rgba(245, 185, 74, 0.13);
+  --status-danger: #f87171;
+  --status-danger-tint: rgba(248, 113, 113, 0.13);
+  --status-info: #9aa8ba;
+  --status-info-tint: rgba(154, 168, 186, 0.13);
+
+  --code-key: #c4a7f5;
+  --code-str: #34e89e;
+  --code-num: #f5b94a;
 }
 
 /* --- section tones, dark ---------------------------------------------------
    Separate from the block above because that block is shared with the light
-   theme's one dark section, and these three values are the part that must
-   NOT be shared.
+   theme's one dark section, and these values are the part that must NOT be
+   shared.
 
-   The dark palette has almost no room below the ground: #0a0a0b to true black
-   is 1.06:1, so alternating downward is invisible. The alternation therefore
-   runs the other way — --tone-raised lifts to #101114, 1.08:1 above the sunk
-   tone, and the cards lift again above that. Same argument as the elevation
-   scale: in dark, hierarchy is carried by lightness going up, not by shadow
-   going down.
-
-   --tone-ink is true black, which in a dark theme is the one direction still
-   available and makes the proof section unmistakably the odd one out: 1.11:1
-   against the sections either side of it. Those neighbours are both
-   --tone-raised on purpose; against a sunk section it would be 1.03:1 and the
-   whole point would be lost. */
+   The dark palette has little room below the ground, so alternation runs
+   upward: --tone-raised lifts above --bg and the cards lift again above that.
+   --tone-ink is the deepest value and marks the proof section as the odd one
+   out. */
+:root,
 [data-theme="dark"] {
-  --tone-raised: #101114;
-  --tone-sunk: #050507;
-  --tone-ink: #000000;
+  --tone-raised: #0f141c;
+  --tone-sunk: #070a0f;
+  --tone-ink: #05070a;
 
-  /* Dark already worked this way: a bright fill with black on it. */
-  --accent-strong: #35c97b;
-  --on-accent-strong: #000000;
+  /* A bright fill with dark text on it. Same value as --accent in dark. */
+  --accent-strong: #34e89e;
+  --on-accent-strong: #06130d;
 }
 
-/* --- vertical rhythm ------------------------------------------------------
+/* The light theme. Must stay after the dark blocks; see the note at the top. */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --border: #cbd3dc;
+  --text: #0a0e14;
+  --muted: #4a5565;
+  --faint: #525e6e;
+  /* #34e89e is 1.6:1 as text on white, so light keeps a darker green for
+     anything that is TEXT: 5.38:1 on white, 4.58:1 on --tone-sunk. The bright
+     green still appears in light, as a fill with dark text (--accent-strong). */
+  --accent: #0a7a4c;
+  --ink: #0a7a4c;
+  --on-accent: #ffffff;
+  --accent-2: #0b67c2;
+  --danger: #c0271f;
+  --ok: #0a7a4c;
+  --result: #0a0e14;
+  --badge-fg: #525e6e;
+  --badge-dot: #6b7787;
+  --badge-border: #a9b3bf;
+  --logo: #667281;
+  --chip-op: 0.28;
+  --warn: #7a4a00;
+  --hero-rgb: 245, 247, 250;
+  --hero-veil: rgba(245, 247, 250, 0);
+  --hero-filter: contrast(1.04) saturate(0.94);
+  --hero-text: #0a0e14;
+  --hero-sub: #3e4856;
+  --hero-line: #b9c2cc;
+  --hero-photo: #eef1f5;
+  --hero-soft: #3a4553;
+  --hero-edge: rgba(10, 14, 20, 0.32);
+
+  /* --- elevation, light ---------------------------------------------------
+     In light the whole lift is the shadow; --raise-* stays white at every
+     level. Two stacked shadows per level: the short offset draws the contact
+     edge, the longer one the ambient falloff. */
+  --raise-1: #ffffff;
+  --raise-2: #ffffff;
+  --raise-3: #ffffff;
+  --elev-1: 0 1px 2px rgba(10, 14, 20, 0.06), 0 4px 10px rgba(10, 14, 20, 0.08);
+  --elev-2: 0 2px 4px rgba(10, 14, 20, 0.07), 0 8px 22px rgba(10, 14, 20, 0.12);
+  --elev-3: 0 4px 8px rgba(10, 14, 20, 0.08), 0 18px 44px rgba(10, 14, 20, 0.16);
+
+  --glow: 0 0 0 1px rgba(10, 122, 76, 0.3), 0 10px 28px -8px rgba(52, 232, 158, 0.75);
+  --dot: rgba(10, 14, 20, 0.07);
+
+  --code-bg: #eef1f5;
+  --code-fg: #1b222c;
+  --code-border: #cbd3dc;
+  --code-label: #525e6e;
+  --code-dim: #5d6877;
+
+  /* --- admin console additions (light) ------------------------------------ */
+  --sunk: #edf0f4;
+  --border-input: rgba(10, 14, 20, 0.32);
+
+  --status-success: #0a7a4c;
+  --status-success-tint: rgba(10, 122, 76, 0.09);
+  --status-warn: #8a5200;
+  --status-warn-tint: rgba(138, 82, 0, 0.1);
+  --status-danger: #c0271f;
+  --status-danger-tint: rgba(192, 39, 31, 0.09);
+  --status-info: #4a5565;
+  --status-info-tint: rgba(74, 85, 101, 0.09);
+
+  --code-key: #7a3e9d;
+  --code-str: #0a7a4c;
+  --code-num: #8a5200;
+
+  /* --- section tones, light -----------------------------------------------
+     --tone-sunk is capped by the eyebrow: --ink at label size measures 4.58:1
+     on it. One shade deeper and the green labels fall below AA. */
+  --tone-raised: #ffffff;
+  --tone-sunk: #e9edf2;
+  --tone-ink: #0a0e14;
+
+  --accent-strong: #34e89e;
+  --on-accent-strong: #06130d;
+}
+
+/* --- rhythm and motion ------------------------------------------------------
    Not colours, so not theme-dependent, but they belong with the other tokens.
-   The measured "before" was 0/0, 22/40, 18/18, 56/56 seven times and 64/64 —
-   five values, four of them arrived at by whoever wrote that section.
 
-   Three, and each one means something:
+   Spacing sits on an 8px scale. Section padding is 96 to 128px on a desktop
+   and 64px on a phone; a band is a strip that belongs to the section above it.
 
-     --pad-band     a strip that belongs to the section above it rather than
-                    standing on its own
-     --pad-section  an ordinary chapter break
-     --pad-major    a new movement: the proof, and the ask
+   Motion has one easing and three durations. Anything that moves on the page
+   uses these, so the site has one sense of weight rather than one per author:
 
-   The two larger ones are fluid, because 96px of air above the fold on a
-   390px phone is not rhythm, it is scrolling. */
-/* The content measure. 1280 was wide enough that a centred heading still
-   read as left-aligned at 1536 — the eye cannot see a centre it never
-   reaches. 1120 is narrow enough for the composition to register. */
+     --dur-micro    hover, press, focus          200 to 300ms
+     --dur-reveal   a section or card arriving   600 to 800ms
+     --stagger      between siblings             80 to 100ms */
 :root {
-  /* A spring, written as a linear() curve. The overshoot is what makes a
-     card feel like it has weight instead of being tweened into place — it
-     passes its resting point by about 1.7% and settles back. cubic-bezier
-     cannot express that; linear() can, and it is why 2020-era easing reads as
-     dated next to it. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-micro: 240ms;
+  --dur-reveal: 700ms;
+  --stagger: 90ms;
+
+  /* Kept for the few places that still want the overshoot. */
   --ease-spring: linear(
     0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%,
     0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001
   );
 
-  --measure: 1120px;
-  --pad-band: 20px;
-  --pad-section: clamp(44px, 5vw, 64px);
-  --pad-major: clamp(60px, 7.5vw, 96px);
+  --measure: 1200px;
+  --pad-band: 24px;
+  --pad-section: clamp(64px, 8vw, 96px);
+  --pad-major: clamp(64px, 10vw, 128px);
 }
 
 /* --------------------------------------------------------------------------
-   Tailwind theme mapping. Tailwind v4 is CSS-first (@theme), so this file
-   replaces the tailwind.config.ts the brief asked for — see DESIGN-NOTES.md.
+   Tailwind theme mapping. Tailwind v4 is CSS-first (@theme), so this block is
+   the config.
    -------------------------------------------------------------------------- */
 
 @theme inline {
@@ -327,6 +262,8 @@
   --color-muted: var(--muted);
   --color-faint: var(--faint);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-danger: var(--danger);
   --color-ink: var(--ink);
   --color-on-accent: var(--on-accent);
   --color-ok: var(--ok);
@@ -342,61 +279,35 @@
 
   /* Typography, split by ROLE rather than by face.
 
-     --font-prose  THE DEFAULT. Anything a person reads: headings, paragraphs,
-                   helper text, labels, pills, buttons, navigation, table
-                   headers, and the human-readable names inside tables.
-     --font-data   the exception. Only what a machine produced and a person
-                   looks up rather than reads: event and session ids,
-                   timestamps, count columns, event names and destination
-                   slugs, url paths, inline code, and inputs holding an
-                   identifier.
+     --font-display  headings. Space Grotesk, 700, tracked in.
+     --font-prose    THE DEFAULT. Anything a person reads: paragraphs, helper
+                     text, buttons, navigation. Inter.
+     --font-data     what a machine produced, and the small uppercase labels
+                     that sit beside it: event names, ids, timestamps, stats,
+                     tags. JetBrains Mono.
 
-     The test for anything unclear: did a person write it, or did a machine
-     emit it? Person → prose.
-
-     Geist and Geist Mono, one foundry, one skeleton — which is why the two
-     can sit in the same table without looking like two fonts. Swapping either
-     face is one line here and nothing else in the codebase; nothing outside
-     this block names a font. */
-  --font-prose: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-data: var(--font-geist-mono), ui-monospace, monospace;
+     Swapping a face is one line here and one in app/fonts.ts; nothing else in
+     the codebase names a font. */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-prose: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-data: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   /* --- type scale ----------------------------------------------------------
-     What was here before was not a scale. It was twenty-three tokens named
-     after the values the design happened to contain — 2xs, xs, xs-plus, sm,
-     sm-plus, base, base-plus, md, md-plus, lg, lg-plus, xl, xl-plus — and,
-     like the radius tokens, not one of them was ever referenced. The page
-     rendered 21 distinct sizes.
+     Two families of step:
 
-     Nine steps, in two families, because a marketing page genuinely needs two
-     ramps and pretending otherwise is what produces 14.5px:
+       TEXT     13 → 15 → 17. A mono label, dense prose, body copy.
+       DISPLAY  a 1.25 ratio from 20 to 64, fluid between phone and desktop. */
+  --text-label: 13px;
+  --text-small: 15px;
+  --text-body: 17px;
 
-       TEXT     12.5 → 14 → 16. Fine steps, because the difference between a
-                label, dense prose and body copy is small and functional.
-       DISPLAY  20 → 25 → 31 → 39 → 49 → 61. A 1.25 ratio, because the
-                difference between a subhead and a hero is supposed to be
-                obvious.
-
-     WHAT MOVED AND WHY. 164 elements rendered at 11px or 12px, which is
-     correct for a console and too much for a homepage. The label size goes UP
-     to 12.5 and consolidates four values (10, 10.5, 11, 11.5) into one. More
-     importantly the count comes down: the service bullet lists, the defect
-     table and the navigation were never labels, they were prose set in label
-     clothing, and they move to --text-small and --text-body.
-
-     The hero was 47.6px at 1536. It is 61px now. */
-  --text-label: 12.5px;
-  --text-small: 14px;
-  --text-body: 16px;
-
-  --text-lead: clamp(17px, 1.4vw, 20px);
+  --text-lead: clamp(18px, 1.4vw, 20px);
   --text-h4: clamp(20px, 1.8vw, 25px);
   --text-h3: clamp(23px, 2.2vw, 31px);
-  --text-h2: clamp(25px, 2.8vw, 39px);
-  /* Between h2 and h1: the contact heading, which is the page's second-most
-     important thing to say and was previously the same size as the hero. */
-  --text-display: clamp(28px, 3.4vw, 49px);
-  --text-h1: clamp(32px, 4.3vw, 61px);
+  --text-h2: clamp(28px, 3.2vw, 44px);
+  /* Between h2 and h1: the contact heading. */
+  --text-display: clamp(30px, 3.8vw, 52px);
+  --text-h1: clamp(36px, 5vw, 68px);
 
   /* tracking */
   --tracking-tightest: -0.03em;
@@ -407,33 +318,18 @@
   --tracking-wide: 0.04em;
   --tracking-wider: 0.06em;
   --tracking-widest: 0.08em;
-  --tracking-label: 0.1em;
+  --tracking-label: 0.08em;
   --tracking-label-lg: 0.12em;
   --tracking-caps: 0.14em;
 
   /* --- radii ---------------------------------------------------------------
-     Four, down from fourteen distinct values across the four stylesheets and
-     the inline styles: 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 50% and 999px.
-     Nine of those reached the homepage. None of them was a decision; each was
-     whatever the component in front of somebody happened to need that day.
-
-     The seven tokens that used to live here were never referenced once — not
-     in a stylesheet, not as a Tailwind utility. A scale nothing uses is not a
-     scale.
-
        sm    inputs, buttons, tags, and the wells cut into a card
        md    cards
-       lg    feature panels — the case studies, the review slides
-       full  things that are actually round
-
-     md stays at 14px so the most common element on the page does not move.
-     lg goes 16 → 20 to put real daylight between a card and a panel; at 16
-     the two were within two pixels of each other and the hierarchy was not
-     legible. Nesting stays correct: an 8px well inside a 20px panel with 22px
-     of padding is about where the inner curve should sit. */
+       lg    feature panels: the case studies, the review slides
+       full  things that are actually round */
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-full: 999px;
 }
 
@@ -446,14 +342,46 @@ html {
   background: var(--bg);
 }
 
+/* Lenis drives the scroll position itself; a CSS smooth scroll underneath it
+   makes every wheel tick ease twice. The class is set by components/
+   SmoothScroll.tsx, and only when reduced motion is off. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
 /* Sans is the default everywhere, on both the site and the console. Monospace
-   is now opt-in, and every place that opts in is a machine value. */
+   is opt-in, and every place that opts in is a machine value or a label.
+
+   The dot grid is painted on the body, so it shows through every section that
+   does not set a tone of its own. */
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+  background-size: 24px 24px;
   color: var(--text);
   font-family: var(--font-prose);
+  font-size: var(--text-body);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 /* Code is code in any context, including the middle of a sentence. */
@@ -490,18 +418,10 @@ p a {
   text-underline-offset: 3px;
 }
 
-/* Visible focus ring in the design's accent. --accent clears 3:1 against
-   both --bg and --surface in both themes, so it is safe as a UI indicator. */
-/* No border-radius here, and that is a fix rather than an omission.
- *
- * This rule used to set `border-radius: 2px`, which does not shape the ring —
- * it reshapes the ELEMENT. Measured with :focus-visible forced on: a button
- * went 8px → 2px and a pill went 999px → 2px, so every control on the site
- * visibly squared off the moment somebody reached it with the Tab key. Only
- * keyboard users ever saw it, which is why it survived this long.
- *
- * Every current browser draws an outline following the element's own radius,
- * so removing the declaration is all that is needed. */
+/* Visible focus ring in the accent. No border-radius here on purpose: setting
+   one reshapes the ELEMENT, not the ring, so every control squared off the
+   moment somebody reached it with the Tab key. Browsers draw the outline
+   following the element's own radius. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;

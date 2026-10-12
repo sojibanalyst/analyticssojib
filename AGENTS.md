@@ -28,14 +28,19 @@ runs in CI.
 - **Not one public URL may change.** Add to `scripts/check-routes.mjs` when a
   route is added; never edit an existing entry to make a failure go away.
 - **One token source.** Every colour is a custom property in `app/globals.css`,
-  defined in both the `:root, [data-theme="light"]` block and the
-  `[data-theme="dark"]` block. The dark block must stay second — equal
+  defined in both the `:root, [data-theme="dark"]` block and the
+  `[data-theme="light"]` block. The light block must stay second: equal
   specificity means source order decides. `admin.css` aliases those tokens and
   contains no hex values.
 - **One theme mechanism.** `lib/theme.ts`, `data-theme` on `<html>`,
-  localStorage key `sf-theme-2`. Light is the default.
-- **One font setup.** `app/fonts.ts`. The variables belong on `<html>`, because
-  Tailwind's `@theme` resolves them at `:root`.
+  localStorage key `sf-theme-3`. Dark is the default.
+- **One font setup.** `app/fonts.ts`: Space Grotesk for headings, Inter for
+  prose, JetBrains Mono for data and labels. The variables belong on `<html>`,
+  because Tailwind's `@theme` resolves them at `:root`.
+- **One motion setup.** `lib/motion.ts` holds the easing, the durations and the
+  lazy loaders for GSAP and Lenis. Neither library may be imported statically
+  into a component that renders above the fold, and every animation checks
+  `prefersReducedMotion()` first and has a static state.
 - **Public pages stay static.** No `force-dynamic` on a public route, and no
   per-request database call to render one. Content is read at BUILD time
   through `lib/content`, which uses a plain client with cached GETs — never

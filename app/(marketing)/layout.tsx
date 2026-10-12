@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Motion } from "@/components/Motion";
 import { Parallax } from "@/components/Parallax";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import { Footer } from "@/components/sections/Footer";
 import { Tracker } from "@/components/Tracker";
 import { nav, footerNav } from "@/content/site";
@@ -55,6 +56,9 @@ export default async function MarketingLayout({
       {/* Public pages only. The console must not appear in the analytics it
           exists to inspect, so this is not in the (admin) group. */}
       <Tracker />
+
+      {/* Smooth scroll. Renders nothing, and does nothing under reduced motion. */}
+      <SmoothScroll />
 
       {/* Scroll reveal. Renders nothing; hides nothing unless it runs. */}
       <Motion />

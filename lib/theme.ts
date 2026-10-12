@@ -5,17 +5,18 @@ import { useSyncExternalStore } from "react";
 export type Theme = "dark" | "light";
 
 /**
- * Bumped from "sf-theme" when light became the default. Anyone who had
- * toggled under the old dark-default build still had "dark" saved, so the new
- * default would never have reached them — a new key retires those values once
- * and lands everyone on light.
+ * Bumped again, from "sf-theme-2", when dark became the default in the 2026
+ * redesign. Under the light-default build the bootstrap wrote nothing unless a
+ * visitor toggled, but anyone who toggled to dark and back has "light" saved,
+ * and would never see the new default. A new key retires those values once
+ * and lands everyone on dark.
  */
-const STORAGE_KEY = "sf-theme-2";
+const STORAGE_KEY = "sf-theme-3";
 const EVENT = "sf-theme-change";
 
 export function getTheme(): Theme {
-  if (typeof document === "undefined") return "light";
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  if (typeof document === "undefined") return "dark";
+  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
 /**
@@ -68,10 +69,10 @@ function subscribe(onChange: () => void) {
 }
 
 /**
- * The server always renders the default (light), so the server snapshot is
- * "light" and the client corrects on mount. The pre-paint script in layout.tsx
+ * The server always renders the default (dark), so the server snapshot is
+ * "dark" and the client corrects on mount. The pre-paint script in layout.tsx
  * has already set the attribute, so nothing visibly flashes.
  */
 export function useTheme(): Theme {
-  return useSyncExternalStore(subscribe, getTheme, () => "light" as const);
+  return useSyncExternalStore(subscribe, getTheme, () => "dark" as const);
 }

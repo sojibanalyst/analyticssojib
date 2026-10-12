@@ -97,10 +97,14 @@
   font-family: var(--font-prose);
 }
 
+/* The mono label. 13px, uppercase, tracked out: the same voice as an event
+   name, which is the point. */
 .eyebrow {
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
   font-size: var(--text-label);
-  letter-spacing: 0.14em;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   white-space: nowrap;
   color: var(--ink);
 }
@@ -109,13 +113,16 @@
   color: var(--muted);
 }
 
+/* Sentence case now. Space Grotesk set in capitals at this size shouts, and
+   the mono eyebrow above it already carries the uppercase. */
 .h2 {
   margin: 0;
-  font-family: var(--font-prose);
+  font-family: var(--font-display);
   font-size: var(--text-h2);
   font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.02em;
-  text-transform: uppercase;
+  text-wrap: balance;
 }
 
 /* Elevation --------------------------------------------------------------
@@ -204,7 +211,8 @@ a.doc-button:hover {
   align-items: center;
   padding: 12px clamp(16px, 2vw, 22px);
   border-bottom: 1px solid var(--border);
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
+  text-transform: uppercase;
   font-size: var(--text-label);
   letter-spacing: 0.1em;
   color: var(--muted);
@@ -669,35 +677,39 @@ a.doc-button:hover {
   border-radius: var(--radius-sm);
   cursor: pointer;
   white-space: nowrap;
-  transition: border-color 150ms ease, color 150ms ease, background 150ms ease,
-    box-shadow 180ms ease;
+  transition: border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out), background var(--dur-micro) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
 }
 
-/* 800 rather than 700, and a touch larger: the extra stroke weight is what
-   makes dark-on-red legible at this size, more than the colour change does. */
+/* The primary action: the signal green as a FILL, dark text on it, in both
+   themes. --accent-strong rather than --accent, because in light --accent is
+   the darker green that text needs and a button wants the bright one. */
 .btn-primary {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--accent-strong);
+  color: var(--on-accent-strong);
   font-size: var(--text-small);
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   padding: 15px 22px;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--accent-strong);
 }
 
+/* A soft glow rather than a lift in brightness: the button is already the
+   brightest thing on the screen. */
 .btn-primary:hover {
-  color: var(--on-accent);
-  filter: brightness(1.08);
-  box-shadow: var(--elev-2);
+  color: var(--on-accent-strong);
+  box-shadow: var(--glow);
 }
 
+/* The secondary action: an outline. */
 .btn-ghost {
   border: 1px solid var(--border);
   color: var(--text);
   background: transparent;
   font-size: var(--text-small);
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   padding: 14px 20px;
 }
 
@@ -705,7 +717,6 @@ a.doc-button:hover {
   border-color: var(--ink);
   color: var(--ink);
   background: var(--raise-2);
-  box-shadow: var(--elev-2);
 }
 
 /* Small chrome ----------------------------------------------------------- */
@@ -718,7 +729,8 @@ a.doc-button:hover {
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   padding: 6px 11px;
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
+  text-transform: uppercase;
   font-size: var(--text-label);
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -736,7 +748,8 @@ a.pill:hover {
   border-radius: var(--radius-sm);
   padding: 4px 9px;
   white-space: nowrap;
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
+  text-transform: uppercase;
   font-size: var(--text-label);
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -927,12 +940,11 @@ a.pill:hover {
    contrast against the portrait. */
 .hero-h1 {
   margin: 0;
-  font-family: var(--font-prose);
+  font-family: var(--font-display);
   font-size: var(--text-h1);
-  line-height: 1.08;
+  line-height: 1.04;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
   text-wrap: pretty;
   color: var(--hero-text);
 }
@@ -1041,7 +1053,7 @@ a.pill:hover {
    and keeps the last one, so declaring -webkit- last silently drops the
    standard property and the blur disappears in Chrome. */
 .site-header[data-scrolled="true"] {
-  background: rgba(244, 244, 242, 0.78);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
   -webkit-backdrop-filter: saturate(150%) blur(14px);
   backdrop-filter: saturate(150%) blur(14px);
   border-bottom-color: var(--border);
@@ -1052,7 +1064,7 @@ a.pill:hover {
 }
 
 [data-theme="dark"] .site-header[data-scrolled="true"] {
-  background: rgba(10, 10, 11, 0.72);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
 }
 
 .wordmark {
@@ -1503,7 +1515,7 @@ a.wordmark:hover {
 [data-motion="on"] [data-reveal="shown"] {
   /* `both` so the from-state holds through the stagger delay instead of
      flashing the element at full opacity while it waits its turn. */
-  animation: reveal-rise 400ms cubic-bezier(0.22, 0.61, 0.36, 1)
+  animation: reveal-rise var(--dur-reveal) var(--ease-out)
     var(--reveal-delay, 0ms) both;
 }
 
@@ -1523,8 +1535,8 @@ a.wordmark:hover {
   .btn,
   .pill {
     transition-property: box-shadow, background-color, border-color, color, transform;
-    transition-duration: 180ms;
-    transition-timing-function: ease;
+    transition-duration: var(--dur-micro);
+    transition-timing-function: var(--ease-out);
   }
 
   .note-card:hover,
@@ -2229,7 +2241,7 @@ a.wordmark:hover {
 }
 
 [data-motion="on"] .section-head[data-reveal="shown"] .h2 {
-  animation: h2-wipe 760ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: h2-wipe var(--dur-reveal) var(--ease-out) both;
 }
 
 /* Tools band, centred =====================================================
@@ -2398,14 +2410,14 @@ a.wordmark:hover {
 
 [data-motion="on"] .grid4 > [data-reveal="shown"],
 [data-motion="on"] [data-stagger] > [data-reveal="shown"] {
-  animation: reveal-focus 720ms var(--ease-spring) both;
+  animation: reveal-focus var(--dur-reveal) var(--ease-out) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
 
 /* Section-level blocks: same spring, no blur. */
 [data-motion="on"] [data-reveal="shown"] {
-  animation-timing-function: var(--ease-spring);
-  animation-duration: 620ms;
+  animation-timing-function: var(--ease-out);
+  animation-duration: var(--dur-reveal);
 }
 
 /* 2. THE TOOLS BAND IS SCROLL-LINKED, NOT FIRED ONCE.
@@ -2555,4 +2567,137 @@ a.wordmark:hover {
   letter-spacing: 0;
   white-space: normal;
   font-weight: 700;
+}
+
+/* ==========================================================================
+   2026 design system: shared pieces
+   ==========================================================================
+
+   The components in components/ui. Everything here reads its colours from the
+   tokens in globals.css; nothing below is a hex. */
+
+/* EventChip ----------------------------------------------------------------
+   A line from a tag debugger, as a pill:  ● purchase → GA4 · Meta · Ads */
+
+.evt-chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.evt-chip__dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.evt-chip__name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.evt-chip__arrow {
+  color: var(--accent-2);
+}
+
+.evt-chip__dest {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evt-chip[data-state="broken"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+}
+
+.evt-chip[data-state="broken"] .evt-chip__dot {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 18%, transparent);
+}
+
+.evt-chip[data-state="broken"] .evt-chip__name {
+  color: var(--danger);
+}
+
+.evt-chip[data-state="idle"] .evt-chip__dot {
+  background: var(--faint);
+  box-shadow: none;
+}
+
+/* StatCard -----------------------------------------------------------------
+   One figure and what it measures. The label comes first in the markup (it is
+   the term) and second on screen, hence the reversed column. */
+
+.stat-card {
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
+}
+
+.stat-card__label {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-card__value {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.stat-card__unit {
+  margin-left: 2px;
+  font-size: 0.5em;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.stat-card[data-tone="good"] .stat-card__value {
+  color: var(--ok);
+}
+
+.stat-card[data-tone="bad"] .stat-card__value {
+  color: var(--danger);
+}
+
+/* Section tones carry the dot grid too ---------------------------------------
+   The body paints it, but a section with a tone of its own covers the body.
+   Sunk and ink sections get it back; raised sections stay clean, so the grid
+   reads as the floor the raised ones sit on rather than as wallpaper. */
+
+.section--sunk,
+.section--ink {
+  background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+  background-size: 24px 24px;
 }

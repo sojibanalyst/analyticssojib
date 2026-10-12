@@ -32,7 +32,7 @@ import { observeInView } from "@/lib/in-view";
  * an IntersectionObserver — see the note there for what that missed.
  */
 
-const STEP_MS = 60;
+const STEP_MS = 90;
 const MAX_STEPS = 4;
 
 export function Motion() {
