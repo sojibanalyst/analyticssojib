@@ -637,6 +637,10 @@ export const work = {
   intro:
     "Two engagements, written up in full. Each reconciles against the client's own order data; click through for the detail.",
   readMore: "READ THE FULL CASE →",
+  /** The grid of smaller projects under the case files. Items are in Supabase. */
+  moreTitle: "More work",
+  moreAll: "All of it on Upwork",
+  moreGo: "View on Upwork",
   screenshotPending: "Case screenshot pending",
   cases: [
     {

@@ -3648,3 +3648,115 @@ a.wordmark:hover {
     }
   }
 }
+
+/* ==========================================================================
+   More work: the small cards under the case files
+   ========================================================================== */
+
+.more-work {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.more-work__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.more-work__title {
+  margin: 0;
+  font-size: var(--text-h4);
+}
+
+.more-work__all {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.more-work__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .more-work__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .more-work__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.more-work__grid > li {
+  display: flex;
+}
+
+/* The whole card is the link, so it lifts: a lift is a promise that the thing
+   can be clicked, and this one can. */
+.more-card {
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 132px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  color: var(--text);
+  transition: border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.more-card:hover {
+  border-color: var(--ink);
+  background: var(--raise-2);
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.more-card__index {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.more-card__title {
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.more-card__go {
+  margin-top: auto;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more-card:hover {
+    transform: none;
+  }
+}

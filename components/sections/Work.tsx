@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { work, type CaseStudy } from "@/content/site";
+import { upworkUrl, work, type CaseStudy } from "@/content/site";
+import type { PortfolioItem } from "@/lib/content";
+import { CountValue } from "@/components/CountValue";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { CaseGallery } from "@/components/sections/CaseGallery";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
@@ -19,7 +21,45 @@ function Screenshot({ item }: { item: CaseStudy }) {
   return <CaseGallery shots={item.screenshots} label={item.title} />;
 }
 
-export function Work({ cases }: { cases: CaseStudy[] }) {
+/**
+ * "More work": small cards under the case files, one per portfolio item, each
+ * linking out. The items are rows in `portfolio_items`; nothing here is typed
+ * into the component. Renders nothing at all when the table is empty, heading
+ * included, so an unpublished grid does not leave a title over a gap.
+ */
+function MoreWork({ items }: { items: PortfolioItem[] }) {
+  if (!items.length) return null;
+
+  return (
+    <div className="more-work">
+      <div className="more-work__head">
+        <h3 className="more-work__title">{work.moreTitle}</h3>
+        <a className="more-work__all" href={upworkUrl} target="_blank" rel="noopener">
+          {work.moreAll}
+        </a>
+      </div>
+
+      <ul className="more-work__grid" data-stagger>
+        {items.map((item, i) => (
+          <li key={item.title}>
+            <a className="more-card" href={item.url} target="_blank" rel="noopener">
+              <span className="more-card__index" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span className="more-card__title">{item.title}</span>
+              <span className="more-card__go">
+                {work.moreGo}
+                <span className="sr-only"> (opens in a new tab)</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function Work({ cases, more }: { cases: CaseStudy[]; more: PortfolioItem[] }) {
   return (
     <section id="work" className="section section--major section--ink" aria-labelledby="work-title">
       <SectionHeading eyebrow={work.eyebrow} title={work.title} titleId="work-title" />
@@ -51,9 +91,9 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
               <h3
                 style={{
                   margin: 0,
-                  fontSize: "var(--text-h4)",
-                  fontWeight: 700,
-                  letterSpacing: "-0.015em",
+                  fontSize: "var(--text-h3)",
+                  lineHeight: 1.15,
+                  textWrap: "balance",
                 }}
               >
                 {item.title}
@@ -87,8 +127,8 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
               <div className="grid4">
                 {item.stats.map((stat) => (
                   <div key={stat.label} className="stat-tile">
-                    <span style={{ fontFamily: "var(--font-prose)", fontSize: "var(--text-lead)", fontWeight: 800 }}>
-                      {stat.value}
+                    <span style={{ fontFamily: "var(--font-data)", fontSize: "var(--text-lead)", fontWeight: 700 }}>
+                      <CountValue value={stat.value} />
                       {stat.unit && (
                         <span style={{ fontSize: "var(--text-label)", color: "var(--muted)" }}>{stat.unit}</span>
                       )}
@@ -140,6 +180,8 @@ export function Work({ cases }: { cases: CaseStudy[] }) {
           {work.metricNote}
         </p>
       ) : null}
+
+      <MoreWork items={more} />
 
       <div className="table-scroll">
         <table className="defect-table">

@@ -13,6 +13,7 @@ import { Contact } from "@/components/sections/Contact";
 import {
   getCaseStudies,
   getFaqs,
+  getPortfolioItems,
   getPosts,
   getVideoReviews,
   getWrittenReviews,
@@ -32,12 +33,13 @@ export const revalidate = 3600;
 export default async function Home() {
   // One round trip each, in parallel. Sequential awaits here would add four
   // round trips to every build.
-  const [cases, videoReviews, writtenReviews, posts, faqs] = await Promise.all([
+  const [cases, videoReviews, writtenReviews, posts, faqs, portfolio] = await Promise.all([
     getCaseStudies(),
     getVideoReviews(),
     getWrittenReviews(),
     getPosts(),
     getFaqs(),
+    getPortfolioItems(),
   ]);
 
   return (
@@ -48,7 +50,7 @@ export default async function Home() {
         <StackStrip />
         <Symptoms />
         <Services />
-        <Work cases={cases} />
+        <Work cases={cases} more={portfolio} />
         <Reviews items={videoReviews} written={writtenReviews} />
         <Process />
         <About />
