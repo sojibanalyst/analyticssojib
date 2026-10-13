@@ -59,7 +59,7 @@ export default async function PortfolioItemPage({ params }: Params) {
   return (
     <main id="main">
       <article className="section pf" aria-labelledby="pf-title">
-        <Link href="/#work" className="pf__back">
+        <Link href="/work" className="pf__back">
           {portfolioCopy.back}
         </Link>
 

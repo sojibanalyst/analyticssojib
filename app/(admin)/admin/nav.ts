@@ -96,6 +96,12 @@ export const navGroups: NavGroup[] = [
         ready: true,
       },
       {
+        href: "/admin/portfolio",
+        label: "Portfolio",
+        short: "PF",
+        ready: true,
+      },
+      {
         href: "/admin/reviews",
         label: "Reviews",
         short: "RV",

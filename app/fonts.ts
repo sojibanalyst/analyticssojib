@@ -23,10 +23,16 @@
  * next/font downloads the files at build time and serves them from this
  * origin, so nothing is requested from Google by a visitor's browser.
  *
- * Inter and Space Grotesk are preloaded: one sets the body copy, the other the
- * hero headline, which is the largest thing painted on the first screen. The
- * mono face is not. It only ever sets small labels, where a late swap costs
- * nothing measurable, and a third preload would sit ahead of the page.
+ * All three are preloaded, and that is about layout rather than speed. With
+ * `display: swap` the page is laid out again each time a face arrives. When
+ * the mono face was left to be discovered late it arrived more than a second
+ * after the other two, and on a throttled phone that was a third full layout
+ * of the page as a long task of its own. Preloaded, the three arrive together,
+ * usually before the first paint, and there is nothing to swap.
+ *
+ * `display: optional` was tried, because it removes the swap entirely. It
+ * also means a first-time visitor on a slow connection can get the fallback
+ * fonts for the whole page view. The faces are the design, so it stays swap.
  *
  * The .ttf files in app/ are unrelated: they are read from disk by the OG image
  * routes because satori needs raw font bytes, and are not wired to next/font.
@@ -52,7 +58,7 @@ export const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
   display: "swap",
-  preload: false,
+  preload: true,
 });
 
 /** Applied to <html> so the variables resolve at :root, where @theme reads them. */

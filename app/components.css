@@ -1962,17 +1962,19 @@ a.wordmark:hover {
    first and then hide it. This is plain CSS behind the media query, so it
    starts at first paint and needs no JavaScript at all.
 
-   The H1 and the portrait are deliberately excluded. The headline is almost
-   certainly the Largest Contentful Paint element, and animating its opacity
-   from zero delays the moment the browser records that paint. On a site that
-   sells measurement, spending a real Core Web Vitals number on a flourish
-   would be the wrong trade. The supporting elements assemble around a
-   headline that is simply there. */
+   The H1 and the lead paragraph are deliberately excluded. One of the two
+   is the Largest Contentful Paint element: the headline on a wide screen, and
+   the paragraph on a phone, where it wraps to seven lines and covers more of
+   the screen than the headline does. Animating either from opacity zero
+   delays the moment the browser records that paint. Measured on a throttled
+   phone, the paragraph's fade put LCP a full second after first paint. On a
+   site that sells measurement, spending a real Core Web Vitals number on a
+   flourish would be the wrong trade. The supporting elements assemble around
+   text that is simply there. */
 @media (prefers-reduced-motion: no-preference) {
   .hero-badge,
-  .hero-lead,
   .hero-ctas,
-  .hero-trust {
+  .hero-id {
     animation: reveal-rise 560ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
 
@@ -1980,16 +1982,12 @@ a.wordmark:hover {
     animation-delay: 60ms;
   }
 
-  .hero-lead {
-    animation-delay: 160ms;
-  }
-
   .hero-ctas {
-    animation-delay: 250ms;
+    animation-delay: 200ms;
   }
 
-  .hero-trust {
-    animation-delay: 330ms;
+  .hero-id {
+    animation-delay: 300ms;
   }
 }
 
@@ -4537,32 +4535,6 @@ a.wordmark:hover {
   color: var(--muted);
 }
 
-.more-work__fold {
-  display: flex;
-  flex-direction: column;
-}
-
-/* The summary is the button. Its own marker is removed; the count in the
-   label already says there is more. */
-.more-work__fold > summary {
-  align-self: center;
-  list-style: none;
-  margin-inline: auto;
-  width: fit-content;
-}
-
-.more-work__fold > summary::-webkit-details-marker {
-  display: none;
-}
-
-.more-work__fold[open] > summary {
-  display: none;
-}
-
-.more-work__fold > .more-work__grid {
-  margin-top: 12px;
-}
-
 /* Compact case files ------------------------------------------------------- */
 
 .case-compact__grid {
@@ -4994,3 +4966,9 @@ a.wordmark:hover {
   line-height: 1.6;
   color: var(--muted);
 }
+
+.more-work__more {
+  display: flex;
+  justify-content: center;
+}
+

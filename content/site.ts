@@ -645,8 +645,8 @@ export const work = {
   moreTitle: "More work",
   moreAll: "All of it on Upwork",
   moreGo: "Read the project",
-  /** The label on the disclosure that opens the rest of the grid. */
-  showAll: "Show all projects",
+  /** The link under the grid, to the page with every project. */
+  showAll: "See all projects",
   videoMark: "Client video",
   /** Heading over the compact cards, once there are more than two case files. */
   moreCases: "More case files",
@@ -1100,10 +1100,19 @@ export const trackingDrawer = {
 /* -------------------------------------------------------------------------- */
 
 export const portfolioCopy = {
-  back: "← All work",
+  back: "← All projects",
+  backHome: "← Back to the homepage",
+  indexEyebrow: "Portfolio",
+  indexTitle: "All projects",
+  indexDescription:
+    "Tracking projects by Sojib H.: GA4, Google Tag Manager, server-side tagging, Meta CAPI, Google Ads conversions and more, each with its own write-up.",
+  /** Follows the count: "52 tracking projects, ...". */
+  indexLead: "tracking projects, as they appear on my Upwork portfolio. You can also",
   clientLabel: "Client:",
   skillsLabel: "Tools and platforms",
   upwork: "View my Upwork portfolio",
+  /** The same link inside a sentence on the index page. */
+  upworkInline: "view my Upwork portfolio",
   videoLabel: "Play the client's video review",
   videoBadge: "CLIENT VIDEO",
   galleryLabel: "Screenshots from the project",

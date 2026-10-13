@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { upworkUrl, work, type CaseStudy } from "@/content/site";
 import type { PortfolioItem } from "@/lib/content";
 import { CountValue } from "@/components/CountValue";
+import { ProjectCard } from "@/components/ProjectCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { CaseGallery } from "@/components/sections/CaseGallery";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
@@ -25,44 +25,8 @@ function Screenshot({ item }: { item: CaseStudy }) {
 /** Case studies shown at full size. Any beyond this get the compact card. */
 const FULL_CASES = 2;
 
-/** How many of the smaller cards show before the "show all" disclosure. */
+/** How many of the smaller cards show before the link to /work. */
 const MORE_VISIBLE = 9;
-
-function ProjectCard({ item, index }: { item: PortfolioItem; index?: number }) {
-  return (
-    <Link className="more-card" href={`/work/${item.slug}`} data-featured={item.featured || undefined}>
-      {item.images[0] ? (
-        <Image
-          className="more-card__cover"
-          src={item.images[0].src}
-          alt=""
-          width={item.images[0].width}
-          height={item.images[0].height}
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          loading="lazy"
-        />
-      ) : null}
-      <span className="more-card__top">
-        {index !== undefined ? (
-          <span className="more-card__index" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-        ) : null}
-        {item.videoId ? <span className="more-card__video">{work.videoMark}</span> : null}
-      </span>
-      <span className="more-card__title">{item.title}</span>
-      {item.featured ? <span className="more-card__desc">{item.description}</span> : null}
-      <span className="more-card__skills">
-        {item.skills.slice(0, item.featured ? 5 : 3).map((skill) => (
-          <span key={skill} className="more-card__skill">
-            {skill}
-          </span>
-        ))}
-      </span>
-      <span className="more-card__go">{work.moreGo} →</span>
-    </Link>
-  );
-}
 
 /**
  * The portfolio under the case files: the featured projects as larger cards,
@@ -72,9 +36,9 @@ function ProjectCard({ item, index }: { item: PortfolioItem; index?: number }) {
  * component. With nothing published it renders nothing at all, headings
  * included, so an empty table does not leave a title over a gap.
  *
- * Only the first nine of the smaller cards are open. The rest sit inside a
- * <details>, which needs no JavaScript, is in the HTML for search engines, and
- * is opened by find-in-page in current browsers.
+ * Only the first nine of the smaller cards are here. The rest are on /work,
+ * one link away. They were all on this page once, inside a closed <details>,
+ * and were a third of its HTML for something most visitors never opened.
  */
 function MoreWork({ items }: { items: PortfolioItem[] }) {
   if (!items.length) return null;
@@ -82,7 +46,7 @@ function MoreWork({ items }: { items: PortfolioItem[] }) {
   const featured = items.filter((item) => item.featured);
   const rest = items.filter((item) => !item.featured);
   const open = rest.slice(0, MORE_VISIBLE);
-  const folded = rest.slice(MORE_VISIBLE);
+  const hidden = rest.length - open.length;
 
   return (
     <div className="more-work">
@@ -117,19 +81,12 @@ function MoreWork({ items }: { items: PortfolioItem[] }) {
             ))}
           </ul>
 
-          {folded.length > 0 && (
-            <details className="more-work__fold">
-              <summary className="btn btn-ghost">
-                {work.showAll} ({rest.length})
-              </summary>
-              <ul className="more-work__grid">
-                {folded.map((item, i) => (
-                  <li key={item.slug}>
-                    <ProjectCard item={item} index={i + MORE_VISIBLE} />
-                  </li>
-                ))}
-              </ul>
-            </details>
+          {hidden > 0 && (
+            <div className="more-work__more">
+              <Link className="btn btn-ghost" href="/work">
+                {work.showAll} ({items.length})
+              </Link>
+            </div>
           )}
         </>
       )}

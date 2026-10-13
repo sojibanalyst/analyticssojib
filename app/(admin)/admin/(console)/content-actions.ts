@@ -277,7 +277,7 @@ function slugify(input: string): string {
 /** Appends -2, -3 … until nothing is using it. */
 async function uniqueSlug(
   supabase: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>,
-  table: "posts" | "case_studies",
+  table: "posts" | "case_studies" | "portfolio_items",
   base: string,
 ): Promise<string> {
   let slug = base;
@@ -546,4 +546,141 @@ export async function deleteCaseStudy(
   await revalidateContent();
   revalidatePath("/admin/case-studies");
   return ok("Case study deleted.");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Portfolio                                                                    */
+/* -------------------------------------------------------------------------- */
+
+/** "GA4, Google Tag Manager" becomes ["GA4", "Google Tag Manager"]. */
+function toSkills(value: FormDataEntryValue | null): string[] {
+  return String(value ?? "")
+    .split(",")
+    .map((skill) => skill.trim())
+    .filter(Boolean)
+    .slice(0, 12);
+}
+
+/** Empty becomes null, so an optional field is absent rather than "". */
+function optional(value: FormDataEntryValue | null): string | null {
+  const text = String(value ?? "").trim();
+  return text || null;
+}
+
+/** A YouTube id, or the id pulled out of a pasted YouTube link. */
+function toVideoId(value: FormDataEntryValue | null): string | null {
+  const text = String(value ?? "").trim();
+  if (!text) return null;
+  const fromUrl = /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/.exec(text)?.[1];
+  const id = fromUrl ?? text;
+  return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
+}
+
+export async function createPortfolioItem(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const supabase = await requireAdmin();
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
+
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  if (!title || !description) return fail(ACTION_ERRORS.missingFields);
+
+  // The table's slug check wants at most hyphen-separated words; slugify
+  // already produces that, trimmed here so the URL stays readable.
+  const slug = await uniqueSlug(supabase, "portfolio_items", slugify(title).slice(0, 60).replace(/-+$/, ""));
+
+  const { data: last } = await supabase
+    .from("portfolio_items")
+    .select("sort_order")
+    .lt("sort_order", 9000)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { error } = await supabase.from("portfolio_items").insert({
+    slug,
+    title,
+    description,
+    skills: toSkills(formData.get("skills")),
+    url: "https://www.upwork.com/freelancers/conversiontrackinggtmga4looker",
+    // Starts hidden, like a new case study: a half-filled project should not
+    // be on the homepage the instant it is created.
+    published: false,
+    sort_order: (last?.sort_order ?? 1000) + 1,
+  });
+  if (error) return fail(error.message);
+
+  await revalidateContent();
+  revalidatePath("/admin/portfolio");
+  return ok("Project added, hidden. Open it to finish and publish.");
+}
+
+export async function updatePortfolioItem(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const supabase = await requireAdmin();
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return fail(ACTION_ERRORS.noId);
+
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const url = String(formData.get("url") ?? "").trim();
+  if (!title || !description) return fail(ACTION_ERRORS.missingFields);
+  if (!/^https:\/\//.test(url)) return fail("The link has to start with https://");
+
+  const videoRaw = String(formData.get("video_id") ?? "").trim();
+  const videoId = toVideoId(videoRaw);
+  if (videoRaw && !videoId) {
+    return fail("That is not a YouTube video id. Paste the 11-character id or the video's link.");
+  }
+
+  const order = Number(formData.get("sort_order"));
+
+  const { error } = await supabase
+    .from("portfolio_items")
+    .update({
+      title,
+      description,
+      url,
+      role: optional(formData.get("role")),
+      client: optional(formData.get("client")),
+      video_id: videoId,
+      skills: toSkills(formData.get("skills")),
+      featured: formData.get("featured") === "on",
+      published: formData.get("published") === "on",
+      ...(Number.isInteger(order) ? { sort_order: order } : {}),
+    })
+    .eq("id", id);
+  if (error) return fail(error.message);
+
+  await revalidateContent();
+  revalidatePath("/admin/portfolio");
+  return ok("Project saved.");
+}
+
+export async function deletePortfolioItem(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const supabase = await requireAdmin();
+  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
+
+  if (formData.get("confirm") !== "on") {
+    return fail(ACTION_ERRORS.notConfirmed);
+  }
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return fail(ACTION_ERRORS.noId);
+
+  const { error } = await supabase.from("portfolio_items").delete().eq("id", id);
+  if (error) return fail(error.message);
+
+  await revalidateContent();
+  revalidatePath("/admin/portfolio");
+  return ok("Project deleted.");
 }

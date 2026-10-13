@@ -41,6 +41,14 @@ runs in CI.
   lazy loaders for GSAP and Lenis. Neither library may be imported statically
   into a component that renders above the fold, and every animation checks
   `prefersReducedMotion()` first and has a static state.
+- **Animate `transform` and `opacity`, nothing else.** Anything that loops or
+  runs on scroll must be something the compositor can do alone. `fill`,
+  `stroke`, `offset-path`, `filter` and colours repaint on the main thread
+  every frame, and most visitors are on phones. Lighthouse lists offenders
+  under "non-composited animations"; that list must stay empty.
+- **No `content-visibility` on sections.** It was tried and it made header
+  links land in the wrong place. The note is in `app/components.css`.
+- **Smooth scroll is desktop only.** Lenis is not loaded on touch devices.
 - **Public pages stay static.** No `force-dynamic` on a public route, and no
   per-request database call to render one. Content is read at BUILD time
   through `lib/content`, which uses a plain client with cached GETs — never
@@ -113,6 +121,18 @@ changes nothing. Everything else in `content/site.ts` (hero, stats, stack,
 services, process, about, contact, footer) is still live and still edited
 there.
 
+The portfolio (`portfolio_items`) is in Supabase too, edited at
+`/admin/portfolio`, shown under the case files and at `/work/<slug>`. Its
+screenshots are files: save them by hand under `portfolio-raw/<upwork_id>/`
+and run `npm run portfolio:images`. Upwork blocks scripted downloads; do not
+work around that.
+
+The Upwork figures (job success, jobs, reviews, rating) are typed once, at the
+top of the proof block in `content/site.ts`.
+
+Every tracked event, its trigger and its parameters are in `TRACKING_PLAN.md`.
+Change an event and that file in the same commit.
+
 `posts.status` is visibility; `posts.is_draft` is whether the writing is
 finished. An unfinished post keeps its URL and carries a noindex.
 
@@ -130,4 +150,5 @@ npm run seed           idempotent seed, reads .env.local
 npm run import:content content/*.ts → Supabase; --sql prints it instead
 npm run snapshot       <baseUrl> <outDir> — snapshot every public page
 npm run diff:pages     <beforeDir> <afterDir> — prove nothing changed
+npm run portfolio:images  hand-saved screenshots → public/portfolio, plus the SQL
 ```

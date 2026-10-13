@@ -21,6 +21,7 @@ const ROUTES = [
   ["/case-studies/shopify-purchase-accuracy-rebuild", 200],
   ["/case-studies/meta-roas-deduplication", 200],
   // Portfolio project pages, added in the 2026 redesign. One featured, one not.
+  ["/work", 200, "All projects"],
   ["/work/server-side-tracking-using-stape-io", 200],
   ["/work/ga4-custom-report-setup", 200],
   ["/work/this-project-does-not-exist", 404],
@@ -42,6 +43,7 @@ const ROUTES = [
   // the one that matters: /admin must never render to a stranger.
   ["/admin", 307],
   ["/admin/settings", 307],
+  ["/admin/portfolio", 307],
   ["/admin/login", 200, "Email"],
 
   // The collector accepts POST only. A GET returning 405 is the check that it
