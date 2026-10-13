@@ -1057,6 +1057,14 @@ export type Database = {
       }
     }
     Views: {
+      public_recent_events: {
+        Row: {
+          at: string | null
+          event_name: string | null
+          page_path: string | null
+        }
+        Relationships: []
+      }
       public_site_settings: {
         Row: {
           gtm_container_id: string | null

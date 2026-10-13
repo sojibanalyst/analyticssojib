@@ -13,6 +13,8 @@ type Props = {
   label: string;
   orientation: "portrait" | "landscape";
   badge?: string;
+  /** Who is speaking, for the review_video_play event. Not shown. */
+  client?: string;
 };
 
 /**
@@ -20,7 +22,7 @@ type Props = {
  * no third-party JavaScript, no iframe, no cookies. The privacy-enhanced
  * iframe is injected only after the user clicks play.
  */
-export function LiteYouTube({ id, label, orientation, badge }: Props) {
+export function LiteYouTube({ id, label, orientation, badge, client }: Props) {
   const [playing, setPlaying] = useState(false);
   const portrait = orientation === "portrait";
 
@@ -63,6 +65,8 @@ export function LiteYouTube({ id, label, orientation, badge }: Props) {
           type="button"
           onClick={() => setPlaying(true)}
           aria-label={label}
+          data-track-event="review_video_play"
+          data-track-client={client ?? "unnamed"}
           style={{
             position: "absolute",
             inset: 0,

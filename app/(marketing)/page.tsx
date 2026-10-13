@@ -8,6 +8,7 @@ import { Reviews } from "@/components/sections/Reviews";
 import { Process } from "@/components/sections/Process";
 import { About } from "@/components/sections/About";
 import { Notes } from "@/components/sections/Notes";
+import { LiveEvents } from "@/components/LiveEvents";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import {
@@ -54,6 +55,7 @@ export default async function Home() {
         <Reviews items={videoReviews} written={writtenReviews} />
         <Process />
         <About />
+        <LiveEvents />
         <Notes posts={posts} />
         <Faq items={faqs} />
         <Contact />

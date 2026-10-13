@@ -3993,3 +3993,362 @@ a.wordmark:hover {
   break-inside: avoid;
   margin-bottom: 14px;
 }
+
+/* ==========================================================================
+   "This site, tracked live"
+   ========================================================================== */
+
+.live {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .live {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 72px);
+  }
+}
+
+.live__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.live__body {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.live__panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-2);
+  overflow: hidden;
+}
+
+.live__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.live__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ok);
+}
+
+.live__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--ok);
+}
+
+@keyframes live-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .live__pulse {
+    animation: live-pulse 1.8s ease-in-out infinite;
+  }
+}
+
+/* A fixed height for eight rows, so the panel is the same size before the
+   first response, with three events and with twelve. Nothing below it moves
+   when the data arrives. */
+.live__list,
+.live__empty {
+  box-sizing: border-box;
+  height: 320px;
+  margin: 0;
+}
+
+.live__list {
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.live__empty {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--faint);
+}
+
+.live__row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+}
+
+.live__name {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.live__path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.live__time {
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.live__note {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: var(--text-label);
+  color: var(--faint);
+}
+
+/* ==========================================================================
+   "What I'm tracking about you": the button and the drawer
+   ========================================================================== */
+
+/* Bottom left. The contact dock owns the bottom right. Below the header's
+   z-index, like the dock, and for the same reason. */
+.track-fab {
+  position: fixed;
+  z-index: 40;
+  left: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--raise-3);
+  box-shadow: var(--elev-3);
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color var(--dur-micro) var(--ease-out);
+}
+
+.track-fab:hover {
+  border-color: var(--ink);
+}
+
+.track-fab__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+}
+
+.track-fab__count {
+  min-width: 1.6em;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--ink);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* On a phone the label would run under the contact dock, so the button keeps
+   its dot and its count and the label goes to screen readers only. */
+@media (max-width: 639px) {
+  .track-fab__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.track-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--tone-ink) 70%, transparent);
+}
+
+.track-drawer {
+  position: fixed;
+  z-index: 61;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: min(440px, 100vw);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--elev-3);
+}
+
+@keyframes track-drawer-in {
+  from {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .track-drawer {
+    animation: track-drawer-in var(--dur-micro) var(--ease-out);
+  }
+}
+
+.track-drawer__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.track-drawer__title {
+  margin: 0;
+  font-size: var(--text-h4);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.track-drawer__close {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  cursor: pointer;
+}
+
+.track-drawer__close:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.track-drawer__intro,
+.track-drawer__empty {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.track-drawer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.track-row {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.track-row__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.track-row__name {
+  color: var(--ink);
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+.track-row__time {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--faint);
+}
+
+.track-row__what {
+  margin: 6px 0 0;
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.track-row__meta,
+.track-row__held {
+  margin: 6px 0 0;
+  font-family: var(--font-data);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  color: var(--faint);
+}
+
+.track-row__held {
+  color: var(--warn);
+}
+
+.track-drawer__foot {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.track-drawer__foot p {
+  margin: 0 0 8px;
+}
+
+.track-drawer__foot a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

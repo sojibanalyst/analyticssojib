@@ -8,6 +8,7 @@ import { ScrollProgress } from "@/components/ScrollProgress";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { Footer } from "@/components/sections/Footer";
 import { Tracker } from "@/components/Tracker";
+import { TrackingDrawer } from "@/components/TrackingDrawer";
 import { nav, footerNav } from "@/content/site";
 import { getPublishedPosts } from "@/lib/content";
 import { ldJson, personJsonLd, professionalServiceJsonLd } from "@/lib/jsonld";
@@ -68,6 +69,11 @@ export default async function MarketingLayout({
       {/* Last in the DOM on purpose: it is a shortcut, so a keyboard user
           reaches it after the page's own content rather than before it. */}
       <ContactDock />
+
+      {/* The other corner: what this visit has sent, in the visitor's own
+          words. After the dock in the DOM for the same reason the dock is
+          last, it is a shortcut and not part of the page's reading order. */}
+      <TrackingDrawer />
 
       <script
         type="application/ld+json"

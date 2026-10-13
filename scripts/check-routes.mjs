@@ -43,6 +43,10 @@ const ROUTES = [
   // The collector accepts POST only. A GET returning 405 is the check that it
   // exists and has not quietly become a page.
   ["/api/collect", 405],
+
+  // The public read behind the live panel. JSON with an `events` array, and
+  // nothing else at the top level.
+  ["/api/events/recent", 200, '"events"'],
 ];
 
 let failed = 0;

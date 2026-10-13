@@ -144,7 +144,8 @@ export function Reviews({
               <div className="review-slide__media">
                 <LiteYouTube
                   id={item.id}
-                  label={`${item.label} — client video review ${i + 1} of ${N}, recorded on Upwork`}
+                  label={`${item.label}, client video review ${i + 1} of ${N}, recorded on Upwork`}
+                  client={item.name ?? item.title ?? "unnamed"}
                   orientation={item.orientation}
                   badge="VIDEO REVIEW"
                 />

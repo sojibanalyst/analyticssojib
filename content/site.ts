@@ -1024,3 +1024,62 @@ export const leadForm = {
   privacy:
     "Goes to me, nobody else. No list, no sequence, no newsletter you did not ask for.",
 };
+
+/* -------------------------------------------------------------------------- */
+/* "This site, tracked live"                                                    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Every claim in this block is about what the code does, so check the code
+ * before changing a word: app/api/events/recent/route.ts and the
+ * public_recent_events view it reads.
+ */
+export const livePanel = {
+  eyebrow: "Live",
+  title: "This site, tracked live",
+  body: "This site runs its own first-party event collector. These are its latest events: the event name, the page, and the time. No IP addresses, no ids, nothing that identifies a visitor.",
+  status: "Live",
+  source: "/api/collect",
+  loading: "Reading the collector…",
+  empty: "No events to show yet.",
+  note: "Refreshes every 10 seconds. Query strings are removed before anything is shown.",
+} as const;
+
+/* -------------------------------------------------------------------------- */
+/* "See what I'm tracking about you"                                            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The drawer that lists the events this visitor's own browser has sent.
+ *
+ * Plain English, and only what is true. Each sentence in `explain` describes
+ * what lib/track.ts and components/Tracker.tsx send for that event. If an
+ * event changes, change its sentence in the same commit.
+ */
+export const trackingDrawer = {
+  button: "What I'm tracking about you",
+  title: "What this site has recorded about your visit",
+  close: "Close",
+  intro:
+    "Everything below was sent by your browser to this site's own collector since this page loaded. The list lives in this tab only. Reload and it starts again.",
+  empty: "Nothing has been sent yet.",
+  explain: {
+    page_view: "You opened a page. This is how I know which pages get read.",
+    scroll_depth:
+      "You scrolled past a quarter, half, three quarters or 90% of the page. It shows me where people stop reading.",
+    cta_click: "You pressed a button. I record which button and which section it was in.",
+    book_call_click:
+      "You opened the booking calendar. Nothing is booked until you choose a time there.",
+    whatsapp_click: "You followed a link to WhatsApp. I see the click, never the conversation.",
+    case_study_view: "You opened a case study. I record which one.",
+    review_video_play:
+      "You started a client video. YouTube is only loaded at this moment, not before.",
+    form_start:
+      "You started filling in the enquiry form. I record that it happened, not what you typed.",
+  },
+  explainOther: "An event from this page.",
+  held: "Not sent: you are signed in to the console, so your own visits are left out.",
+  never:
+    "With each event the collector stores the time and the page address, including anything after a question mark in it. It does not store your IP address.",
+  privacyLink: "Read the privacy notice",
+} as const;
