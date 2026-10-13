@@ -190,7 +190,12 @@ export type StackItem = {
 export const site = {
   name: "Sojib H.",
   fullName: "Sojib Hossain",
-  wordmark: { first: "SOJIB", accent: "_", last: "ANALYTICS" },
+  /**
+   * The logo text. "Sojib", with a full stop in the accent colour. It was
+   * SOJIB_ANALYTICS, which did not match the domain (analyticssojib) or the
+   * name used everywhere else on the page.
+   */
+  wordmark: { first: "Sojib", accent: ".", last: "" },
   headline:
     "Google Tag Manager & Google Analytics 4 | Server-Side, Meta Pixel, CAPI",
   role: "Web analytics and tracking specialist",
@@ -451,8 +456,6 @@ export const stack: StackItem[] = [
   { label: "TIKTOK", icon: "tiktok", fill: "#FFFFFF", themed: "tiktok", size: 17 },
   { label: "SNAPCHAT", icon: "snapchat", fill: "#FFFC00", themed: "snapchat", size: 17 },
   { label: "REDDIT", icon: "reddit", fill: "#FF4500", size: 18 },
-  { label: "CLAUDE", icon: "claude", fill: "#D97757", size: 18 },
-  { label: "CHATGPT", icon: "openai", fill: "#FFFFFF", themed: "openai", size: 17 },
 ];
 
 /**
@@ -886,7 +889,7 @@ export const reviews = {
    * `placeholder: true` as each one is filled.
    */
   written: Array.from({ length: 8 }, (_, i) => ({
-    quote: `Upwork review ${i + 1} — paste the client's own words here, unedited.`,
+    quote: `Upwork review ${i + 1}: paste the client's own words here, unedited.`,
     attribution: `AWAITING REVIEW ${i + 1} OF 8`,
     placeholder: true,
   })) satisfies WrittenReview[],

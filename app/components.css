@@ -440,12 +440,11 @@ a.doc-button:hover {
 .contact-title {
   margin: 0;
   max-width: 26ch;
-  font-family: var(--font-prose);
+  font-family: var(--font-display);
   font-size: var(--text-display);
   line-height: 1.1;
   font-weight: 700;
-  letter-spacing: -0.025em;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -3951,7 +3950,10 @@ a.wordmark:hover {
     display: block;
   }
 
-  .rv-track {
+  /* Only once the component has added the second copy of each row. Before
+     that there is nothing to loop into, and the row would drift off into
+     empty space. */
+  .rv-rows[data-loop] .rv-track {
     animation: rv-drift var(--rv-duration, 60s) linear infinite;
   }
 
@@ -4351,4 +4353,39 @@ a.wordmark:hover {
 .track-drawer__foot a {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* The wordmark is a name now, not a label: set in the display face at a size
+   that reads as a logo. Last in the file so it follows the header rules it
+   adjusts. */
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   Skip the work for what is not on screen
+   ==========================================================================
+
+   The homepage is long: two case files with galleries, twenty reviews, a
+   table, a form. The browser was styling and laying out all of it before the
+   first paint of a hero that needs none of it; Lighthouse put style and
+   layout at two seconds of main-thread time on a throttled phone.
+
+   content-visibility: auto lets it skip a section's contents until the
+   section is near the viewport. contain-intrinsic-size gives the skipped
+   section a placeholder height, and `auto` makes the browser remember the
+   real height once it has rendered it, so scrolling back up does not jump.
+
+   Only the sections well below the first screen, and deliberately not the
+   scroll story: that one is a sticky panel inside a tall section, and its
+   height is the mechanism. */
+#work,
+#reviews,
+.live,
+#faq,
+#contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }

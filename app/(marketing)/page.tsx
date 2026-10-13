@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { site } from "@/content/site";
 import { Hero } from "@/components/sections/Hero";
 import { StatBand } from "@/components/sections/StatBand";
 import { StackStrip } from "@/components/sections/StackStrip";
@@ -30,6 +32,10 @@ import {
  * be statically analysable. It is kept in step with that constant by hand.
  */
 export const revalidate = 3600;
+
+/** The homepage's own canonical. It used to be inherited from the root layout,
+ *  by this page and by every other route that did not set one. */
+export const metadata: Metadata = { alternates: { canonical: site.url } };
 
 export default async function Home() {
   // One round trip each, in parallel. Sequential awaits here would add four

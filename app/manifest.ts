@@ -3,7 +3,7 @@ import { site } from "@/content/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${site.name} — ${site.role}`,
+    name: `${site.name} | ${site.role}`,
     short_name: "Sojib Analytics",
     description: site.description,
     start_url: "/",

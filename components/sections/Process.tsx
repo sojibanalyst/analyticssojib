@@ -29,7 +29,7 @@ export function Process() {
           >
             <span
               style={{
-                fontFamily: "var(--font-prose)",
+                fontFamily: "var(--font-display)",
                 fontSize: "var(--text-h3)",
                 fontWeight: 800,
                 color: "var(--ink)",
@@ -45,7 +45,6 @@ export function Process() {
                 fontSize: "var(--text-body)",
                 fontWeight: 700,
                 letterSpacing: "0.04em",
-                textTransform: "uppercase",
               }}
             >
               {step.title}

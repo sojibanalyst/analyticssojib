@@ -9,9 +9,16 @@
  *   Inter           everything a person reads
  *   JetBrains Mono  event names, stats, ids and the small uppercase labels
  *
- * All three are loaded as VARIABLE fonts, with no `weight` array. One file per
- * family carries every weight. Listing weights would download a static file per
- * weight and silently round anything unlisted to the nearest one that shipped.
+ * Inter and JetBrains Mono are loaded as VARIABLE fonts, with no `weight`
+ * array: one file per family carries every weight, and both are used at
+ * several. Listing weights would download a static file per weight and
+ * silently round anything unlisted to the nearest one that shipped.
+ *
+ * Space Grotesk is the exception, and on purpose. Headings are set at 700 and
+ * nothing else, so it loads that one static weight: 13 kB against 23 kB for
+ * the variable file, on the font that sets the first screen's largest text.
+ * If a heading is ever set lighter, add the weight here; an unlisted one would
+ * be faked by the browser.
  *
  * next/font downloads the files at build time and serves them from this
  * origin, so nothing is requested from Google by a visitor's browser.
@@ -28,6 +35,7 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 
 export const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
+  weight: "700",
   variable: "--font-space-grotesk",
   display: "swap",
   preload: true,

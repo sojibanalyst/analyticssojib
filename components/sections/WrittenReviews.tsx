@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { reviews, type WrittenReview } from "@/content/site";
 import { ReviewCard } from "@/components/ui/ReviewCard";
@@ -32,6 +32,23 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
   const [open, setOpen] = useState(false);
   const gridId = useId();
 
+  /**
+   * The second copy of each row exists only to close the loop, so it is only
+   * rendered where there is a loop: a wide screen with motion allowed, and
+   * only after hydration. In the server's HTML it would be every review a
+   * second time, for every visitor, including the phones that never show it.
+   * The drift is switched on by the same flag, so a row never starts moving
+   * before the copy that makes it seamless is there.
+   */
+  const [loop, setLoop] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px) and (prefers-reduced-motion: no-preference)");
+    const sync = () => setLoop(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
   if (!real.length) return null;
 
   // Alternate cards between the rows, so each row gets a mix of long and short
@@ -53,7 +70,12 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
     <div className="rv">
       <h3 className="rv__title">{reviews.writtenTitle}</h3>
 
-      <div className="rv-rows" role="group" aria-label={reviews.writtenTitle}>
+      <div
+        className="rv-rows"
+        role="group"
+        aria-label={reviews.writtenTitle}
+        data-loop={loop || undefined}
+      >
         {rows.map((row, r) => (
           <div
             key={r}
@@ -69,7 +91,8 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
                   {card(item, true)}
                 </li>
               ))}
-              {row.map((item) => (
+              {loop &&
+                row.map((item) => (
                 <li
                   key={`copy-${item.attribution + item.quote.slice(0, 24)}`}
                   className="rv-item rv-item--copy"

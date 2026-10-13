@@ -10,8 +10,8 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.role}`,
-    template: `%s — ${site.name}`,
+    default: `${site.name} | ${site.role}`,
+    template: `%s | ${site.name}`,
   },
   description: site.description,
   applicationName: site.domain,
@@ -30,12 +30,15 @@ export const metadata: Metadata = {
     "Looker Studio",
     "analytics consultant",
   ],
-  alternates: { canonical: site.url },
+  // No canonical here. Declared in the root layout it was inherited by every
+  // route that did not set its own, so /admin and /book both told crawlers
+  // they were the homepage. Each public page declares its own; the homepage's
+  // is in app/(marketing)/page.tsx.
   openGraph: {
     type: "website",
     url: site.url,
     siteName: site.domain,
-    title: `${site.name} — ${site.role}`,
+    title: `${site.name} | ${site.role}`,
     description: site.description,
     locale: "en_US",
   },
@@ -43,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: site.twitterHandle,
     creator: site.twitterHandle,
-    title: `${site.name} — ${site.role}`,
+    title: `${site.name} | ${site.role}`,
     description: site.description,
   },
   robots: {

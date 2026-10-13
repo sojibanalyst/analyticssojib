@@ -42,12 +42,12 @@ const PLATFORMS = new Set([
   "",
 ]);
 
-const SENT_MESSAGE = "Thanks — I'll reply personally, usually within a day.";
+const SENT_MESSAGE = "Thanks. I'll reply personally, usually within a day.";
 
 const ERRORS: Record<string, string> = {
   name_invalid: "Please enter your name.",
   email_invalid: "That email address does not look right.",
-  too_soon: "That looks like a duplicate — your first message is already in.",
+  too_soon: "That looks like a duplicate. Your first message is already in.",
 };
 
 export async function submitLead(

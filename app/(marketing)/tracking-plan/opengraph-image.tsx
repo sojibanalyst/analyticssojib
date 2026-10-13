@@ -51,7 +51,7 @@ export default async function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex" }}>
-            SOJIB<span style={{ color: ACCENT }}>_</span>ANALYTICS
+            SOJIB<span style={{ color: ACCENT }}>.</span>
           </div>
           <div
             style={{

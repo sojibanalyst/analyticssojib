@@ -101,7 +101,7 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
       <header className="site-header" data-scrolled={scrolled}>
         {/* The wordmark is the conventional way home, so it is a link, not
             the design's plain span. */}
-        <Link href="/" className="wordmark" aria-label={`${site.name} — home`}>
+        <Link href="/" className="wordmark" aria-label={`${site.name}, home`}>
           {site.wordmark.first}
           <span style={{ color: "var(--ink)" }} aria-hidden="true">
             {site.wordmark.accent}

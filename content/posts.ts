@@ -77,5 +77,5 @@ export const blog = {
   draftNotice:
     "This one is still being written. The outline is set; the post goes up when it is finished rather than half-done.",
   emptyBody:
-    "No body text yet — replace `body` in content/posts.ts to publish this post.",
+    "No body text yet. Replace `body` in content/posts.ts to publish this post.",
 } as const;

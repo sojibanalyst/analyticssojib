@@ -41,7 +41,7 @@ export const trackingPlanMeta = {
   stack: "GA4 · GTM · SERVER-SIDE GTM · META CAPI · GOOGLE ADS EC · CONSENT MODE V2",
   downloadLabel: "DOWNLOAD AS PDF →",
   contentsLabel: "CONTENTS",
-  title: "Tracking Plan Template — GA4, GTM, Server-Side & Meta CAPI | Sojib H.",
+  title: "Tracking Plan Template: GA4, GTM, Server-Side & Meta CAPI | Sojib H.",
   description:
     "The measurement and tracking plan I write before implementing anything: dataLayer spec, GA4 configuration, server-side architecture, Consent Mode v2 and the QA checklist I sign off against.",
   ogTitle: "TRACKING PLAN",
@@ -463,7 +463,7 @@ window.dataLayer.push({
         kind: "table",
         head: ["Container", "Tag", "Trigger", "Consent required"],
         rows: [
-          ["Web", "`GA4 - Config`", "Initialisation — All Pages", "`analytics_storage`"],
+          ["Web", "`GA4 - Config`", "Initialisation: All Pages", "`analytics_storage`"],
           ["Web", "`GA4 - Event - view_item`", "`CE - view_item`", "`analytics_storage`"],
           ["Web", "`GA4 - Event - add_to_cart`", "`CE - add_to_cart`", "`analytics_storage`"],
           ["Web", "`GA4 - Event - begin_checkout`", "`CE - begin_checkout`", "`analytics_storage`"],

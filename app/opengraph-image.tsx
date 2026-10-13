@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { proof, site } from "@/content/site";
 
-export const alt = `${site.name} — ${site.role}`;
+export const alt = `${site.name} | ${site.role}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -54,7 +54,7 @@ export default async function OpengraphImage() {
           }}
         >
           <div style={{ display: "flex" }}>
-            SOJIB<span style={{ color: ACCENT }}>_</span>ANALYTICS
+            SOJIB<span style={{ color: ACCENT }}>.</span>
           </div>
           {/* The square is DRAWN, not typed. As a "■" character it rendered as
               a tofu box on the share card: Satori fetches a font per glyph and

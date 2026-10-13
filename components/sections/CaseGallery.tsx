@@ -71,7 +71,7 @@ export function CaseGallery({ shots, label }: { shots: CaseShot[]; label: string
         onKeyDown={onKeyDown}
         tabIndex={single ? -1 : 0}
         role="group"
-        aria-label={`${label} — evidence screenshots`}
+        aria-label={`${label}, evidence screenshots`}
         data-track="1"
         className="case-gallery__track"
       >
