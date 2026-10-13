@@ -2388,17 +2388,40 @@ a.wordmark:hover {
       tall; blurring something that size every frame is a real cost for an
       effect nobody reads at that scale. Section-level blocks keep the plain
       rise. */
+/* No blur in the base version. A filter cannot be animated on the compositor
+   ("filter-related property may move pixels", in Lighthouse's words), so
+   every card that arrived this way was repainted on the main thread for each
+   frame of its entrance, and the tools strip does it to twenty items at once
+   as the page loads. On a phone that is the difference between a smooth
+   first scroll and a stuttering one. */
 @keyframes reveal-focus {
   from {
     opacity: 0;
     transform: translateY(18px) scale(0.97);
-    filter: blur(7px);
   }
 
   to {
     opacity: 1;
     transform: none;
-    filter: blur(0);
+  }
+}
+
+/* A mouse-driven machine has the headroom, so it keeps the focus pull. A
+   keyframes rule inside a media query replaces the one above where it
+   matches. */
+@media (hover: hover) and (pointer: fine) {
+  @keyframes reveal-focus {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.97);
+      filter: blur(7px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
   }
 }
 
@@ -2870,20 +2893,31 @@ a.wordmark:hover {
 }
 
 /* Pipeline -----------------------------------------------------------------
-   The diagram in components/hero/PipelineSvg.tsx. Sizes below are SVG user
-   units, not CSS pixels: the drawing scales with its box.
+   The diagram in components/hero/PipelineSvg.tsx: a static SVG, and a layer of
+   plain elements on top of it that carries all the motion.
 
-   Everything here is the STATIC drawing. The motion is in the
-   no-preference block underneath, so with reduced motion on there is nothing
-   to switch off: it was never switched on. */
+   THE RULE FOR EVERYTHING ANIMATED HERE: transform and opacity, nothing else.
+   Those two run on the compositor. Anything else (fill, stroke, offset-path,
+   a colour) makes the browser recalculate style and repaint on the main
+   thread for every frame of an animation that never ends, which on a slow
+   phone is most of the main thread. See the note in the component for what
+   that measured. */
 
 .pipe {
   position: relative;
   display: block;
   width: 100%;
-  height: auto;
+  /* The overlay sizes itself in container units, so this is the container.
+     The height comes from the aspect-ratio set inline. */
+  container-type: size;
   transform: translate(calc(var(--px) * 8px), calc(var(--py) * 8px));
   transition: transform 600ms var(--ease-out);
+}
+
+.pipe svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* Two layouts of the same nodes; see the note in the component. */
@@ -2905,6 +2939,8 @@ a.wordmark:hover {
     display: none;
   }
 }
+
+/* The drawing. Sizes are SVG user units; the drawing scales with its box. */
 
 .pipe-lines path {
   fill: none;
@@ -2936,12 +2972,6 @@ a.wordmark:hover {
 
 .pipe-node--server rect {
   stroke: var(--accent);
-}
-
-.pipe-node--server .pipe-server-glow {
-  fill: color-mix(in srgb, var(--accent) 12%, transparent);
-  stroke: none;
-  opacity: 0.6;
 }
 
 .pipe-mono {
@@ -2987,46 +3017,88 @@ a.wordmark:hover {
   fill: var(--accent);
 }
 
-.pipe-badge rect {
-  fill: color-mix(in srgb, var(--accent) 14%, var(--surface));
-  stroke: var(--accent);
-  stroke-width: 1;
+/* The motion layer. Every child is placed in viewBox units times --u, which
+   the component sets to one viewBox unit in container units. */
+
+.pipe-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.pipe-badge text {
-  font-size: 11px;
-  fill: var(--ink);
-}
-
-/* Invisible until the motion block gives them somewhere to go. */
+.pipe-fx > *,
 .pipe-dot {
+  position: absolute;
+}
+
+/* What is visible with no animation at all: the server's soft glow and the
+   badge. Dots, row highlights and platform rings only exist in motion. */
+
+.pipe-fx__row {
+  border-radius: calc(5 * var(--u));
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
   opacity: 0;
-  offset-rotate: 0deg;
-  fill: var(--accent-2);
+}
+
+.pipe-fx__glow {
+  border-radius: calc(20 * var(--u));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  opacity: 0.35;
+}
+
+.pipe-fx__hit {
+  box-sizing: border-box;
+  border: 1.5px solid var(--accent);
+  border-radius: calc(12 * var(--u));
+  opacity: 0;
+}
+
+.pipe-fx__badge {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--ink);
+  font-family: var(--font-data);
+  font-size: calc(11 * var(--u));
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pipe-fx__event {
+  inset: 0;
+}
+
+.pipe-dot {
+  left: 0;
+  top: 0;
+  width: calc(9 * var(--u));
+  height: calc(9 * var(--u));
+  margin: calc(-4.5 * var(--u)) 0 0 calc(-4.5 * var(--u));
+  border-radius: var(--radius-full);
+  background: var(--accent-2);
+  opacity: 0;
+  transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
 }
 
 .pipe-dot--trunk {
-  fill: var(--accent);
+  background: var(--accent);
 }
 
 /* One loop is 12s and an event starts every 4s. Each event's elements carry
    --d, its offset into the loop. Within an event's own 12s:
 
      0 to 9%     the dot crosses from the browser to the server
-     10 to 20%   three dots fan out to the platforms
+     10 to 20%   three dots fan out to the platforms, in two straight legs
      22% on      (purchase only) the deduplicated badge appears on Meta
 
    The server and the platforms are hit by every event, so their pulses run on
    a 4s loop instead and need no offset. */
 @media (prefers-reduced-motion: no-preference) {
-  .pipe-row {
-    fill: var(--muted);
+  .pipe-fx__row {
     animation: pipe-row 12s linear var(--d, 0s) infinite;
-  }
-
-  .pipe-row-dot {
-    fill: var(--border);
-    animation: pipe-row-dot 12s linear var(--d, 0s) infinite;
   }
 
   .pipe-dot--trunk {
@@ -3037,47 +3109,42 @@ a.wordmark:hover {
     animation: pipe-branch 12s linear var(--d, 0s) infinite;
   }
 
-  .pipe-badge {
+  .pipe-fx__badge {
     opacity: 0;
     animation: pipe-badge 12s var(--ease-out) var(--d, 0s) infinite;
   }
 
-  .pipe-node--server .pipe-server-glow {
+  .pipe-fx__glow {
     animation: pipe-server 4s var(--ease-out) infinite;
   }
 
-  .pipe-node--platform rect {
+  .pipe-fx__hit {
     animation: pipe-hit 4s var(--ease-out) infinite;
+  }
+
+  /* Off screen, it stops. components/hero/HeroParallax.tsx sets the attribute
+     when the hero has scrolled away. A compositor animation is cheap, not
+     free, and nobody is watching this one from the reviews section. */
+  .hero[data-offscreen] .pipe-fx * {
+    animation-play-state: paused;
   }
 }
 
 @keyframes pipe-row {
   0%,
   22% {
-    fill: var(--text);
+    opacity: 1;
   }
 
   27%,
   100% {
-    fill: var(--muted);
-  }
-}
-
-@keyframes pipe-row-dot {
-  0%,
-  22% {
-    fill: var(--accent);
-  }
-
-  27%,
-  100% {
-    fill: var(--border);
+    opacity: 0;
   }
 }
 
 @keyframes pipe-trunk {
   0% {
-    offset-distance: 0%;
+    transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
     opacity: 0;
   }
 
@@ -3086,13 +3153,13 @@ a.wordmark:hover {
   }
 
   9% {
-    offset-distance: 100%;
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
     opacity: 1;
   }
 
   10%,
   100% {
-    offset-distance: 100%;
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
     opacity: 0;
   }
 }
@@ -3100,23 +3167,28 @@ a.wordmark:hover {
 @keyframes pipe-branch {
   0%,
   9% {
-    offset-distance: 0%;
+    transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
     opacity: 0;
   }
 
   10% {
-    offset-distance: 0%;
+    transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
+    opacity: 1;
+  }
+
+  15% {
+    transform: translate(calc(var(--xm) * var(--u)), calc(var(--ym) * var(--u)));
     opacity: 1;
   }
 
   20% {
-    offset-distance: 100%;
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
     opacity: 1;
   }
 
   21%,
   100% {
-    offset-distance: 100%;
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
     opacity: 0;
   }
 }
@@ -3159,16 +3231,16 @@ a.wordmark:hover {
 @keyframes pipe-hit {
   0%,
   57% {
-    stroke: var(--border);
+    opacity: 0;
   }
 
   63%,
   78% {
-    stroke: var(--accent);
+    opacity: 1;
   }
 
   100% {
-    stroke: var(--border);
+    opacity: 0;
   }
 }
 
@@ -4378,12 +4450,16 @@ a.wordmark:hover {
    section a placeholder height, and `auto` makes the browser remember the
    real height once it has rendered it, so scrolling back up does not jump.
 
-   Only the sections well below the first screen, and deliberately not the
-   scroll story: that one is a sticky panel inside a tall section, and its
-   height is the mechanism. */
+   Every section below the first screen, and deliberately not the scroll
+   story: that one is a sticky panel inside a tall section, and its height is
+   the mechanism. */
+#services,
 #work,
 #reviews,
+#process,
+#about,
 .live,
+#blog,
 #faq,
 #contact {
   content-visibility: auto;

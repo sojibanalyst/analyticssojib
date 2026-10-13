@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import { hero } from "@/content/site";
 
 /**
@@ -8,27 +10,37 @@ import { hero } from "@/content/site";
  * resolves as deduplicated. That is the service, and it is the whole of what
  * this draws.
  *
- * THREE DECISIONS:
+ * FOUR DECISIONS:
  *
- * 1. SVG AND CSS, NO JAVASCRIPT. The dots ride their lines with offset-path
- *    and keyframes (app/components.css, "Pipeline"). Nothing here is a client
- *    component, so the hero costs no hydration and no bundle, and the diagram
- *    is in the HTML the server sends.
+ * 1. THE DRAWING IS AN SVG AND IT DOES NOT MOVE. Every node, line and label is
+ *    static markup in the HTML the server sends. Under reduced motion, or with
+ *    animations unavailable, this is the whole picture and it is complete.
  *
- * 2. THE STATIC DRAWING IS COMPLETE. Every node, line and label is real
- *    markup. The animation only adds travelling dots and highlights, so under
- *    reduced motion, or with CSS animations unavailable, what is left is the
- *    full pipeline with the deduplicated badge showing.
+ * 2. THE MOTION IS A LAYER OF PLAIN ELEMENTS ON TOP, and only `transform` and
+ *    `opacity` are ever animated. The first version animated `fill`, `stroke`
+ *    and `offset-distance` on the SVG's own elements. None of those can run on
+ *    the compositor, so the browser recalculated style and repainted on the
+ *    main thread for every frame, for ever. Measured with real CPU throttling
+ *    it cost a slow phone a second of LCP and half of its main thread. Dots,
+ *    highlights and the badge are now positioned <span>s, which the compositor
+ *    moves without asking the main thread anything.
  *
- * 3. TWO LAYOUTS, ONE COMPONENT. A 640-wide drawing scaled into a 340px phone
+ * 3. NO JAVASCRIPT. Positions are viewBox coordinates multiplied by one custom
+ *    property, --u, which is "one viewBox unit" in container-query units. The
+ *    overlay therefore scales with the drawing at any width, with no resize
+ *    listener and no hydration.
+ *
+ * 4. TWO LAYOUTS, ONE COMPONENT. A 640-wide drawing scaled into a 340px phone
  *    leaves 5px labels. So the same nodes are laid out twice, left-to-right
  *    for wide screens and top-to-bottom for narrow ones, and CSS shows one.
  *    The hidden one is display: none, which also stops its animations.
  *
- * One loop is 12 seconds: an event every four.
+ * One loop is 12 seconds: an event every four. The keyframes are in
+ * app/components.css under "Pipeline".
  */
 
 type Box = { x: number; y: number; w: number; h: number };
+type Point = [number, number];
 
 type Layout = {
   name: "wide" | "tall";
@@ -36,12 +48,19 @@ type Layout = {
   browser: Box;
   server: Box;
   platforms: [Box, Box, Box];
-  /** Browser to server. */
-  trunk: string;
-  /** Server to each platform, in the same order as `platforms`. */
-  branches: [string, string, string];
+  /** Browser to server: the drawn line, and the two points a dot moves between. */
+  trunk: { d: string; from: Point; to: Point };
+  /**
+   * Server to each platform. `d` is the drawn curve. A dot cannot follow a
+   * curve with a transform alone, so it travels start, `mid`, end in two
+   * straight legs; `mid` is the point the curve itself passes through halfway,
+   * which keeps the dot on the line where it matters.
+   */
+  branches: [Branch, Branch, Branch];
   badge: Box;
 };
+
+type Branch = { d: string; from: Point; mid: Point; to: Point };
 
 const WIDE: Layout = {
   name: "wide",
@@ -53,11 +72,11 @@ const WIDE: Layout = {
     { x: 500, y: 180, w: 132, h: 60 },
     { x: 500, y: 320, w: 132, h: 60 },
   ],
-  trunk: "M184 210 H250",
+  trunk: { d: "M184 210 H250", from: [184, 210], to: [250, 210] },
   branches: [
-    "M406 210 C456 210 450 70 500 70",
-    "M406 210 H500",
-    "M406 210 C456 210 450 350 500 350",
+    { d: "M406 210 C456 210 450 70 500 70", from: [406, 210], mid: [453, 140], to: [500, 70] },
+    { d: "M406 210 H500", from: [406, 210], mid: [453, 210], to: [500, 210] },
+    { d: "M406 210 C456 210 450 350 500 350", from: [406, 210], mid: [453, 280], to: [500, 350] },
   ],
   badge: { x: 500, y: 248, w: 132, h: 26 },
 };
@@ -72,46 +91,59 @@ const TALL: Layout = {
     { x: 120, y: 392, w: 100, h: 56 },
     { x: 236, y: 392, w: 100, h: 56 },
   ],
-  trunk: "M170 156 V212",
+  trunk: { d: "M170 156 V212", from: [170, 156], to: [170, 212] },
   branches: [
-    "M170 308 C170 356 54 344 54 392",
-    "M170 308 V392",
-    "M170 308 C170 356 286 344 286 392",
+    { d: "M170 308 C170 356 54 344 54 392", from: [170, 308], mid: [112, 350], to: [54, 392] },
+    { d: "M170 308 V392", from: [170, 308], mid: [170, 350], to: [170, 392] },
+    { d: "M170 308 C170 356 286 344 286 392", from: [170, 308], mid: [228, 350], to: [286, 392] },
   ],
   badge: { x: 104, y: 458, w: 132, h: 26 },
 };
 
 /** Seconds between events. Three events, so the loop is three of these. */
 const STEP_S = 4;
+const ROW_H = 24;
 
 const { pipeline } = hero;
 
-function Diagram({ layout }: { layout: Layout }) {
-  const { browser, server, platforms, badge } = layout;
-  const [w, h] = layout.size;
-  const rows = pipeline.events;
+/** Where the event list starts, inside the browser window. */
+function listTop(layout: Layout): number {
+  // In the wide layout the window is taller, so the list is pushed down to
+  // leave room for the two skeleton bars that make it read as a page.
+  return layout.browser.y + (layout.name === "wide" ? 96 : 54);
+}
 
-  // The event list sits under the browser's title bar. In the wide layout the
-  // window is taller, so the list is pushed down to leave room for the two
-  // skeleton bars that make it read as a page rather than a list.
-  const listTop = browser.y + (layout.name === "wide" ? 96 : 54);
+/** A box in viewBox units, as CSS that scales with the drawing. */
+function place(box: Box): CSSProperties {
+  return {
+    left: `calc(${box.x} * var(--u))`,
+    top: `calc(${box.y} * var(--u))`,
+    width: `calc(${box.w} * var(--u))`,
+    height: `calc(${box.h} * var(--u))`,
+  };
+}
+
+const vars = (values: Record<string, string | number>) => values as CSSProperties;
+
+function Drawing({ layout }: { layout: Layout }) {
+  const { browser, server, platforms } = layout;
+  const [w, h] = layout.size;
+  const top = listTop(layout);
 
   return (
     <svg
-      className={`pipe pipe--${layout.name}`}
       viewBox={`0 0 ${w} ${h}`}
-      // The wide and tall drawings say the same thing, so only one is exposed.
-      // CSS hides the other with display: none, which removes it from the
-      // accessibility tree too; aria-hidden here would double up.
+      // The wide and tall drawings say the same thing. CSS hides one with
+      // display: none, which removes it from the accessibility tree too.
       role="img"
       aria-label={pipeline.label}
       preserveAspectRatio="xMidYMid meet"
     >
       {/* Lines first, so the nodes sit on top of where they meet. */}
       <g className="pipe-lines">
-        <path d={layout.trunk} />
-        {layout.branches.map((d) => (
-          <path key={d} d={d} />
+        <path d={layout.trunk.d} />
+        {layout.branches.map((branch) => (
+          <path key={branch.d} d={branch.d} />
         ))}
       </g>
 
@@ -156,13 +188,13 @@ function Diagram({ layout }: { layout: Layout }) {
           </>
         )}
 
-        <text className="pipe-mono pipe-mono--dim" x={browser.x + 14} y={listTop - 10}>
+        <text className="pipe-mono pipe-mono--dim" x={browser.x + 14} y={top - 10}>
           dataLayer
         </text>
-        {rows.map((name, i) => (
-          <g key={name} style={{ ["--d" as string]: `${i * STEP_S}s` }}>
-            <circle className="pipe-row-dot" cx={browser.x + 18} cy={listTop + 8 + i * 24} r="3" />
-            <text className="pipe-mono pipe-row" x={browser.x + 30} y={listTop + 12 + i * 24}>
+        {pipeline.events.map((name, i) => (
+          <g key={name}>
+            <circle className="pipe-row-dot" cx={browser.x + 18} cy={top + 8 + i * ROW_H} r="3" />
+            <text className="pipe-mono" x={browser.x + 30} y={top + 12 + i * ROW_H}>
               {name}
             </text>
           </g>
@@ -179,7 +211,6 @@ function Diagram({ layout }: { layout: Layout }) {
 
       {/* Server ------------------------------------------------------------ */}
       <g className="pipe-node pipe-node--server">
-        <rect className="pipe-server-glow" x={server.x - 6} y={server.y - 6} width={server.w + 12} height={server.h + 12} rx="20" />
         <rect x={server.x} y={server.y} width={server.w} height={server.h} rx="14" />
         <text
           className="pipe-title"
@@ -206,7 +237,7 @@ function Diagram({ layout }: { layout: Layout }) {
 
       {/* Platforms --------------------------------------------------------- */}
       {platforms.map((box, i) => (
-        <g key={pipeline.platforms[i]} className="pipe-node pipe-node--platform">
+        <g key={pipeline.platforms[i]} className="pipe-node">
           <rect x={box.x} y={box.y} width={box.w} height={box.h} rx="12" />
           <text
             className="pipe-title pipe-title--sm"
@@ -218,37 +249,93 @@ function Diagram({ layout }: { layout: Layout }) {
           </text>
         </g>
       ))}
-
-      {/* The deduplicated badge, under Meta. Appears after the purchase lands. */}
-      <g className="pipe-badge" style={{ ["--d" as string]: `${2 * STEP_S}s` }}>
-        <rect x={badge.x} y={badge.y} width={badge.w} height={badge.h} rx="13" />
-        <text className="pipe-mono" x={badge.x + badge.w / 2} y={badge.y + 17} textAnchor="middle">
-          {pipeline.dedupe}
-        </text>
-      </g>
-
-      {/* The travelling dots. One on the trunk and one per branch, per event.
-          Decoration only: the drawing above already says everything. */}
-      <g aria-hidden="true">
-        {rows.map((name, i) => (
-          <g key={name} style={{ ["--d" as string]: `${i * STEP_S}s` }}>
-            <circle
-              className="pipe-dot pipe-dot--trunk"
-              r="4.5"
-              style={{ offsetPath: `path("${layout.trunk}")` }}
-            />
-            {layout.branches.map((d) => (
-              <circle
-                key={d}
-                className="pipe-dot pipe-dot--branch"
-                r="4"
-                style={{ offsetPath: `path("${d}")` }}
-              />
-            ))}
-          </g>
-        ))}
-      </g>
     </svg>
+  );
+}
+
+/**
+ * Everything that moves. Decoration, so hidden from screen readers: the
+ * drawing's label already says all of it, and the badge's words are in it.
+ */
+function Motion({ layout }: { layout: Layout }) {
+  const { browser, server, platforms, badge } = layout;
+  const top = listTop(layout);
+
+  return (
+    <div className="pipe-fx" aria-hidden="true">
+      {/* The row for the event that is firing. */}
+      {pipeline.events.map((name, i) => (
+        <span
+          key={name}
+          className="pipe-fx__row"
+          style={{
+            ...place({ x: browser.x + 8, y: top - 4 + i * ROW_H, w: browser.w - 16, h: ROW_H }),
+            ...vars({ "--d": `${i * STEP_S}s` }),
+          }}
+        />
+      ))}
+
+      <span
+        className="pipe-fx__glow"
+        style={place({ x: server.x - 6, y: server.y - 6, w: server.w + 12, h: server.h + 12 })}
+      />
+
+      {platforms.map((box, i) => (
+        <span key={i} className="pipe-fx__hit" style={place(box)} />
+      ))}
+
+      {/* Under Meta, after the purchase lands. */}
+      <span
+        className="pipe-fx__badge"
+        style={{ ...place(badge), ...vars({ "--d": `${2 * STEP_S}s` }) }}
+      >
+        {pipeline.dedupe}
+      </span>
+
+      {/* One dot on the trunk and one per branch, for each event. */}
+      {pipeline.events.map((name, i) => (
+        <span key={name} className="pipe-fx__event" style={vars({ "--d": `${i * STEP_S}s` })}>
+          <span
+            className="pipe-dot pipe-dot--trunk"
+            style={vars({
+              "--x0": layout.trunk.from[0],
+              "--y0": layout.trunk.from[1],
+              "--x1": layout.trunk.to[0],
+              "--y1": layout.trunk.to[1],
+            })}
+          />
+          {layout.branches.map((branch) => (
+            <span
+              key={branch.d}
+              className="pipe-dot pipe-dot--branch"
+              style={vars({
+                "--x0": branch.from[0],
+                "--y0": branch.from[1],
+                "--xm": branch.mid[0],
+                "--ym": branch.mid[1],
+                "--x1": branch.to[0],
+                "--y1": branch.to[1],
+              })}
+            />
+          ))}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function Diagram({ layout }: { layout: Layout }) {
+  const [w, h] = layout.size;
+  return (
+    <div
+      className={`pipe pipe--${layout.name}`}
+      // --u is one viewBox unit. The box has the viewBox's aspect ratio, so the
+      // same unit is right on both axes.
+      style={{ aspectRatio: `${w} / ${h}`, ...vars({ "--u": `calc(100cqw / ${w})` }) }}
+    >
+      <Drawing layout={layout} />
+      <Motion layout={layout} />
+    </div>
   );
 }
 

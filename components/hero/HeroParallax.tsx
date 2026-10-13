@@ -63,5 +63,22 @@ export function HeroParallax() {
     };
   }, []);
 
+  // Whether the hero can be seen at all. The stylesheet pauses the pipeline's
+  // animations while it cannot. This runs for every visitor, touch included,
+  // and under reduced motion it is harmless: there is nothing to pause.
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>(".hero");
+    if (!hero) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) delete hero.dataset.offscreen;
+      else hero.dataset.offscreen = "";
+    });
+    observer.observe(hero);
+    return () => {
+      observer.disconnect();
+      delete hero.dataset.offscreen;
+    };
+  }, []);
+
   return null;
 }
