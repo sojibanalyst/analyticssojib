@@ -8,23 +8,23 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // Design tokens, dark theme.
-const BG = "#0A0A0B";
-const BORDER = "#24252A";
-const TEXT = "#FAFAFA";
-const MUTED = "#A7AAB2";
-const FAINT = "#8C8F97";
-const ACCENT = "#35C97B";
-const ON_ACCENT = "#000000";
+const BG = "#0A0E14";
+const BORDER = "#1F2A37";
+const TEXT = "#E6EDF3";
+const MUTED = "#8B98A9";
+const FAINT = "#8492A3";
+const ACCENT = "#34E89E";
+const ON_ACCENT = "#06130D";
 
 export default async function OpengraphImage() {
   // Read from disk rather than fetch(new URL(..., import.meta.url)): Turbopack
   // has no file: fetch handler. This route is statically prerendered, so the
   // read only happens at build time.
   const font = (name: string) => readFile(join(process.cwd(), "app", name));
-  const [monoBold, monoMedium, geistBold] = await Promise.all([
-    font("GeistMono-ExtraBold.ttf"),
-    font("GeistMono-Medium.ttf"),
-    font("Geist-Bold.ttf"),
+  const [monoBold, monoMedium, displayBold] = await Promise.all([
+    font("JetBrainsMono-ExtraBold.ttf"),
+    font("JetBrainsMono-Medium.ttf"),
+    font("SpaceGrotesk-Bold.ttf"),
   ]);
 
   return new ImageResponse(
@@ -38,7 +38,7 @@ export default async function OpengraphImage() {
           justifyContent: "space-between",
           background: BG,
           padding: "64px 72px",
-          fontFamily: "Geist Mono",
+          fontFamily: "JetBrains Mono",
         }}
       >
         {/* wordmark */}
@@ -85,7 +85,7 @@ export default async function OpengraphImage() {
             style={{
               display: "flex",
               flexWrap: "wrap",
-              fontFamily: "Geist",
+              fontFamily: "Space Grotesk",
               fontSize: 68,
               fontWeight: 700,
               lineHeight: 1.06,
@@ -147,9 +147,9 @@ export default async function OpengraphImage() {
     {
       ...size,
       fonts: [
-        { name: "Geist Mono", data: monoBold, weight: 800, style: "normal" },
-        { name: "Geist Mono", data: monoMedium, weight: 500, style: "normal" },
-        { name: "Geist", data: geistBold, weight: 700, style: "normal" },
+        { name: "JetBrains Mono", data: monoBold, weight: 800, style: "normal" },
+        { name: "JetBrains Mono", data: monoMedium, weight: 500, style: "normal" },
+        { name: "Space Grotesk", data: displayBold, weight: 700, style: "normal" },
       ],
     },
   );

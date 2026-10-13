@@ -48,6 +48,9 @@ const ROUTES = [
   // exists and has not quietly become a page.
   ["/api/collect", 405],
 
+  // The tracking check accepts POST only, like the collector.
+  ["/api/tracking-check", 405],
+
   // The public read behind the live panel. JSON with an `events` array, and
   // nothing else at the top level.
   ["/api/events/recent", 200, '"events"'],

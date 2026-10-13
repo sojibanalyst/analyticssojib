@@ -11,6 +11,7 @@ import { Process } from "@/components/sections/Process";
 import { About } from "@/components/sections/About";
 import { Notes } from "@/components/sections/Notes";
 import { LiveEvents } from "@/components/LiveEvents";
+import { TrackingCheck } from "@/components/TrackingCheck";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import {
@@ -63,6 +64,7 @@ export default async function Home() {
         <About />
         <LiveEvents />
         <Notes posts={posts} />
+        <TrackingCheck />
         <Faq items={faqs} />
         <Contact />
       </main>

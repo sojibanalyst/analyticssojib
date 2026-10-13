@@ -41,16 +41,13 @@ To switch GTM on later: set the container id in `/admin/settings` (or `NEXT_PUBL
 | `review_video_play` | A click on a video review's play button. YouTube is only loaded at this moment. | `client` (the client name, the video's title, or `unnamed`), `section` | `LiteYouTube.tsx` markup, `Tracker.tsx` listener |
 | `scroll_depth` | Scrolling past 25, 50, 75 and 90% of the page. Once each per page. Not fired on a page shorter than the screen. | `percent`: `25` \| `50` \| `75` \| `90` | `Tracker.tsx` |
 | `form_start` | The first focus inside the enquiry form. Once per page load. | `form` (`contact`), `section` | `Tracker.tsx`, delegated |
-| `generate_lead` | A successful enquiry form submission. | `form` (`contact`), `event_id` | `LeadForm.tsx`, see the note below |
+| `generate_lead` | A successful enquiry form submission. | `form` (`contact`), `platform` (the visitor's choice in the form, `other` if none), `event_id` | `LeadForm.tsx`, see the note below |
+| `tracking_check_run` | A free tracking check that returned a result. | `found` (how many of the four were found, 0 to 4). The address that was checked is not sent. | `TrackingCheck.tsx` |
 | `consent_update` | Would fire when a consent choice is stored. Dormant: nothing calls `setConsent()`. | `consent_state` | `lib/consent.ts` |
-
-Not built: `tracking_check_run`. The free tracking check (Phase 7.3) was optional and has not been built. The name is reserved in the live panel's allowlist.
 
 ### `generate_lead` is different, on purpose
 
 It does not go through `track()`. The server action that saves the enquiry writes the single event row in the same transaction as the lead and returns that row's `event_id`, and the browser pushes `generate_lead` to the dataLayer with **that** id. So there is one event, one id, and no second row from the browser.
-
-The brief listed a `platform` parameter on `generate_lead`. The dataLayer push carries `form: "contact"`; the platform the visitor selected in the form is stored on the lead row, not sent to the dataLayer. Add it to the push in `LeadForm.tsx` if a tag needs it.
 
 ### How to mark an element
 
@@ -69,7 +66,7 @@ The attribute is `data-track-event`, not `data-track`: a bare `[data-track]` is 
 | Event | dataLayer | Collector | GA4 | Meta / Ads / TikTok |
 |---|---|---|---|---|
 | `page_view` | yes | yes | browser tag in GTM | optional, browser |
-| `cta_click`, `whatsapp_click`, `scroll_depth`, `form_start`, `case_study_view`, `review_video_play` | yes | yes | browser tag in GTM | not needed |
+| `cta_click`, `whatsapp_click`, `scroll_depth`, `form_start`, `case_study_view`, `review_video_play`, `tracking_check_run` | yes | yes | browser tag in GTM | not needed |
 | `book_call_click` | yes | yes | browser tag in GTM | browser tag, as a soft conversion |
 | `generate_lead` | yes | yes (written by the server action) | **server only**, Measurement Protocol | browser tag plus server event, deduplicated on `event_id` |
 

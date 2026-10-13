@@ -545,7 +545,7 @@ export const services = {
   eyebrow: "Services",
   title: "Four ways in",
   footnote:
-    "Scope-dependent. Fixed price agreed before any work starts. No hourly billing, no surprise invoices.",
+    "Scope-dependent. A fixed price is agreed before any work starts, so there are no surprise invoices.",
   items: [
     {
       code: "S-01",
@@ -1085,6 +1085,8 @@ export const trackingDrawer = {
       "You started a client video. YouTube is only loaded at this moment, not before.",
     form_start:
       "You started filling in the enquiry form. I record that it happened, not what you typed.",
+    tracking_check_run:
+      "You ran the free tracking check. I record how many of the four things were found, not which site you checked.",
   },
   explainOther: "An event from this page.",
   held: "Not sent: you are signed in to the console, so your own visits are left out.",
@@ -1105,4 +1107,44 @@ export const portfolioCopy = {
   videoLabel: "Play the client's video review",
   videoBadge: "CLIENT VIDEO",
   galleryLabel: "Screenshots from the project",
+} as const;
+
+/* -------------------------------------------------------------------------- */
+/* The free tracking check                                                      */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Honest about what it is: a look at one page's HTML. Every line of copy here
+ * says "found in the page source" rather than "installed", because a tag that
+ * a tag manager loads after the page arrives cannot be seen this way. Do not
+ * sharpen the wording into a claim the check cannot support.
+ */
+export const trackingCheck = {
+  eyebrow: "Free check",
+  title: "What is on your page, in ten seconds",
+  body: "Enter a page address. I fetch its HTML once and tell you whether a Tag Manager container, GA4, the Meta pixel and a consent tool are visible in it.",
+  label: "Page address",
+  placeholder: "yourstore.com",
+  submit: "Check the page",
+  checking: "Checking…",
+  note: "The address is fetched once and not stored.",
+  resultFor: "Page source of",
+  names: {
+    gtm: "Google Tag Manager",
+    ga4: "Google Analytics 4",
+    meta_pixel: "Meta pixel",
+    consent: "Consent tool or Consent Mode",
+  },
+  found: "Found in the page source",
+  notFound: "Not found in the page source",
+  disclaimer:
+    "This is a surface check of one page's HTML. It cannot see tags that a tag manager loads afterwards, and it does not tell you whether anything fires correctly, fires twice, or matches your orders. That is what the audit is for.",
+  cta: "Book the full audit call",
+  errors: {
+    invalid_url: "That does not look like a web address. Try something like yourstore.com.",
+    blocked: "That address cannot be checked. It has to be a public website.",
+    unreachable: "The page did not answer in time, or refused the request. Some sites block automated checks.",
+    not_html: "That address did not return a web page.",
+    rate_limited: "Too many checks in a short time. Give it a minute.",
+  },
 } as const;
