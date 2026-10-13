@@ -47,3 +47,6 @@ next-env.d.ts
 
 # HTML snapshots used by scripts/diff-pages.mjs — build artefacts, not source
 .snapshots/
+
+# hand-saved portfolio screenshots, before scripts/build-portfolio-images.mjs
+/portfolio-raw/

@@ -297,17 +297,106 @@ export async function getFaqs(): Promise<Faq[]> {
 /* Portfolio items: the "More work" grid                                       */
 /* -------------------------------------------------------------------------- */
 
-export type PortfolioItem = { title: string; url: string };
+export type PortfolioImage = { src: string; alt: string; width: number; height: number };
 
+export type PortfolioItem = {
+  /** URL segment: /work/<slug> */
+  slug: string;
+  title: string;
+  /** Sojib's own label for his part, e.g. "Marketing Analyst". */
+  role: string | null;
+  description: string;
+  skills: string[];
+  /** Only set where the client is already named elsewhere on the site. */
+  client: string | null;
+  /** YouTube id of the client's video, where there is one. */
+  videoId: string | null;
+  featured: boolean;
+  images: PortfolioImage[];
+  /** Where the item lives on Upwork. The profile, until each has its own link. */
+  url: string;
+};
+
+const PORTFOLIO_COLUMNS =
+  "slug, title, role, description, skills, client, video_id, featured, images, url";
+
+type PortfolioRow = {
+  slug: string;
+  title: string;
+  role: string | null;
+  description: string;
+  skills: string[];
+  client: string | null;
+  video_id: string | null;
+  featured: boolean;
+  images: unknown;
+  url: string;
+};
+
+/**
+ * `images` is jsonb, so it arrives as Json and is narrowed here. An entry that
+ * is not a complete image is dropped rather than thrown on: a gallery missing
+ * one screenshot is a smaller problem than a build that will not finish.
+ */
+function toImages(value: unknown): PortfolioImage[] {
+  if (!Array.isArray(value)) return [];
+  const images: PortfolioImage[] = [];
+  for (const entry of value) {
+    const image = entry as Partial<PortfolioImage> | null;
+    if (
+      image &&
+      typeof image.src === "string" &&
+      image.src.startsWith("/") &&
+      typeof image.alt === "string" &&
+      typeof image.width === "number" &&
+      typeof image.height === "number"
+    ) {
+      images.push({ src: image.src, alt: image.alt, width: image.width, height: image.height });
+    }
+  }
+  return images;
+}
+
+function toPortfolioItem(row: PortfolioRow): PortfolioItem {
+  return {
+    slug: row.slug,
+    title: row.title,
+    role: row.role,
+    description: row.description,
+    skills: row.skills,
+    client: row.client,
+    videoId: row.video_id,
+    featured: row.featured,
+    images: toImages(row.images),
+    url: row.url,
+  };
+}
+
+/** Published items, featured first, then in the order set in the table. */
 export async function getPortfolioItems(): Promise<PortfolioItem[]> {
   const rows = orThrow(
     "portfolio items",
     await contentClient()
       .from("portfolio_items")
-      .select("title, url")
+      .select(PORTFOLIO_COLUMNS)
       .eq("published", true)
       .order("sort_order", { ascending: true }),
   );
 
-  return rows.map((row) => ({ title: row.title, url: row.url }));
+  return rows.map(toPortfolioItem);
+}
+
+/** Same reasoning as getPost: queried by slug so a new one resolves at once. */
+export async function getPortfolioItem(slug: string): Promise<PortfolioItem | undefined> {
+  const rows = orThrow(
+    `portfolio item ${slug}`,
+    await contentClient()
+      .from("portfolio_items")
+      .select(PORTFOLIO_COLUMNS)
+      .eq("slug", slug)
+      .eq("published", true)
+      .limit(1),
+  );
+
+  return rows[0] ? toPortfolioItem(rows[0]) : undefined;
 }

@@ -641,9 +641,15 @@ export const work = {
     "Two engagements, written up in full. Each reconciles against the client's own order data; click through for the detail.",
   readMore: "READ THE FULL CASE →",
   /** The grid of smaller projects under the case files. Items are in Supabase. */
+  featuredTitle: "Selected projects",
   moreTitle: "More work",
   moreAll: "All of it on Upwork",
-  moreGo: "View on Upwork",
+  moreGo: "Read the project",
+  /** The label on the disclosure that opens the rest of the grid. */
+  showAll: "Show all projects",
+  videoMark: "Client video",
+  /** Heading over the compact cards, once there are more than two case files. */
+  moreCases: "More case files",
   screenshotPending: "Case screenshot pending",
   cases: [
     {
@@ -1085,4 +1091,18 @@ export const trackingDrawer = {
   never:
     "With each event the collector stores the time and the page address, including anything after a question mark in it. It does not store your IP address.",
   privacyLink: "Read the privacy notice",
+} as const;
+
+/* -------------------------------------------------------------------------- */
+/* Portfolio project pages (/work/<slug>)                                       */
+/* -------------------------------------------------------------------------- */
+
+export const portfolioCopy = {
+  back: "← All work",
+  clientLabel: "Client:",
+  skillsLabel: "Tools and platforms",
+  upwork: "View my Upwork portfolio",
+  videoLabel: "Play the client's video review",
+  videoBadge: "CLIENT VIDEO",
+  galleryLabel: "Screenshots from the project",
 } as const;

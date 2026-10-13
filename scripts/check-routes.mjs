@@ -20,6 +20,10 @@ const ROUTES = [
   ["/blog/consent-mode-v2-without-losing-data", 200],
   ["/case-studies/shopify-purchase-accuracy-rebuild", 200],
   ["/case-studies/meta-roas-deduplication", 200],
+  // Portfolio project pages, added in the 2026 redesign. One featured, one not.
+  ["/work/server-side-tracking-using-stape-io", 200],
+  ["/work/ga4-custom-report-setup", 200],
+  ["/work/this-project-does-not-exist", 404],
   ["/tracking-plan", 200],
   ["/privacy", 200],
   ["/terms", 200],

@@ -14,7 +14,8 @@
     "snapshot": "node scripts/snapshot-pages.mjs",
     "diff:pages": "node scripts/diff-pages.mjs",
     "check:secrets": "node scripts/check-no-secrets.mjs",
-    "check:routes": "node scripts/check-routes.mjs"
+    "check:routes": "node scripts/check-routes.mjs",
+    "portfolio:images": "node scripts/build-portfolio-images.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

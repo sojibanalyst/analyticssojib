@@ -787,31 +787,58 @@ export type Database = {
       }
       portfolio_items: {
         Row: {
+          client: string | null
           created_at: string
+          description: string
+          featured: boolean
           id: string
+          images: Json
           published: boolean
+          role: string | null
+          skills: string[]
+          slug: string
           sort_order: number
           title: string
           updated_at: string
+          upwork_id: string | null
           url: string
+          video_id: string | null
         }
         Insert: {
+          client?: string | null
           created_at?: string
+          description: string
+          featured?: boolean
           id?: string
+          images?: Json
           published?: boolean
+          role?: string | null
+          skills?: string[]
+          slug: string
           sort_order?: number
           title: string
           updated_at?: string
+          upwork_id?: string | null
           url: string
+          video_id?: string | null
         }
         Update: {
+          client?: string | null
           created_at?: string
+          description?: string
+          featured?: boolean
           id?: string
+          images?: Json
           published?: boolean
+          role?: string | null
+          skills?: string[]
+          slug?: string
           sort_order?: number
           title?: string
           updated_at?: string
+          upwork_id?: string | null
           url?: string
+          video_id?: string | null
         }
         Relationships: []
       }

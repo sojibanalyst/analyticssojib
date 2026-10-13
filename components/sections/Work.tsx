@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { upworkUrl, work, type CaseStudy } from "@/content/site";
 import type { PortfolioItem } from "@/lib/content";
@@ -21,41 +22,150 @@ function Screenshot({ item }: { item: CaseStudy }) {
   return <CaseGallery shots={item.screenshots} label={item.title} />;
 }
 
+/** Case studies shown at full size. Any beyond this get the compact card. */
+const FULL_CASES = 2;
+
+/** How many of the smaller cards show before the "show all" disclosure. */
+const MORE_VISIBLE = 9;
+
+function ProjectCard({ item, index }: { item: PortfolioItem; index?: number }) {
+  return (
+    <Link className="more-card" href={`/work/${item.slug}`} data-featured={item.featured || undefined}>
+      {item.images[0] ? (
+        <Image
+          className="more-card__cover"
+          src={item.images[0].src}
+          alt=""
+          width={item.images[0].width}
+          height={item.images[0].height}
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          loading="lazy"
+        />
+      ) : null}
+      <span className="more-card__top">
+        {index !== undefined ? (
+          <span className="more-card__index" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        ) : null}
+        {item.videoId ? <span className="more-card__video">{work.videoMark}</span> : null}
+      </span>
+      <span className="more-card__title">{item.title}</span>
+      {item.featured ? <span className="more-card__desc">{item.description}</span> : null}
+      <span className="more-card__skills">
+        {item.skills.slice(0, item.featured ? 5 : 3).map((skill) => (
+          <span key={skill} className="more-card__skill">
+            {skill}
+          </span>
+        ))}
+      </span>
+      <span className="more-card__go">{work.moreGo} →</span>
+    </Link>
+  );
+}
+
 /**
- * "More work": small cards under the case files, one per portfolio item, each
- * linking out. The items are rows in `portfolio_items`; nothing here is typed
- * into the component. Renders nothing at all when the table is empty, heading
- * included, so an unpublished grid does not leave a title over a gap.
+ * The portfolio under the case files: the featured projects as larger cards,
+ * then everything else as a grid. Every card links to the project's own page.
+ *
+ * The items are rows in `portfolio_items`; nothing here is typed into the
+ * component. With nothing published it renders nothing at all, headings
+ * included, so an empty table does not leave a title over a gap.
+ *
+ * Only the first nine of the smaller cards are open. The rest sit inside a
+ * <details>, which needs no JavaScript, is in the HTML for search engines, and
+ * is opened by find-in-page in current browsers.
  */
 function MoreWork({ items }: { items: PortfolioItem[] }) {
   if (!items.length) return null;
 
+  const featured = items.filter((item) => item.featured);
+  const rest = items.filter((item) => !item.featured);
+  const open = rest.slice(0, MORE_VISIBLE);
+  const folded = rest.slice(MORE_VISIBLE);
+
   return (
     <div className="more-work">
-      <div className="more-work__head">
-        <h3 className="more-work__title">{work.moreTitle}</h3>
-        <a className="more-work__all" href={upworkUrl} target="_blank" rel="noopener">
-          {work.moreAll}
-        </a>
-      </div>
+      {featured.length > 0 && (
+        <>
+          <div className="more-work__head">
+            <h3 className="more-work__title">{work.featuredTitle}</h3>
+          </div>
+          <ul className="more-work__grid more-work__grid--featured" data-stagger>
+            {featured.map((item) => (
+              <li key={item.slug}>
+                <ProjectCard item={item} />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
-      <ul className="more-work__grid" data-stagger>
-        {items.map((item, i) => (
-          <li key={item.title}>
-            <a className="more-card" href={item.url} target="_blank" rel="noopener">
-              <span className="more-card__index" aria-hidden="true">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="more-card__title">{item.title}</span>
-              <span className="more-card__go">
-                {work.moreGo}
-                <span className="sr-only"> (opens in a new tab)</span>
-              </span>
+      {rest.length > 0 && (
+        <>
+          <div className="more-work__head">
+            <h3 className="more-work__title">{work.moreTitle}</h3>
+            <a className="more-work__all" href={upworkUrl} target="_blank" rel="noopener">
+              {work.moreAll}
             </a>
-          </li>
-        ))}
-      </ul>
+          </div>
+          <ul className="more-work__grid" data-stagger>
+            {open.map((item, i) => (
+              <li key={item.slug}>
+                <ProjectCard item={item} index={i} />
+              </li>
+            ))}
+          </ul>
+
+          {folded.length > 0 && (
+            <details className="more-work__fold">
+              <summary className="btn btn-ghost">
+                {work.showAll} ({rest.length})
+              </summary>
+              <ul className="more-work__grid">
+                {folded.map((item, i) => (
+                  <li key={item.slug}>
+                    <ProjectCard item={item} index={i + MORE_VISIBLE} />
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </>
+      )}
     </div>
+  );
+}
+
+/**
+ * A case study beyond the first two, as a compact card. The first two keep the
+ * full treatment with the gallery; with five or six all at that size the
+ * section would be six screens long before the reader reached anything else.
+ */
+function CompactCase({ item }: { item: CaseStudy }) {
+  return (
+    <Link href={`/case-studies/${item.slug}`} className="case-compact">
+      <span className="case-compact__code">{item.code}</span>
+      <span className="case-compact__title">{item.title}</span>
+      <span className="case-compact__body">{item.body}</span>
+      {hasMetric(item.metric) ? (
+        <span className="case-compact__metric">
+          <span className="case-compact__before">{item.metric.before}</span>
+          <span aria-hidden="true">→</span>
+          <span className="sr-only"> to </span>
+          <span className="case-compact__after">{item.metric.after}</span>
+          <span className="case-compact__caption">{item.metric.caption}</span>
+        </span>
+      ) : null}
+      <span className="case-compact__tags">
+        {item.tags.map((tag) => (
+          <span key={tag} className="tag">
+            {tag}
+          </span>
+        ))}
+      </span>
+      <span className="more-card__go">{work.readMore}</span>
+    </Link>
   );
 }
 
@@ -76,7 +186,7 @@ export function Work({ cases, more }: { cases: CaseStudy[]; more: PortfolioItem[
         {work.intro}
       </p>
 
-      {cases.map((item) => (
+      {cases.slice(0, FULL_CASES).map((item) => (
         <article key={item.slug} className="case-card">
           <div className="case-card__bar">
             <span>{item.code}</span>
@@ -180,6 +290,21 @@ export function Work({ cases, more }: { cases: CaseStudy[]; more: PortfolioItem[
           {work.metricNote}
         </p>
       ) : null}
+
+      {cases.length > FULL_CASES && (
+        <div className="more-work">
+          <div className="more-work__head">
+            <h3 className="more-work__title">{work.moreCases}</h3>
+          </div>
+          <ul className="case-compact__grid" data-stagger>
+            {cases.slice(FULL_CASES).map((item) => (
+              <li key={item.slug}>
+                <CompactCase item={item} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <MoreWork items={more} />
 
