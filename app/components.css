@@ -3760,3 +3760,236 @@ a.wordmark:hover {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   Written reviews: two drifting rows, a swipe row on phones, a full grid
+   ==========================================================================
+
+   components/sections/WrittenReviews.tsx and components/ui/ReviewCard.tsx. */
+
+.rv {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.rv__title {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rv__more {
+  display: flex;
+  justify-content: center;
+}
+
+/* The card ----------------------------------------------------------------- */
+
+.rv-card {
+  /* Not decoration. The card holds a visually hidden "5 out of 5 stars", which
+     is absolutely positioned. Without a positioned ancestor inside the
+     scrolling row, that text is laid out against the page instead, 5,000px to
+     the right, and the whole page scrolls sideways to reach it. */
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
+}
+
+.rv-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+.rv-card__stars {
+  font-size: var(--text-small);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.rv-card__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-data);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.rv-card__quote {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+/* Seven lines. Long enough that most reviews are whole, short enough that the
+   one 850-character review does not set the height of the row. */
+.rv-card[data-clamp] .rv-card__quote {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 7;
+  line-clamp: 7;
+  overflow: hidden;
+}
+
+.rv-card__by {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* Phones first: one row, swiped ------------------------------------------- */
+
+.rv-rows {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.rv-rows::-webkit-scrollbar {
+  display: none;
+}
+
+/* The two rows and their tracks dissolve, so every card is a direct item of
+   the one scrolling row. */
+.rv-row,
+.rv-track {
+  display: contents;
+}
+
+.rv-item {
+  flex: 0 0 86%;
+  max-width: 360px;
+  list-style: none;
+  scroll-snap-align: start;
+}
+
+.rv-item--copy {
+  display: none;
+}
+
+/* Wide screens: two rows that drift --------------------------------------- */
+
+@media (min-width: 768px) {
+  .rv-rows {
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+    scroll-snap-type: none;
+    padding-bottom: 0;
+    /* Cards arrive and leave through a fade rather than a hard edge. */
+    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  }
+
+  .rv-row {
+    display: block;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .rv-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rv-track {
+    display: flex;
+    width: max-content;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* A margin, not a gap: the loop moves the track by exactly half its width,
+     and a gap would leave that half one gutter short. */
+  .rv-item {
+    flex: 0 0 360px;
+    margin-right: 14px;
+    scroll-snap-align: none;
+  }
+}
+
+@keyframes rv-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .rv-row {
+    overflow: hidden;
+  }
+
+  .rv-item--copy {
+    display: block;
+  }
+
+  .rv-track {
+    animation: rv-drift var(--rv-duration, 60s) linear infinite;
+  }
+
+  .rv-row[data-dir="right"] .rv-track {
+    animation-direction: reverse;
+  }
+
+  /* Anything that moves on its own stops for a pointer and for focus. */
+  .rv-rows:hover .rv-track,
+  .rv-rows:focus-within .rv-track {
+    animation-play-state: paused;
+  }
+}
+
+/* The full list ------------------------------------------------------------ */
+
+.rv-grid {
+  columns: 1;
+  column-gap: 14px;
+}
+
+.rv-grid[hidden] {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .rv-grid {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rv-grid {
+    columns: 3;
+  }
+}
+
+.rv-grid__item {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}

@@ -873,7 +873,11 @@ export const reviews = {
     },
   ] as Testimonial[],
 
-  writtenTitle: "WRITTEN REVIEWS",
+  writtenTitle: "Written reviews",
+  /** The small mark on every written review card. */
+  verified: "Verified on Upwork",
+  readAll: "Read all reviews",
+  hideAll: "Hide the full list",
   /**
    * The design ships an 8-slide written-review carousel. Upwork blocks
    * automated reads of the profile (HTTP 403), so these cannot be pulled in
