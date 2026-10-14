@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
+import { parseGtmSnippet, type HeadScript } from "@/lib/gtm-snippet";
 import type { Database } from "@/lib/supabase/types";
 
 /**
@@ -29,6 +30,8 @@ const SETTINGS_REVALIDATE = 3600;
 
 export type SiteSettings = {
   gtmContainerId: string | null;
+  /** The GTM <head> snippet pasted in the console, as stored. */
+  gtmHeadCode: string | null;
   siteName: string | null;
   contactEmail: string | null;
   calendlyUrl: string | null;
@@ -38,6 +41,7 @@ export type SiteSettings = {
 
 const FALLBACK: SiteSettings = {
   gtmContainerId: null,
+  gtmHeadCode: null,
   siteName: null,
   contactEmail: null,
   calendlyUrl: null,
@@ -85,12 +89,12 @@ export async function getSettings(): Promise<SiteSettings> {
     // see migration 20260815020001.
     const { data, error } = await settingsClient()
       .from("public_site_settings")
-      .select("gtm_container_id")
+      .select("gtm_container_id, gtm_head_code")
       .maybeSingle();
 
     if (error || !data) return FALLBACK;
 
-    return { ...FALLBACK, gtmContainerId: data.gtm_container_id };
+    return { ...FALLBACK, gtmContainerId: data.gtm_container_id, gtmHeadCode: data.gtm_head_code };
   } catch {
     return FALLBACK;
   }
@@ -112,4 +116,17 @@ export async function getGtmContainerId(): Promise<string | null> {
 
   const candidate = (gtmContainerId ?? process.env.NEXT_PUBLIC_GTM_ID ?? "").trim().toUpperCase();
   return GTM_ID_PATTERN.test(candidate) ? candidate : null;
+}
+
+/**
+ * The pasted GTM <head> snippet, split into scripts, or null when there is
+ * none or it does not parse. Checked again here at the point of use, whatever
+ * the console accepted: an invalid snippet renders nothing rather than half.
+ * When this returns scripts they replace the id-built snippet.
+ */
+export async function getGtmHeadScripts(): Promise<{ scripts: HeadScript[]; containerId: string | null } | null> {
+  const { gtmHeadCode } = await getSettings();
+  if (!gtmHeadCode?.trim()) return null;
+  const parsed = parseGtmSnippet(gtmHeadCode);
+  return parsed.ok ? { scripts: parsed.scripts, containerId: parsed.containerId } : null;
 }

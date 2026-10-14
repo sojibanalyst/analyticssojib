@@ -70,7 +70,7 @@ export async function buildUpload(
       rejected_count: rows.length - eligible,
       result_message:
         `Dry run: ${eligible} of ${rows.length} lead(s) eligible. ` +
-        "Nothing was sent — export the CSV and import it by hand.",
+        "Nothing was sent. Export the CSV and import it by hand.",
     })
     .select("id")
     .single();

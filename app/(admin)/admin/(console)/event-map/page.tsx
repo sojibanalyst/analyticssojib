@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { createClient } from "@/lib/supabase/server";
 
@@ -37,14 +38,11 @@ export default async function EventMapPage() {
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Event map</h1>
-        <p>
-          The documented contract: what each event means, what it carries, and
-          where it goes. An event arriving that is not on this list is not a
-          feature — it is drift, and it is listed separately below.
-        </p>
-      </div>
+      <PageHeader
+        title="Event map"
+        subtitle={"What each event means, what it carries and where it goes."}
+        help="An event that arrives but is not on this list is drift, and is listed separately below."
+      />
 
       <section className="admin-card">
         <h2>Documented</h2>
@@ -58,8 +56,7 @@ export default async function EventMapPage() {
           </AdminState>
         ) : !map.data?.length ? (
           <AdminState title="No events documented yet.">
-            Seeded by `npm run seed`. Until then the site is firing events with
-            nothing to check them against.
+            Run `npm run seed` to add the documented events.
           </AdminState>
         ) : (
           <AdminTable
@@ -77,10 +74,10 @@ export default async function EventMapPage() {
                   <td className="admin-mono" style={{ color: "var(--ink)" }}>
                     {row.event_name}
                   </td>
-                  <td>{row.trigger_description ?? "—"}</td>
-                  <td className="admin-mono">{params.length ? params.join(", ") : "—"}</td>
+                  <td>{row.trigger_description ?? "None"}</td>
+                  <td className="admin-mono">{params.length ? params.join(", ") : "None"}</td>
                   <td className="admin-mono">
-                    {row.destinations.length ? row.destinations.join(", ") : "—"}
+                    {row.destinations.length ? row.destinations.join(", ") : "None"}
                   </td>
                   <td>
                     {/* "Receiving" green, "Documented" neutral. The old pair

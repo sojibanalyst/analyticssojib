@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { SavingForm } from "@/components/admin/SavingForm";
@@ -55,18 +56,11 @@ export default async function DestinationsPage() {
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Destinations</h1>
-        <p>
-          Where server-side events are forwarded. Identifiers like a
-          measurement ID are ordinary settings — they appear in the page source
-          of any site running the tag, so hiding them here would be theatre.
-          Credentials are different: they are encrypted into Supabase Vault,
-          which holds its key outside the database, and this screen can never
-          read one back. It shows you the last four characters so you can tell
-          which one is loaded, and nothing more.
-        </p>
-      </div>
+      <PageHeader
+        title="Destinations"
+        subtitle={"Where server-side events are forwarded."}
+        help="Ids like a measurement ID are ordinary settings. Credentials are encrypted in Supabase Vault and never shown again; you see the last four characters only."
+      />
 
       <section className="admin-card">
         {destinations.error ? (
@@ -75,7 +69,7 @@ export default async function DestinationsPage() {
           </AdminState>
         ) : !destinations.data?.length ? (
           <AdminState title="No destinations configured.">
-            Run `npm run seed` to create the five the brief names, all disabled.
+            Run `npm run seed` to add them, all switched off.
           </AdminState>
         ) : (
           <AdminTable
@@ -155,7 +149,7 @@ export default async function DestinationsPage() {
           <section className="admin-card" key={`cfg-${destination.id}`}>
             <h2>{spec.label}</h2>
 
-            <SavingForm action={saveDestination}>
+            <SavingForm action={saveDestination} submitLabel="Save changes">
               <input type="hidden" name="key" value={destination.key} />
 
               {spec.public ? (
@@ -204,7 +198,7 @@ export default async function DestinationsPage() {
                 action={testDestination}
                 className="admin-inline-form"
                 submitLabel="Test connection"
-                pendingLabel="Testing…"
+                pendingLabel="Testing..."
                 variant="ghost"
               >
                 <input type="hidden" name="key" value={destination.key} />
@@ -233,13 +227,12 @@ export default async function DestinationsPage() {
                         ? "Passed"
                         : "Inconclusive"}
                   </span>{" "}
-                  Tested <Ago iso={destination.last_test_at} /> —{" "}
+                  Tested <Ago iso={destination.last_test_at} />.{" "}
                   {destination.last_test_message}
                 </p>
               ) : (
                 <p className="admin-note">
-                  Never tested. Credentials being present is not evidence they
-                  work.
+                  Never tested. Saved credentials are not proof they work.
                 </p>
               )}
             </div>
@@ -258,26 +251,13 @@ export default async function DestinationsPage() {
       <section className="admin-card">
         <h2>What forwards today</h2>
         <p className="admin-note">
-          <strong>GA4 only, and only <code>generate_lead</code>.</strong> It is
-          sent from the enquiry form&rsquo;s server action the moment the
-          database confirms the lead — after the visitor already has their
-          answer, so a slow or failing GA4 can never make someone wait or turn a
-          saved lead into an error.
+          <strong>Only GA4, and only <code>generate_lead</code></strong>, sent after the lead is saved, so GA4 can never slow the form.
         </p>
         <p className="admin-note">
-          Nothing else is forwarded, and that is a rule in code rather than a
-          setting. GA4 does not deduplicate by <code>event_id</code> the way
-          Meta and TikTok do, so an event sent from both the browser and the
-          Measurement Protocol is counted twice with no error anywhere.{" "}
-          <code>page_view</code> is denied by name. The counters above are real:
-          a skip is recorded with its reason, not silently dropped.
+          Nothing else is forwarded: GA4 would count it twice. Skips are counted with a reason.
         </p>
         <p className="admin-note">
-          Meta, Google Ads, TikTok and server-side GTM are{" "}
-          <strong>not built</strong>. Their credentials store and their Test
-          buttons work, but no event has ever been forwarded to them. Each is a
-          new file implementing the same adapter — see{" "}
-          <code>lib/forwarding/types.ts</code>.
+          Meta, Google Ads, TikTok and server-side GTM are <strong>not built</strong> yet. Credentials and Test work; nothing is forwarded.
         </p>
       </section>
     </>

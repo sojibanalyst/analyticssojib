@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { createClient } from "@/lib/supabase/server";
 
@@ -25,15 +26,11 @@ export default async function SessionsPage() {
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Sessions</h1>
-        <p>
-          First touch is written once and never overwritten; last touch is
-          rewritten on every visit. That split is what lets a lead be credited
-          to the campaign that originally found them rather than to the reload
-          that happened to be last.
-        </p>
-      </div>
+      <PageHeader
+        title="Sessions"
+        subtitle={"First touch is kept; last touch updates on every visit."}
+        help="That split lets a lead be credited to the campaign that first found them, not the visit that happened to be last."
+      />
 
       <section className="admin-card">
         {error ? (
@@ -42,8 +39,7 @@ export default async function SessionsPage() {
           </AdminState>
         ) : !data?.length ? (
           <AdminState title="No sessions yet.">
-            A session is only created when a visitor allows analytics storage.
-            Declined visits are counted but never given an identifier.
+            A session starts only when a visitor allows analytics storage.
           </AdminState>
         ) : (
           <AdminTable
@@ -67,7 +63,7 @@ export default async function SessionsPage() {
                       visitor arrived with — machine values, and read down the
                       column against each other. */}
                   <td className="admin-mono" style={{ color: "var(--ink)" }}>
-                    {session.first_touch_source ?? "—"}
+                    {session.first_touch_source ?? "None"}
                     {session.first_touch_medium ? ` / ${session.first_touch_medium}` : ""}
                     {session.first_touch_campaign ? (
                       <div style={{ color: "var(--ink-muted)" }}>
@@ -76,10 +72,10 @@ export default async function SessionsPage() {
                     ) : null}
                   </td>
                   <td className="admin-mono">
-                    {session.last_touch_source ?? "—"}
+                    {session.last_touch_source ?? "None"}
                     {session.last_touch_medium ? ` / ${session.last_touch_medium}` : ""}
                   </td>
-                  <td className="admin-mono">{session.landing_page ?? "—"}</td>
+                  <td className="admin-mono">{session.landing_page ?? "None"}</td>
                   <td>
                     {session.device_type}
                     {session.country ? ` · ${session.country}` : ""}
@@ -90,7 +86,7 @@ export default async function SessionsPage() {
                         {clickId}
                       </span>
                     ) : (
-                      "—"
+                      "None"
                     )}
                   </td>
                 </tr>

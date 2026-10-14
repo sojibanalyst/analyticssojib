@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import Link from "next/link";
 import { AdminState } from "@/components/admin/Table";
 import { SavingForm } from "@/components/admin/SavingForm";
@@ -15,22 +16,16 @@ export default async function SettingsPage() {
 
   const { data, error } = await supabase
     .from("settings")
-    .select("site_name, contact_email, calendly_url, gtm_container_id, sgtm_endpoint, default_currency, retention_days")
+    .select("site_name, contact_email, calendly_url, gtm_container_id, gtm_head_code, sgtm_endpoint, default_currency, retention_days")
     .maybeSingle();
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Settings</h1>
-        <p>
-          Site-wide configuration, none of it secret. Destination credentials
-          are not on this page — they are set on{" "}
-          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, encrypted into
-          Supabase Vault, and never sent back to the browser. A screenshot of
-          either page cannot leak one, because neither page has ever been given
-          the value to show.
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        subtitle={"Site-wide configuration. Nothing here is secret."}
+        help="Destination credentials live on Destinations, encrypted, and are never sent back to the browser."
+      />
 
       {error ? (
         <section className="admin-card">
@@ -40,7 +35,7 @@ export default async function SettingsPage() {
         </section>
       ) : (
         <section className="admin-card">
-          <SavingForm action={updateSettings}>
+          <SavingForm action={updateSettings} submitLabel="Save changes">
             <div className="admin-field">
               <label htmlFor="gtm_container_id">GTM container ID</label>
               <input
@@ -52,9 +47,23 @@ export default async function SettingsPage() {
                 spellCheck={false}
               />
               <p className="admin-note">
-                Takes effect on the next page load — no redeploy. Leave it empty
-                and no container script is rendered at all, rather than a broken
-                one.
+                Applies on the next page load. Empty means no container at all.
+              </p>
+            </div>
+
+            <div className="admin-field">
+              <label htmlFor="gtm_head_code">GTM head code</label>
+              <textarea
+                id="gtm_head_code"
+                name="gtm_head_code"
+                rows={8}
+                defaultValue={data?.gtm_head_code ?? ""}
+                placeholder="<!-- Google Tag Manager --> <script>...</script> <!-- End Google Tag Manager -->"
+                spellCheck={false}
+                className="admin-mono"
+              />
+              <p className="admin-note">
+                Paste the &lt;head&gt; snippet from GTM as is. When set, it is used instead of the container ID.
               </p>
             </div>
 
@@ -110,22 +119,13 @@ export default async function SettingsPage() {
         <h2>Set elsewhere, on purpose</h2>
         <p className="admin-note">
           <strong>Destination credentials</strong> are on{" "}
-          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, one per platform. Each
-          is stored encrypted and can be rotated from that screen without a
-          redeploy; an environment variable is still read as a fallback if no
-          value has been set there.
+          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, encrypted.
         </p>
         <p className="admin-note">
-          <strong>GTM container</strong> is set above and read at request time.{" "}
-          <code>NEXT_PUBLIC_GTM_ID</code> is still read as a fallback when the
-          field is empty, so a deployment configured before this existed keeps
-          working — but the field wins, and changing it needs no redeploy.
+          <strong>GTM container</strong>: the field above wins; <code>NEXT_PUBLIC_GTM_ID</code> is the fallback.
         </p>
         <p className="admin-note">
-          <strong>Retention</strong> is {data?.retention_days} days. Changing it
-          deletes data on a schedule, so it is a migration rather than a text
-          box — an accidental keystroke here should not be able to erase a
-          year of sessions.
+          <strong>Retention</strong> is {data?.retention_days} days. It changes by migration only, so a typo cannot delete data.
         </p>
       </section>
     </>

@@ -13,6 +13,7 @@ import {
 import { Reviews } from "@/components/sections/Reviews";
 import { Notes } from "@/components/sections/Notes";
 import { Contact } from "@/components/sections/Contact";
+import { TrackingCheck } from "@/components/TrackingCheck";
 import {
   getCaseStudies,
   getPortfolioItems,
@@ -70,6 +71,10 @@ export default async function Home() {
         <AboutTeaser />
         <Notes posts={posts} />
         <Contact />
+        {/* The free tracking check, last before the footer: a visitor who
+            reads to the end can try it here without leaving. It is on /about
+            too. */}
+        <TrackingCheck />
       </main>
     </>
   );

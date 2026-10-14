@@ -4,6 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { isAllowedEmail } from "@/lib/auth";
 import { CONTENT_TAG } from "@/lib/content/client";
 import { finishBlockedReason, toParagraphs } from "@/lib/post-body";
+import { parseGtmSnippet } from "@/lib/gtm-snippet";
 import { GTM_ID_PATTERN, SETTINGS_TAG } from "@/lib/settings";
 import { createClient, getUser } from "@/lib/supabase/server";
 import {
@@ -12,6 +13,7 @@ import {
   ok,
   type ActionState,
 } from "@/lib/action-state";
+import { CONTENT_KINDS, type ContentKind, type SaveResult } from "@/lib/admin/editor";
 
 /**
  * Editing published content from the console.
@@ -33,168 +35,6 @@ async function requireAdmin() {
   return createClient();
 }
 
-/** Publish, unpublish, or mark writing finished. */
-export async function updatePost(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
-
-  const status = formData.get("status") === "published" ? "published" : "draft";
-  const isDraft = formData.get("is_draft") === "on";
-  const body = String(formData.get("body") ?? "");
-
-  const paragraphs = toParagraphs(body);
-
-  // The rule lives in lib/post-body so it can be tested without an admin
-  // session; this is the one place that enforces it.
-  const blocked = finishBlockedReason(isDraft, paragraphs);
-  if (blocked) return fail(blocked);
-
-  const { error } = await supabase
-    .from("posts")
-    .update({
-      title: String(formData.get("title") ?? "").trim() || undefined,
-      summary: String(formData.get("summary") ?? "").trim() || undefined,
-      status,
-      is_draft: isDraft,
-      body: paragraphs,
-      // A post that is finished and visible has a publication date. Setting it
-      // here rather than asking for it keeps the two from disagreeing.
-      published_at:
-        status === "published" && !isDraft ? new Date().toISOString() : null,
-    })
-    .eq("id", id);
-
-
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/posts");
-  return ok("Post saved.");
-}
-
-/** Replace a placeholder review with the client's actual words. */
-export async function updateReview(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
-
-  const quote = String(formData.get("quote") ?? "").trim();
-  const attribution = String(formData.get("attribution") ?? "").trim();
-
-  // is_placeholder is derived, never typed in. A slot stops being a
-  // placeholder exactly when it stops containing the placeholder text — which
-  // is the only definition that cannot drift from reality.
-  const stillPlaceholder = quote.startsWith("Upwork review ") || quote === "";
-
-  const { error } = await supabase
-    .from("reviews")
-    .update({
-      quote: quote || null,
-      attribution: attribution || null,
-      is_placeholder: stillPlaceholder,
-      published: formData.get("published") === "on",
-    })
-    .eq("id", id);
-
-
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/reviews");
-  return ok("Review saved.");
-}
-
-export async function updateFaq(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const id = String(formData.get("id") ?? "");
-  const question = String(formData.get("question") ?? "").trim();
-  const answer = String(formData.get("answer") ?? "").trim();
-  if (!id) return fail(ACTION_ERRORS.noId);
-  if (!question || !answer) return fail(ACTION_ERRORS.missingFields);
-
-  const { error } = await supabase
-    .from("faqs")
-    .update({ question, answer, published: formData.get("published") === "on" })
-    .eq("id", id);
-
-
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/faqs");
-  return ok("Question saved.");
-}
-
-export async function updateCaseStudy(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
-
-  const num = (key: string): number | null => {
-    const raw = String(formData.get(key) ?? "").trim();
-    if (!raw) return null;
-    const value = Number(raw);
-    return Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : null;
-  };
-
-  const { error } = await supabase
-    .from("case_studies")
-    .update({
-      title: String(formData.get("title") ?? "").trim() || undefined,
-      body: String(formData.get("body") ?? "").trim() || undefined,
-      intro: String(formData.get("intro") ?? "").trim() || undefined,
-      // The figures are yours to change. I locked these at first on the
-      // reasoning that a published number should only move in a migration —
-      // but they are your numbers, and a console that will not let you correct
-      // your own case study is not much of a console.
-      metric_caption: String(formData.get("metric_caption") ?? "").trim() || null,
-      metric_before_label: String(formData.get("metric_before_label") ?? "").trim() || null,
-      metric_after_label: String(formData.get("metric_after_label") ?? "").trim() || null,
-      metric_before: String(formData.get("metric_before") ?? "").trim() || null,
-      metric_after: String(formData.get("metric_after") ?? "").trim() || null,
-      // The bar fill percentages, 0–100. Clamped rather than trusted.
-      metric_before_pct: num("metric_before_pct"),
-      metric_after_pct: num("metric_after_pct"),
-      status: formData.get("status") === "published" ? "published" : "draft",
-      // Ticking this off is the point of the flag: it marks a figure Sojib has
-      // confirmed, so the console stops asking.
-      needs_confirmation: formData.get("needs_confirmation") === "on",
-    })
-    .eq("id", id);
-
-
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/case-studies");
-  return ok("Case study saved.");
-}
-
 export async function updateSettings(
   _prev: ActionState,
   formData: FormData,
@@ -207,13 +47,22 @@ export async function updateSettings(
   // and is not, which is worse than having no container at all.
   const gtm = String(formData.get("gtm_container_id") ?? "").trim().toUpperCase();
   if (gtm && !GTM_ID_PATTERN.test(gtm)) {
-    return fail("Container ID looks like GTM-XXXXXXX — capitals and digits after the hyphen.");
+    return fail("Container ID looks like GTM-XXXXXXX: capitals and digits after the hyphen.");
+  }
+
+  // The pasted <head> snippet: only <script> tags and comments, checked by the
+  // same parser the site uses to render it, so what saves is what renders.
+  const headCode = String(formData.get("gtm_head_code") ?? "").trim();
+  if (headCode) {
+    const parsed = parseGtmSnippet(headCode);
+    if (!parsed.ok) return fail(`GTM head code: ${parsed.reason}`);
   }
 
   const { error } = await supabase
     .from("settings")
     .update({
       gtm_container_id: gtm || null,
+      gtm_head_code: headCode || null,
       site_name: String(formData.get("site_name") ?? "").trim() || null,
       contact_email: String(formData.get("contact_email") ?? "").trim() || null,
       calendly_url: String(formData.get("calendly_url") ?? "").trim() || null,
@@ -289,265 +138,6 @@ async function uniqueSlug(
   return `${base}-${Date.now()}`;
 }
 
-export async function createPost(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const title = String(formData.get("title") ?? "").trim();
-  if (!title) return fail(ACTION_ERRORS.missingFields);
-
-  const slug = await uniqueSlug(supabase, "posts", slugify(title));
-
-  const { data: last } = await supabase
-    .from("posts")
-    .select("sort_order")
-    .order("sort_order", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { error } = await supabase.from("posts").insert({
-    slug,
-    title,
-    topic: String(formData.get("topic") ?? "").trim().toUpperCase() || "NOTES",
-    reading_time: String(formData.get("reading_time") ?? "").trim().toUpperCase() || "5 MIN",
-    summary: String(formData.get("summary") ?? "").trim() || title,
-    body: [],
-    // Born visible but unfinished: the URL works immediately and carries a
-    // noindex until the writing is done. Nothing half-written reaches Google.
-    status: "published",
-    is_draft: true,
-    sort_order: (last?.sort_order ?? -1) + 1,
-  });
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/posts");
-  return ok("Post created.");
-}
-
-export async function deletePost(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  // The tick is the safety mechanism. The checkbox is marked required, so
-  // the browser refuses to submit without it; this catches a request that
-  // never went through the form. Returning a reason rather than returning
-  // silently is the difference between a refusal and a broken button.
-  if (formData.get("confirm") !== "on") {
-    return fail(ACTION_ERRORS.notConfirmed);
-  }
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
-
-  const { error } = await supabase.from("posts").delete().eq("id", id);
-  if (error) return fail(error.message);
-
-  await revalidateContent();
-  revalidatePath("/admin/posts");
-  return ok("Post deleted.");
-}
-
-export async function createReview(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const quote = String(formData.get("quote") ?? "").trim();
-  if (!quote) return fail(ACTION_ERRORS.missingFields);
-
-  const { data: last } = await supabase
-    .from("reviews")
-    .select("sort_order")
-    .eq("type", "written")
-    .order("sort_order", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { error } = await supabase.from("reviews").insert({
-    type: "written",
-    quote,
-    attribution: String(formData.get("attribution") ?? "").trim() || null,
-    // Typed in by hand, so it is a real review by definition.
-    is_placeholder: false,
-    published: true,
-    source: "upwork",
-    source_key: `written:manual:${crypto.randomUUID()}`,
-    sort_order: (last?.sort_order ?? -1) + 1,
-  });
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/reviews");
-  return ok("Review added.");
-}
-
-export async function deleteReview(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  // The tick is the safety mechanism. The checkbox is marked required, so
-  // the browser refuses to submit without it; this catches a request that
-  // never went through the form. Returning a reason rather than returning
-  // silently is the difference between a refusal and a broken button.
-  if (formData.get("confirm") !== "on") {
-    return fail(ACTION_ERRORS.notConfirmed);
-  }
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
-
-  const { error } = await supabase.from("reviews").delete().eq("id", id);
-  if (error) return fail(error.message);
-
-  await revalidateContent();
-  revalidatePath("/admin/reviews");
-  return ok("Review deleted.");
-}
-
-export async function createFaq(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const question = String(formData.get("question") ?? "").trim();
-  const answer = String(formData.get("answer") ?? "").trim();
-  if (!question || !answer) return fail(ACTION_ERRORS.missingFields);
-
-  const { data: last } = await supabase
-    .from("faqs")
-    .select("sort_order")
-    .order("sort_order", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { error } = await supabase.from("faqs").insert({
-    question,
-    answer,
-    published: true,
-    source_key: `faq:manual:${crypto.randomUUID()}`,
-    sort_order: (last?.sort_order ?? -1) + 1,
-  });
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/faqs");
-  return ok("Question added.");
-}
-
-export async function deleteFaq(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  // The tick is the safety mechanism. The checkbox is marked required, so
-  // the browser refuses to submit without it; this catches a request that
-  // never went through the form. Returning a reason rather than returning
-  // silently is the difference between a refusal and a broken button.
-  if (formData.get("confirm") !== "on") {
-    return fail(ACTION_ERRORS.notConfirmed);
-  }
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
-
-  const { error } = await supabase.from("faqs").delete().eq("id", id);
-  if (error) return fail(error.message);
-
-  await revalidateContent();
-  revalidatePath("/admin/faqs");
-  return ok("Question deleted.");
-}
-
-export async function createCaseStudy(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  const title = String(formData.get("title") ?? "").trim();
-  if (!title) return fail(ACTION_ERRORS.missingFields);
-
-  const slug = await uniqueSlug(supabase, "case_studies", slugify(title));
-
-  const { data: last } = await supabase
-    .from("case_studies")
-    .select("sort_order")
-    .order("sort_order", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { error } = await supabase.from("case_studies").insert({
-    slug,
-    title,
-    code: String(formData.get("code") ?? "").trim().toUpperCase() || "CASE",
-    body: String(formData.get("body") ?? "").trim() || title,
-    intro: String(formData.get("intro") ?? "").trim() || title,
-    tags: String(formData.get("tags") ?? "")
-      .split(",")
-      .map((tag) => tag.trim().toUpperCase())
-      .filter(Boolean),
-    detail_sections: [],
-    // Starts hidden. A case study with no figures and no write-up should not
-    // appear on the site the instant it is created.
-    status: "draft",
-    needs_confirmation: false,
-    sort_order: (last?.sort_order ?? -1) + 1,
-  });
-  if (error) return fail(error.message);
-
-
-  await revalidateContent();
-  revalidatePath("/admin/case-studies");
-  return ok("Case study created.");
-}
-
-export async function deleteCaseStudy(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  // The tick is the safety mechanism. The checkbox is marked required, so
-  // the browser refuses to submit without it; this catches a request that
-  // never went through the form. Returning a reason rather than returning
-  // silently is the difference between a refusal and a broken button.
-  if (formData.get("confirm") !== "on") {
-    return fail(ACTION_ERRORS.notConfirmed);
-  }
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
-
-  // Stats and screenshots go with it — the foreign keys cascade.
-  const { error } = await supabase.from("case_studies").delete().eq("id", id);
-  if (error) return fail(error.message);
-
-  await revalidateContent();
-  revalidatePath("/admin/case-studies");
-  return ok("Case study deleted.");
-}
-
 /* -------------------------------------------------------------------------- */
 /* Portfolio                                                                    */
 /* -------------------------------------------------------------------------- */
@@ -561,12 +151,6 @@ function toSkills(value: FormDataEntryValue | null): string[] {
     .slice(0, 12);
 }
 
-/** Empty becomes null, so an optional field is absent rather than "". */
-function optional(value: FormDataEntryValue | null): string | null {
-  const text = String(value ?? "").trim();
-  return text || null;
-}
-
 /** A YouTube id, or the id pulled out of a pasted YouTube link. */
 function toVideoId(value: FormDataEntryValue | null): string | null {
   const text = String(value ?? "").trim();
@@ -576,111 +160,323 @@ function toVideoId(value: FormDataEntryValue | null): string | null {
   return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
 }
 
-export async function createPortfolioItem(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
 
-  const title = String(formData.get("title") ?? "").trim();
-  const description = String(formData.get("description") ?? "").trim();
-  if (!title || !description) return fail(ACTION_ERRORS.missingFields);
+/* -------------------------------------------------------------------------- */
+/* The list-and-edit screens                                                    */
+/*                                                                             */
+/* One set of actions for all five content screens: save from the editor       */
+/* drawer, show or hide from the list, reorder, duplicate, delete. Called with  */
+/* plain arguments from client code rather than through a <form>, and every    */
+/* one checks the allowlist and writes through the admin's own session, the    */
+/* same as the form actions above.                                             */
+/* -------------------------------------------------------------------------- */
 
-  // The table's slug check wants at most hyphen-separated words; slugify
-  // already produces that, trimmed here so the URL stays readable.
-  const slug = await uniqueSlug(supabase, "portfolio_items", slugify(title).slice(0, 60).replace(/-+$/, ""));
+const TABLE = {
+  "case-studies": "case_studies",
+  portfolio: "portfolio_items",
+  reviews: "reviews",
+  posts: "posts",
+  faqs: "faqs",
+} as const;
 
-  const { data: last } = await supabase
-    .from("portfolio_items")
-    .select("sort_order")
-    .lt("sort_order", 9000)
-    .order("sort_order", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+const ADMIN_PATH: Record<ContentKind, string> = {
+  "case-studies": "/admin/case-studies",
+  portfolio: "/admin/portfolio",
+  reviews: "/admin/reviews",
+  posts: "/admin/posts",
+  faqs: "/admin/faqs",
+};
 
-  const { error } = await supabase.from("portfolio_items").insert({
-    slug,
-    title,
-    description,
-    skills: toSkills(formData.get("skills")),
-    url: "https://www.upwork.com/freelancers/conversiontrackinggtmga4looker",
-    // Starts hidden, like a new case study: a half-filled project should not
-    // be on the homepage the instant it is created.
-    published: false,
-    sort_order: (last?.sort_order ?? 1000) + 1,
-  });
-  if (error) return fail(error.message);
-
-  await revalidateContent();
-  revalidatePath("/admin/portfolio");
-  return ok("Project added, hidden. Open it to finish and publish.");
+function isKind(kind: unknown): kind is ContentKind {
+  return typeof kind === "string" && (CONTENT_KINDS as string[]).includes(kind);
 }
 
-export async function updatePortfolioItem(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
+const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+const bool = (value: unknown) => value === true;
+
+async function afterWrite(kind: ContentKind) {
+  await revalidateContent();
+  revalidatePath(ADMIN_PATH[kind]);
+}
+
+/** The next sort_order at the end of a list. */
+async function nextOrder(
+  supabase: NonNullable<Awaited<ReturnType<typeof requireAdmin>>>,
+  kind: ContentKind,
+  reviewType?: "written" | "video",
+): Promise<number> {
+  // Typed loosely on purpose: the five tables share sort_order, and only
+  // reviews has the type column the filter below needs.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query: any = supabase.from(TABLE[kind]).select("sort_order").order("sort_order", { ascending: false }).limit(1);
+  if (kind === "portfolio") query = query.lt("sort_order", 9000);
+  if (kind === "reviews" && reviewType) query = query.eq("type", reviewType);
+  const { data } = await query.maybeSingle();
+  const last = (data as { sort_order: number } | null)?.sort_order;
+  return (last ?? (kind === "portfolio" ? 1000 : -1)) + 1;
+}
+
+/** Show or hide one item: `status` on case studies and posts, `published` elsewhere. */
+export async function setVisibility(kind: ContentKind, id: string, visible: boolean): Promise<SaveResult> {
   const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
+  if (!supabase) return { ok: false, message: ACTION_ERRORS.notAllowed };
+  if (!isKind(kind) || !id) return { ok: false, message: ACTION_ERRORS.noId };
 
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
+  const now = new Date().toISOString();
+  let error;
+  if (kind === "case-studies") {
+    ({ error } = await supabase
+      .from("case_studies")
+      .update({ status: visible ? "published" : "draft", updated_at: now })
+      .eq("id", id));
+  } else if (kind === "posts") {
+    const { data: post } = await supabase.from("posts").select("is_draft").eq("id", id).maybeSingle();
+    ({ error } = await supabase
+      .from("posts")
+      .update({
+        status: visible ? "published" : "draft",
+        published_at: visible && post && !post.is_draft ? now : null,
+        updated_at: now,
+      })
+      .eq("id", id));
+  } else {
+    ({ error } = await supabase.from(TABLE[kind]).update({ published: visible, updated_at: now }).eq("id", id));
+  }
+  if (error) return { ok: false, message: error.message };
 
-  const title = String(formData.get("title") ?? "").trim();
-  const description = String(formData.get("description") ?? "").trim();
-  const url = String(formData.get("url") ?? "").trim();
-  if (!title || !description) return fail(ACTION_ERRORS.missingFields);
-  if (!/^https:\/\//.test(url)) return fail("The link has to start with https://");
+  await afterWrite(kind);
+  return { ok: true, id, message: visible ? "Published" : "Moved to hidden" };
+}
 
-  const videoRaw = String(formData.get("video_id") ?? "").trim();
-  const videoId = toVideoId(videoRaw);
-  if (videoRaw && !videoId) {
-    return fail("That is not a YouTube video id. Paste the 11-character id or the video's link.");
+/** Writes sort_order from the order of `ids`: first id first. */
+export async function reorderItems(kind: ContentKind, ids: string[]): Promise<SaveResult> {
+  const supabase = await requireAdmin();
+  if (!supabase) return { ok: false, message: ACTION_ERRORS.notAllowed };
+  if (!isKind(kind) || !Array.isArray(ids) || ids.some((id) => typeof id !== "string")) {
+    return { ok: false, message: ACTION_ERRORS.noId };
   }
 
-  const order = Number(formData.get("sort_order"));
+  // Portfolio items live at 1000 and up; the featured split above 9000 is
+  // left alone by starting where they already are.
+  const base = kind === "portfolio" ? 1000 : 0;
+  const results = await Promise.all(
+    ids.map((id, i) => supabase.from(TABLE[kind]).update({ sort_order: base + i }).eq("id", id)),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) return { ok: false, message: failed.error.message };
 
-  const { error } = await supabase
-    .from("portfolio_items")
-    .update({
-      title,
-      description,
+  await afterWrite(kind);
+  return { ok: true, id: ids[0] ?? "", message: "Order saved" };
+}
+
+/** A copy of one item, hidden, at the end of the list. Returns the new id. */
+export async function duplicateItem(kind: ContentKind, id: string): Promise<SaveResult> {
+  const supabase = await requireAdmin();
+  if (!supabase) return { ok: false, message: ACTION_ERRORS.notAllowed };
+  if (!isKind(kind) || !id) return { ok: false, message: ACTION_ERRORS.noId };
+
+  const { data: row, error: readError } = await supabase.from(TABLE[kind]).select("*").eq("id", id).maybeSingle();
+  if (readError || !row) return { ok: false, message: readError?.message ?? "That item no longer exists." };
+
+  const copy: Record<string, unknown> = { ...(row as Record<string, unknown>) };
+  for (const key of ["id", "created_at", "updated_at"]) delete copy[key];
+
+  if (kind === "case-studies" || kind === "posts" || kind === "portfolio") {
+    copy.title = `${copy.title} (copy)`;
+    copy.slug = await uniqueSlug(supabase, TABLE[kind] as "posts" | "case_studies" | "portfolio_items", `${copy.slug}-copy`.slice(0, 70));
+  }
+  if (kind === "case-studies" || kind === "posts") copy.status = "draft";
+  if (kind === "posts") copy.published_at = null;
+  if (kind === "portfolio" || kind === "reviews" || kind === "faqs") copy.published = false;
+  if (kind === "portfolio") copy.upwork_id = null;
+  if (kind === "reviews") copy.source_key = `${copy.type}:manual:${crypto.randomUUID()}`;
+  if (kind === "faqs") {
+    copy.question = `${copy.question} (copy)`;
+    copy.source_key = null;
+  }
+  copy.sort_order = await nextOrder(supabase, kind, (copy.type as "written" | "video") ?? undefined);
+
+  const { data: created, error } = await supabase.from(TABLE[kind]).insert(copy as never).select("id").single();
+  if (error || !created) return { ok: false, message: error?.message ?? "Could not copy it." };
+
+  await afterWrite(kind);
+  return { ok: true, id: (created as { id: string }).id, message: "Duplicated, hidden" };
+}
+
+/** Deletes one item. The list asks first, in a dialog that names it. */
+export async function deleteItem(kind: ContentKind, id: string): Promise<SaveResult> {
+  const supabase = await requireAdmin();
+  if (!supabase) return { ok: false, message: ACTION_ERRORS.notAllowed };
+  if (!isKind(kind) || !id) return { ok: false, message: ACTION_ERRORS.noId };
+
+  const { error } = await supabase.from(TABLE[kind]).delete().eq("id", id);
+  if (error) return { ok: false, message: error.message };
+
+  await afterWrite(kind);
+  return { ok: true, id, message: "Deleted" };
+}
+
+/**
+ * Saves the editor drawer: creates when `id` is null, updates otherwise.
+ * Every field is checked here, whatever the editor already checked, and a
+ * problem comes back against the field it belongs to.
+ */
+export async function saveItem(kind: ContentKind, id: string | null, draft: unknown): Promise<SaveResult> {
+  const supabase = await requireAdmin();
+  if (!supabase) return { ok: false, message: ACTION_ERRORS.notAllowed };
+  if (!isKind(kind) || typeof draft !== "object" || draft === null) {
+    return { ok: false, message: "Nothing to save." };
+  }
+  const d = draft as Record<string, unknown>;
+  const fields: Record<string, string> = {};
+  const required = (key: string, label: string) => {
+    if (!text(d[key])) fields[key] = `${label} is required.`;
+  };
+  const now = new Date().toISOString();
+  let row: Record<string, unknown> = {};
+
+  if (kind === "case-studies") {
+    required("title", "Title");
+    required("intro", "Intro");
+    required("body", "Summary");
+    const pct = (key: string) => {
+      const raw = text(d[key]);
+      if (!raw) return null;
+      const value = Number(raw);
+      if (!Number.isFinite(value) || value < 0 || value > 100) fields[key] = "Use a number from 0 to 100.";
+      return Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : null;
+    };
+    const sections = Array.isArray(d.detail_sections) ? d.detail_sections : [];
+    const detail = sections.map((s, i) => {
+      const section = (s ?? {}) as { heading?: unknown; paras?: unknown };
+      const heading = text(section.heading);
+      const paras = (Array.isArray(section.paras) ? section.paras : []).map(text).filter(Boolean);
+      if (!heading) fields[`detail_sections.${i}`] = "Give this section a heading.";
+      return { heading, paras };
+    });
+    row = {
+      title: text(d.title),
+      code: text(d.code).toUpperCase() || "CASE",
+      intro: text(d.intro),
+      body: text(d.body),
+      tags: (Array.isArray(d.tags) ? d.tags : []).map(text).filter(Boolean).slice(0, 12),
+      status: d.status === "published" ? "published" : "draft",
+      needs_confirmation: bool(d.needs_confirmation),
+      metric_caption: text(d.metric_caption) || null,
+      metric_before_label: text(d.metric_before_label) || null,
+      metric_after_label: text(d.metric_after_label) || null,
+      metric_before: text(d.metric_before) || null,
+      metric_after: text(d.metric_after) || null,
+      metric_before_pct: pct("metric_before_pct"),
+      metric_after_pct: pct("metric_after_pct"),
+      detail_sections: detail,
+    };
+  } else if (kind === "portfolio") {
+    required("title", "Title");
+    required("description", "Description");
+    const url = text(d.url);
+    if (!/^https:\/\//.test(url)) fields.url = "The link has to start with https://";
+    const videoRaw = text(d.video_id);
+    const videoId = toVideoId(videoRaw);
+    if (videoRaw && !videoId) fields.video_id = "Paste the 11-character YouTube id or the video's link.";
+    row = {
+      title: text(d.title),
+      description: text(d.description),
       url,
-      role: optional(formData.get("role")),
-      client: optional(formData.get("client")),
+      client: text(d.client) || null,
+      role: text(d.role) || null,
       video_id: videoId,
-      skills: toSkills(formData.get("skills")),
-      featured: formData.get("featured") === "on",
-      published: formData.get("published") === "on",
-      ...(Number.isInteger(order) ? { sort_order: order } : {}),
-    })
-    .eq("id", id);
-  if (error) return fail(error.message);
-
-  await revalidateContent();
-  revalidatePath("/admin/portfolio");
-  return ok("Project saved.");
-}
-
-export async function deletePortfolioItem(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  if (!supabase) return fail(ACTION_ERRORS.notAllowed);
-
-  if (formData.get("confirm") !== "on") {
-    return fail(ACTION_ERRORS.notConfirmed);
+      skills: toSkills((Array.isArray(d.skills) ? d.skills : []).map(text).join(",")),
+      featured: bool(d.featured),
+      published: bool(d.published),
+    };
+  } else if (kind === "reviews") {
+    const type = d.type === "video" ? "video" : "written";
+    const published = bool(d.published);
+    if (type === "written") {
+      required("quote", "The quote");
+      const quote = text(d.quote);
+      const rating = text(d.rating);
+      if (rating && !/^[1-5]$/.test(rating)) fields.rating = "Use a whole number from 1 to 5.";
+      row = {
+        type,
+        quote: quote || null,
+        attribution: text(d.attribution) || null,
+        rating: rating ? Number(rating) : null,
+        // Derived, never typed: see updateReview above.
+        is_placeholder: quote.startsWith("Upwork review ") || quote === "",
+        published,
+      };
+    } else {
+      const youtubeId = toVideoId(text(d.youtube_id));
+      if (!youtubeId) fields.youtube_id = "Paste the 11-character YouTube id or the video's link.";
+      row = {
+        type,
+        youtube_id: youtubeId,
+        youtube_url: youtubeId ? `https://www.youtube.com/watch?v=${youtubeId}` : null,
+        client_name: text(d.client_name) || null,
+        company: text(d.company) || null,
+        a11y_label: text(d.a11y_label) || null,
+        aspect_ratio: d.aspect_ratio === "landscape" ? "landscape" : "portrait",
+        is_placeholder: false,
+        published,
+      };
+    }
+  } else if (kind === "posts") {
+    required("title", "Title");
+    const paragraphs = toParagraphs(typeof d.body === "string" ? d.body : "");
+    const isDraft = bool(d.is_draft);
+    const blocked = finishBlockedReason(isDraft, paragraphs);
+    if (blocked) fields.body = "Add the post body, or keep it marked unfinished.";
+    const status = d.status === "published" ? "published" : "draft";
+    row = {
+      title: text(d.title),
+      summary: text(d.summary) || text(d.title),
+      topic: text(d.topic).toUpperCase() || "NOTES",
+      reading_time: text(d.reading_time).toUpperCase() || "5 MIN",
+      body: paragraphs,
+      status,
+      is_draft: isDraft,
+      published_at: status === "published" && !isDraft ? now : null,
+    };
+  } else {
+    required("question", "Question");
+    required("answer", "Answer");
+    row = { question: text(d.question), answer: text(d.answer), published: bool(d.published) };
   }
 
-  const id = String(formData.get("id") ?? "");
-  if (!id) return fail(ACTION_ERRORS.noId);
+  if (Object.keys(fields).length) {
+    return { ok: false, message: "Check the highlighted fields.", fields };
+  }
 
-  const { error } = await supabase.from("portfolio_items").delete().eq("id", id);
-  if (error) return fail(error.message);
+  row.updated_at = now;
 
-  await revalidateContent();
-  revalidatePath("/admin/portfolio");
-  return ok("Project deleted.");
+  if (id) {
+    const { error } = await supabase.from(TABLE[kind]).update(row as never).eq("id", id);
+    if (error) return { ok: false, message: error.message };
+    await afterWrite(kind);
+    return { ok: true, id, message: "Saved" };
+  }
+
+  // A new item.
+  if (kind === "case-studies" || kind === "posts" || kind === "portfolio") {
+    const base = slugify(String(row.title));
+    row.slug = await uniqueSlug(
+      supabase,
+      TABLE[kind] as "posts" | "case_studies" | "portfolio_items",
+      kind === "portfolio" ? base.slice(0, 60).replace(/-+$/, "") : base,
+    );
+  }
+  if (kind === "portfolio") row.upwork_id = null;
+  if (kind === "reviews") {
+    row.source = "upwork";
+    row.source_key = `${row.type}:manual:${crypto.randomUUID()}`;
+  }
+  row.sort_order = await nextOrder(supabase, kind, (row.type as "written" | "video") ?? undefined);
+
+  const { data, error } = await supabase.from(TABLE[kind]).insert(row as never).select("id").single();
+  if (error || !data) return { ok: false, message: error?.message ?? "Could not create it." };
+
+  await afterWrite(kind);
+  return { ok: true, id: (data as { id: string }).id, message: "Created" };
 }

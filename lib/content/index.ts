@@ -9,6 +9,7 @@ import type {
   WrittenReview,
 } from "@/content/site";
 import type { Post } from "@/content/posts";
+import { isAllowedImageSrc } from "@/lib/media";
 import { contentClient, orThrow } from "./client";
 
 /**
@@ -160,6 +161,8 @@ function toCaseStudy(row: CaseRow): CaseStudy {
     }));
 
   const screenshots: CaseShot[] = [...row.case_study_shots]
+    // Only files on this site or in the media bucket; see lib/media.ts.
+    .filter((s) => isAllowedImageSrc(s.storage_path))
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((s) => ({
       src: s.storage_path,
@@ -346,7 +349,7 @@ function toImages(value: unknown): PortfolioImage[] {
     if (
       image &&
       typeof image.src === "string" &&
-      image.src.startsWith("/") &&
+      isAllowedImageSrc(image.src) &&
       typeof image.alt === "string" &&
       typeof image.width === "number" &&
       typeof image.height === "number"

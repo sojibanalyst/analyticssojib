@@ -5816,3 +5816,9 @@ a.wordmark:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* On the homepage the tracking check follows the contact block, which is
+   raised too, so it takes the sunk tone to keep the two apart. */
+#contact + #check {
+  background: var(--tone-sunk);
+}

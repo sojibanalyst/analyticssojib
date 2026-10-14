@@ -29,6 +29,6 @@ export function fail(message: string): ActionState {
 export const ACTION_ERRORS = {
   notAllowed: "You are not signed in as an admin.",
   noId: "That item has no id, so there is nothing to change.",
-  notConfirmed: "Tick Confirm first — nothing was deleted.",
+  notConfirmed: "Tick Confirm first. Nothing was deleted.",
   missingFields: "Fill in the required fields first.",
 } as const;

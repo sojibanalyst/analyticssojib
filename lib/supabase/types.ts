@@ -1054,6 +1054,7 @@ export type Database = {
           contact_email: string | null
           default_currency: string | null
           gtm_container_id: string | null
+          gtm_head_code: string | null
           id: boolean
           retention_days: number
           sgtm_endpoint: string | null
@@ -1065,6 +1066,7 @@ export type Database = {
           contact_email?: string | null
           default_currency?: string | null
           gtm_container_id?: string | null
+          gtm_head_code?: string | null
           id?: boolean
           retention_days?: number
           sgtm_endpoint?: string | null
@@ -1076,6 +1078,7 @@ export type Database = {
           contact_email?: string | null
           default_currency?: string | null
           gtm_container_id?: string | null
+          gtm_head_code?: string | null
           id?: boolean
           retention_days?: number
           sgtm_endpoint?: string | null
@@ -1097,6 +1100,7 @@ export type Database = {
       public_site_settings: {
         Row: {
           gtm_container_id: string | null
+          gtm_head_code: string | null
         }
         Relationships: []
       }

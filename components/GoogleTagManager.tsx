@@ -1,5 +1,5 @@
 import Script from "next/script";
-import { getGtmContainerId } from "@/lib/settings";
+import { getGtmContainerId, getGtmHeadScripts } from "@/lib/settings";
 
 /**
  * The GTM container script.
@@ -40,6 +40,24 @@ function gtmOrigin(): string {
 }
 
 export async function GoogleTagManager() {
+  // The snippet pasted on /admin/settings, exactly as GTM gave it. Plain
+  // <script> elements so they run in <head> in the order pasted, below the
+  // Consent Mode defaults the layout renders first.
+  const pasted = await getGtmHeadScripts();
+  if (pasted) {
+    return (
+      <>
+        {pasted.scripts.map((script, i) =>
+          "src" in script ? (
+            <script key={i} async src={script.src} />
+          ) : (
+            <script key={i} dangerouslySetInnerHTML={{ __html: script.inline }} />
+          ),
+        )}
+      </>
+    );
+  }
+
   const id = await getGtmContainerId();
   if (!id) return null;
 
@@ -58,7 +76,10 @@ f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');
 
 /** The <noscript> iframe, rendered immediately after <body>. */
 export async function GoogleTagManagerNoScript() {
-  const id = await getGtmContainerId();
+  // With a pasted snippet the id comes from the snippet itself, when it has a
+  // GTM-XXXX id in it; a custom loader without one gets no noscript frame.
+  const pasted = await getGtmHeadScripts();
+  const id = pasted ? pasted.containerId : await getGtmContainerId();
   if (!id) return null;
 
   const origin = gtmOrigin();
