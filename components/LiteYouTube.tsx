@@ -38,7 +38,7 @@ export function LiteYouTube({ id, label, orientation, badge, client }: Props) {
         ...(portrait
           ? {
               aspectRatio: "9 / 16",
-              height: "min(72vh, 520px)",
+              height: "var(--yt-portrait-h, min(72vh, 520px))",
               width: "auto",
               maxWidth: "100%",
             }

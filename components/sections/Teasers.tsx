@@ -1,9 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 
-import { ProjectCard } from "@/components/ProjectCard";
+import { Deck } from "@/components/ui/Deck";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { about, pages, services, work, type CaseStudy } from "@/content/site";
+import { about, hero, pages, services, work, type CaseStudy } from "@/content/site";
 import { hasMetric } from "@/lib/case-study";
 import type { PortfolioItem } from "@/lib/content";
 
@@ -107,12 +108,8 @@ function StackCase({ item }: { item: CaseStudy }) {
 }
 
 /**
- * The case studies as a stack: each card holds at the top of the screen and
- * the next one slides up over it, so they arrive one at a time. Sticky
- * positioning does the holding, which the compositor handles on its own; where
- * the browser can tie an animation to scroll, the card underneath also eases
- * back a little (transform and opacity only). Under reduced motion they are a
- * plain list.
+ * The case studies as a deck (see Deck): wide screens only, because a case
+ * card on a phone is taller than the screen and would be covered unread.
  */
 export function CasesTeaser({ cases }: { cases: CaseStudy[] }) {
   const shown = cases.slice(0, CASES_SHOWN);
@@ -121,13 +118,11 @@ export function CasesTeaser({ cases }: { cases: CaseStudy[] }) {
     <section id="work" className="section section--major section--ink" aria-labelledby="work-title">
       <SectionHeading eyebrow={work.eyebrow} title={pages.caseStudies.teaserTitle} titleId="work-title" />
 
-      <ul className="case-stack" data-scroll-anim>
-        {shown.map((item, i) => (
-          <li key={item.slug} className="case-stack__item" style={{ ["--i" as string]: i }}>
-            <StackCase item={item} />
-          </li>
+      <Deck wideOnly>
+        {shown.map((item) => (
+          <StackCase key={item.slug} item={item} />
         ))}
-      </ul>
+      </Deck>
 
       <TeaserLink href="/case-studies">{pages.caseStudies.teaserLink}</TeaserLink>
     </section>
@@ -137,6 +132,52 @@ export function CasesTeaser({ cases }: { cases: CaseStudy[] }) {
 /** Featured projects on the homepage. Everything else is on /work. */
 const PROJECTS_SHOWN = 6;
 
+/** One featured project as a deck card: the screenshot large, the story beside it. */
+function ProjectDeckCard({ item, index, total }: { item: PortfolioItem; index: number; total: number }) {
+  const cover = item.images[0];
+  return (
+    <Link href={`/work/${item.slug}`} className="pdeck">
+      <span className="pdeck__media">
+        {cover ? (
+          <Image
+            className="pdeck__img"
+            src={cover.src}
+            alt=""
+            width={cover.width}
+            height={cover.height}
+            sizes="(min-width: 900px) 640px, 100vw"
+            loading="lazy"
+          />
+        ) : (
+          <span className="pdeck__placeholder" aria-hidden="true">
+            {item.title.slice(0, 1)}
+          </span>
+        )}
+      </span>
+      <span className="pdeck__text">
+        <span className="pdeck__top">
+          <span className="pdeck__count" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+          {item.videoId ? <span className="more-card__video">{work.videoMark}</span> : null}
+        </span>
+        <span className="pdeck__title">{item.title}</span>
+        <span className="pdeck__desc">{item.description}</span>
+        <span className="more-card__skills">
+          {item.skills.slice(0, 4).map((skill) => (
+            <span key={skill} className="more-card__skill">
+              {skill}
+            </span>
+          ))}
+        </span>
+        <span className="pdeck__go">
+          {work.moreGo} <span aria-hidden="true">→</span>
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 export function ProjectsTeaser({ items }: { items: PortfolioItem[] }) {
   const shown = items.filter((item) => item.featured).slice(0, PROJECTS_SHOWN);
   if (!shown.length) return null;
@@ -144,15 +185,11 @@ export function ProjectsTeaser({ items }: { items: PortfolioItem[] }) {
     <section id="projects" className="section" aria-labelledby="projects-title">
       <SectionHeading title={pages.work.teaserTitle} titleId="projects-title" />
 
-      {/* Each card flies in on its own as it scrolls into view; see
-          "Scroll-driven entrances" in app/components.css. */}
-      <ul className="bento" data-stagger data-scroll-anim>
-        {shown.map((item) => (
-          <li key={item.slug} className="bento__item">
-            <ProjectCard item={item} />
-          </li>
+      <Deck>
+        {shown.map((item, i) => (
+          <ProjectDeckCard key={item.slug} item={item} index={i} total={shown.length} />
         ))}
-      </ul>
+      </Deck>
 
       <TeaserLink href="/work">
         {pages.work.teaserLink.replace(" →", ` (${items.length}) →`)}
@@ -161,19 +198,31 @@ export function ProjectsTeaser({ items }: { items: PortfolioItem[] }) {
   );
 }
 
+/** Short: the photo, the line, the credentials, and the way to the rest. */
 export function AboutTeaser() {
   return (
-    <section id="about" className="section" aria-labelledby="about-title">
-      <SectionHeading eyebrow={pages.about.eyebrow} title={about.title} titleId="about-title" />
-      <p className="teaser__body">{about.pullquote}</p>
-      <ul className="teaser__chips">
-        {about.chips.map((chip) => (
-          <li key={chip} className="pill">
-            {chip}
-          </li>
-        ))}
-      </ul>
-      <TeaserLink href="/about">{pages.about.teaserLink}</TeaserLink>
+    <section id="about" className="section about-teaser" aria-labelledby="about-title">
+      <Image
+        src="/about.jpg"
+        alt={hero.imageAlt}
+        width={590}
+        height={635}
+        sizes="(min-width: 760px) 240px, 160px"
+        quality={75}
+        className="about-teaser__photo"
+      />
+      <div className="about-teaser__text">
+        <SectionHeading eyebrow={pages.about.eyebrow} title={about.title} titleId="about-title" />
+        <p className="teaser__body">{about.pullquote}</p>
+        <ul className="teaser__chips">
+          {about.chips.map((chip) => (
+            <li key={chip} className="pill">
+              {chip}
+            </li>
+          ))}
+        </ul>
+        <TeaserLink href="/about">{pages.about.teaserLink}</TeaserLink>
+      </div>
     </section>
   );
 }

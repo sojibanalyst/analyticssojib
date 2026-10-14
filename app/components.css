@@ -371,17 +371,6 @@ a.doc-button:hover {
 
 /* Review carousel -------------------------------------------------------- */
 
-.review-track {
-  display: flex;
-  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .review-track {
-    transition: none;
-  }
-}
-
 .review-slide {
   flex: 0 0 100%;
   min-width: 0;
@@ -5094,19 +5083,7 @@ a.wordmark:hover {
   transform: translateX(4px);
 }
 
-/* The case studies as a stack ------------------------------------------------
-   On wide screens each card holds below the header and the next one slides up
-   over it. Sticky positioning, so the compositor does it alone. Not on phones:
-   a card taller than the screen would be covered before it was read. */
-
-.case-stack {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
+/* Case cards in the homepage deck ------------------------------------------- */
 
 .case-stack__card {
   box-sizing: border-box;
@@ -5167,116 +5144,376 @@ a.wordmark:hover {
   gap: 8px;
 }
 
-@media (min-width: 900px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
-  .case-stack {
-    gap: 12vh;
-  }
+/* Project cards in the homepage deck ---------------------------------------- */
 
-  .case-stack__item {
-    position: sticky;
-    /* Each card stops a little lower than the one before, so the edges of
-       the earlier cards show above it like a deck. */
-    top: calc(96px + var(--i, 0) * 18px);
-  }
-}
-
-/* The selected projects ------------------------------------------------------ */
-
-.bento {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.pdeck {
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
+  color: var(--text);
+  transition: border-color var(--dur-micro) var(--ease-out);
 }
 
-@media (min-width: 640px) {
-  .bento {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.pdeck:hover {
+  border-color: var(--ink);
+  color: var(--text);
+}
+
+@media (min-width: 900px) {
+  .pdeck {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    min-height: min(440px, 62vh);
   }
 }
 
-@media (min-width: 1100px) {
-  .bento {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: start;
-  }
+.pdeck__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
 
-  /* The middle column sits lower, so the grid reads as a scatter rather than
-     a table. Layout, set once; nothing animates it. */
-  .bento__item:nth-child(3n + 2) {
-    margin-top: 56px;
+@media (min-width: 900px) {
+  .pdeck__media {
+    aspect-ratio: auto;
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
   }
 }
 
-.bento__item {
+.pdeck__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  transition: transform 700ms var(--ease-out);
+}
+
+.pdeck:hover .pdeck__img {
+  transform: scale(1.06);
+}
+
+.pdeck__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--faint);
+}
+
+.pdeck__text {
   display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(18px, 2.4vw, 32px);
+  min-width: 0;
 }
 
-.bento .more-card {
+.pdeck__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pdeck__count {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.pdeck__title {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.pdeck__desc {
+  color: var(--muted);
+  line-height: 1.6;
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
   overflow: hidden;
 }
 
-.bento .more-card__cover {
-  transition: transform 500ms var(--ease-out);
+.pdeck__go {
+  margin-top: auto;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 
-.bento .more-card:hover .more-card__cover {
-  transform: scale(1.05);
+.pdeck__go span {
+  display: inline-block;
+  transition: transform var(--dur-micro) var(--ease-out);
 }
 
-/* Scroll-driven entrances ----------------------------------------------------
-   Where the browser can tie an animation to scroll position, each project
-   card flies in as it enters the screen, and each case card rises into place.
-   The animation follows the scroll itself, so it plays back as the visitor
-   scrolls up. Transform and opacity only, which the compositor runs off the
-   main thread. Elsewhere components/Motion.tsx gives these the ordinary
-   reveal, and under reduced motion nothing here applies at all. */
+.pdeck:hover .pdeck__go span {
+  transform: translateX(5px);
+}
 
-@keyframes fly-in {
-  from {
+/* Video review cards -------------------------------------------------------- */
+
+.review-slide__count {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.review-slide__verified {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  color: var(--result);
+}
+
+.review-slide__lead {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.review-slide__by {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.review-more {
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+
+/* In a deck a portrait video must fit on screen with its caption, so it is
+   sized from the viewport height rather than its own. */
+.deck .review-slide {
+  --yt-portrait-h: min(58vh, 520px);
+}
+
+/* Every slide the same height, landscape or portrait, so a taller card never
+   shows below a shorter one stacked on top of it. */
+.deck .review-slide__media {
+  height: var(--yt-portrait-h);
+}
+
+@media (max-width: 699px) {
+  .deck .review-slide {
+    --yt-portrait-h: min(44vh, 380px);
+  }
+
+  .deck .review-slide__body {
+    padding-block: 18px;
+  }
+}
+
+/* About, short, on the homepage --------------------------------------------- */
+
+.about-teaser {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+
+@media (min-width: 760px) {
+  .about-teaser {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 56px);
+  }
+}
+
+.about-teaser__photo {
+  width: 160px;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+@media (min-width: 760px) {
+  .about-teaser__photo {
+    width: 100%;
+  }
+}
+
+/* Beside a photo the heading reads from the left, like the text under it. */
+.about-teaser .section-head {
+  justify-content: flex-start;
+  text-align: left;
+  margin-inline: 0;
+}
+
+.about-teaser__text {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+/* Decks ------------------------------------------------------------------------
+   components/ui/Deck.tsx. Cards that arrive one at a time as the page scrolls.
+
+   HOLD: each card is sticky just below the header, 16px lower than the one
+   before, and the next slides up over it. Sticky is layout the compositor
+   scrolls on its own; nothing runs per frame.
+
+   RISE AND TIP BACK, where the browser can tie an animation to scroll: each
+   card rises into place as it enters, and the card underneath tips back,
+   shrinks and darkens while the next covers it, on the NEXT card's view
+   timeline (--deck-next, set per card in Deck.tsx). The card itself never
+   goes translucent; the darkening is an overlay fading in on top of it, so
+   nothing underneath shows through. Transform and opacity only, so the
+   compositor runs them off the main thread. They follow the scroll, so
+   scrolling back up plays them backwards.
+
+   Under reduced motion none of this applies: the deck is a list. */
+
+.deck {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.deck__card {
+  position: relative;
+  border-radius: var(--radius-lg);
+}
+
+.deck__card > * {
+  width: 100%;
+}
+
+.deck__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-height: 600px) {
+  .deck {
+    gap: 14vh;
+  }
+
+  .deck__item {
+    position: sticky;
+    top: calc(92px + var(--i, 0) * 16px);
+  }
+}
+
+@keyframes deck-rise {
+  0% {
     opacity: 0;
-    transform: translateY(90px) scale(0.88) rotate(var(--tilt, 0deg));
+    transform: translateY(140px) scale(0.9) rotate(var(--deck-tilt, 0deg));
   }
-  to {
+  45% {
+    opacity: 1;
+  }
+  100% {
     opacity: 1;
     transform: none;
   }
 }
 
-@keyframes rise-in {
-  from {
-    opacity: 0.2;
-    transform: translateY(120px) scale(0.94);
-  }
+@keyframes deck-back {
   to {
-    opacity: 1;
-    transform: none;
+    transform: perspective(1400px) rotateX(9deg) scale(0.9);
+  }
+}
+
+@keyframes deck-dim {
+  to {
+    opacity: 0.6;
   }
 }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .bento__item {
-      animation: fly-in linear both;
+    .deck__item {
+      animation: deck-rise linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 30%;
+      animation-range: entry 0% entry 100%;
     }
 
-    .bento__item:nth-child(odd) {
-      --tilt: -3deg;
+    .deck__item:nth-child(odd) {
+      --deck-tilt: -2.5deg;
     }
 
-    .bento__item:nth-child(even) {
-      --tilt: 3deg;
+    .deck__item:nth-child(even) {
+      --deck-tilt: 2.5deg;
     }
 
-    .case-stack__card {
-      animation: rise-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 80%;
+    .deck__card {
+      transform-origin: 50% 0;
+      animation: deck-back linear both;
+      animation-timeline: var(--deck-next);
+      animation-range: entry 10% cover 45%;
+    }
+
+    .deck__card::after {
+      animation: deck-dim linear both;
+      animation-timeline: var(--deck-next);
+      animation-range: entry 10% cover 45%;
+    }
+
+    /* The last card is never covered. */
+    .deck__item:last-child .deck__card,
+    .deck__item:last-child .deck__card::after {
+      animation: none;
     }
   }
 }
 
+/* A deck of cards taller than a phone screen holds on wide screens only, and
+   a card that is never covered is never tipped back. */
+@media (max-width: 899px) {
+  .deck--wide {
+    gap: 24px;
+  }
+
+  .deck--wide .deck__item {
+    position: static;
+  }
+
+  .deck--wide .deck__card,
+  .deck--wide .deck__card::after {
+    animation: none !important;
+  }
+}
