@@ -39,6 +39,19 @@ function gtmOrigin(): string {
   }
 }
 
+/**
+ * True everywhere except the tracking lab (/lab), which is a demo store for
+ * practice and loads only a test container of its own. Checked in the
+ * browser, so the root layout stays static: the site's real container never
+ * runs on a lab page, and the lab's practice events never reach it.
+ */
+const NOT_LAB = "location.pathname.split('/')[1]!=='lab'";
+
+/** A pasted external script, loaded the same way only off the lab. */
+function loader(src: string): string {
+  return `if(${NOT_LAB}){var s=document.createElement('script');s.async=true;s.src=${JSON.stringify(src)};document.head.appendChild(s);}`;
+}
+
 export async function GoogleTagManager() {
   // The snippet pasted on /admin/settings, exactly as GTM gave it. Plain
   // <script> elements so they run in <head> in the order pasted, below the
@@ -48,11 +61,14 @@ export async function GoogleTagManager() {
     return (
       <>
         {pasted.scripts.map((script, i) =>
-          "src" in script ? (
-            <script key={i} async src={script.src} />
-          ) : (
-            <script key={i} dangerouslySetInnerHTML={{ __html: script.inline }} />
-          ),
+          <script
+            key={i}
+            dangerouslySetInnerHTML={{
+              __html: "src" in script ? loader(script.src) : `if(${NOT_LAB}){
+${script.inline}
+}`,
+            }}
+          />,
         )}
       </>
     );
@@ -65,11 +81,13 @@ export async function GoogleTagManager() {
 
   return (
     <Script id="gtm-init" strategy="afterInteractive">
-      {`window.dataLayer = window.dataLayer || [];
+      {`if(${NOT_LAB}){
+window.dataLayer = window.dataLayer || [];
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
 var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
 j.async=true;j.src='${origin}/gtm.js?id='+i+dl;
-f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');`}
+f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');
+}`}
     </Script>
   );
 }

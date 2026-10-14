@@ -1,0 +1,418 @@
+/* ==========================================================================
+   The tracking lab (/lab) only. A plain demo store: readable, quick to use,
+   and obviously not a real shop. Every colour is a token from globals.css.
+   ========================================================================== */
+
+.lab {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-prose);
+}
+
+.lab a {
+  color: var(--accent);
+}
+
+.lab-notice {
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--status-warn-tint);
+  color: var(--text);
+  font-size: 13.5px;
+  text-align: center;
+}
+
+.lab-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px clamp(16px, 4vw, 48px);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.lab .lab-brand {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lab-nav {
+  display: flex;
+  gap: 18px;
+}
+
+.lab-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.lab-count {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-data);
+  font-size: 12px;
+  text-align: center;
+}
+
+.lab-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 48px) 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lab-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 34px);
+}
+
+.lab-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lab-card a {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.lab-card a:hover {
+  border-color: var(--accent);
+}
+
+.lab-card__name {
+  font-weight: 600;
+}
+
+.lab-card__price,
+.lab-product__price,
+.lab-line__price {
+  font-family: var(--font-data);
+}
+
+.lab-tile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  background: var(--raise-2);
+  font-size: 56px;
+}
+
+.lab-tile[data-tone="b"] {
+  background: var(--sunk);
+}
+
+.lab-product {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+@media (min-width: 760px) {
+  .lab-product {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.lab-product__info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lab-product__info p {
+  margin: 0;
+}
+
+.lab-product__price {
+  font-size: 22px;
+}
+
+.lab-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 360px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.lab-field legend {
+  margin-bottom: 6px;
+}
+
+.lab-field input:not([type="radio"]),
+.lab-field select,
+.lab-gtm input {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 400;
+}
+
+.lab-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-weight: 400;
+}
+
+.lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lab-btn,
+.lab .lab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lab-btn[data-primary],
+.lab .lab-btn[data-primary] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.lab-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.lab-lines {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.lab-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.lab-line:last-child {
+  border-bottom: 0;
+}
+
+.lab-line .lab-tile {
+  width: 64px;
+  font-size: 28px;
+}
+
+.lab-line__name {
+  flex: 1;
+  min-width: 160px;
+  font-weight: 600;
+}
+
+.lab-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lab-qty button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.lab-total {
+  margin: 0;
+  font-size: 16px;
+}
+
+.lab-checkout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lab-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lab-summary {
+  max-width: 360px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.lab-summary p {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0;
+}
+
+/* Tracking tools: the test container and the dataLayer inspector. */
+.lab-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto 24px;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+.lab-gtm,
+.lab-inspector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.lab-gtm label {
+  font-weight: 600;
+}
+
+.lab-gtm button,
+.lab-inspector__head button {
+  align-self: flex-start;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.lab-gtm input {
+  font-family: var(--font-data);
+  max-width: 260px;
+}
+
+.lab-inspector__head {
+  display: flex;
+  gap: 8px;
+}
+
+.lab-inspector__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 420px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.lab-inspector__list li {
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.lab-inspector__time {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: 11.5px;
+}
+
+.lab-inspector pre {
+  margin: 4px 0 0;
+  overflow-x: auto;
+  font-family: var(--font-data);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+.lab-foot {
+  padding: 18px clamp(16px, 4vw, 48px);
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
+}
+
+.lab :is(a, button, input, select):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
