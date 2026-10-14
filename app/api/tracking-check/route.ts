@@ -4,13 +4,23 @@ import https from "node:https";
 import { isIP } from "node:net";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { detect, isBlockedAddress, normaliseTarget } from "@/lib/tracking-check";
+import {
+  combine,
+  isBlockedAddress,
+  normaliseTarget,
+  scanContainer,
+  scanPage,
+  type Findings,
+} from "@/lib/tracking-check";
 
 /**
  * The free tracking check.
  *
- * POST { url }. Fetches that page's HTML and reports whether a GTM container,
- * GA4, the Meta pixel and a consent tool are visible in it.
+ * POST { url }. Fetches that page's HTML and reports what tracking is visible
+ * in it. When the page loads a GTM container, the container script is fetched
+ * too, once, through exactly the same fence, and what is configured inside it
+ * is reported separately: most tags on a well-built site live there, not in
+ * the HTML.
  *
  * THIS ROUTE FETCHES A URL CHOSEN BY A STRANGER, so most of it is the fence:
  *
@@ -27,8 +37,11 @@ import { detect, isBlockedAddress, normaliseTarget } from "@/lib/tracking-check"
  *     and the connection.
  *   - Redirects are not followed by the client. Each one comes back here and
  *     goes through the same checks, and there are at most four.
- *   - Six seconds for the whole thing, and the body is cut off at 1.5 MB.
- *   - Only an HTML response is read.
+ *   - Six seconds for the page and six more for the container, and the body is
+ *     cut off at 1.5 MB for a page and 3 MB for a container.
+ *   - Only an HTML response is read as the page, and only a JavaScript
+ *     response as the container. The container URL comes from the page, so it
+ *     goes through every check above as if a visitor had typed it.
  *
  * NOTHING ABOUT THE REQUEST IS KEPT. The URL is not logged and not stored, and
  * the address used for rate limiting lives in memory for a minute.
@@ -37,7 +50,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const TIMEOUT_MS = 6_000;
-const MAX_BYTES = 1_500_000;
+const MAX_PAGE_BYTES = 1_500_000;
+/** A GTM container is often 300 to 600 kB; a big one is past a megabyte. */
+const MAX_SCRIPT_BYTES = 3_000_000;
 const MAX_REDIRECTS = 4;
 
 const PER_ADDRESS = 6;
@@ -88,14 +103,27 @@ async function resolvePublic(hostname: string): Promise<Pinned | null> {
   return pinned.find((a) => a.family === 4) ?? pinned[0];
 }
 
+/** What a request is for: decides the accepted content type and the size cap. */
+type Want = "page" | "script";
+
+const ACCEPT: Record<Want, string> = {
+  page: "text/html,application/xhtml+xml;q=0.9",
+  script: "application/javascript,text/javascript;q=0.9",
+};
+const TYPE: Record<Want, RegExp> = {
+  page: /\b(?:text\/html|application\/xhtml\+xml)\b/i,
+  script: /\b(?:application|text)\/(?:x-)?(?:javascript|ecmascript)\b/i,
+};
+const CAP: Record<Want, number> = { page: MAX_PAGE_BYTES, script: MAX_SCRIPT_BYTES };
+
 type Fetched =
-  | { kind: "html"; body: string }
+  | { kind: "body"; body: string }
   | { kind: "redirect"; location: string }
-  | { kind: "not_html" }
+  | { kind: "wrong_type" }
   | { kind: "error" };
 
 /** One request, to one already-checked address, with redirects left alone. */
-function fetchPinned(url: URL, pinned: Pinned, deadline: number): Promise<Fetched> {
+function fetchPinned(url: URL, pinned: Pinned, deadline: number, want: Want): Promise<Fetched> {
   return new Promise((resolve) => {
     const client = url.protocol === "https:" ? https : http;
     let settled = false;
@@ -122,7 +150,7 @@ function fetchPinned(url: URL, pinned: Pinned, deadline: number): Promise<Fetche
         headers: {
           // Says what it is. A site that does not want to be checked can refuse it.
           "User-Agent": "analyticssojib-tracking-check/1.0 (+https://analyticssojib.com)",
-          Accept: "text/html,application/xhtml+xml;q=0.9",
+          Accept: ACCEPT[want],
           "Accept-Encoding": "identity",
         },
       },
@@ -137,9 +165,9 @@ function fetchPinned(url: URL, pinned: Pinned, deadline: number): Promise<Fetche
           response.resume();
           return done({ kind: "error" });
         }
-        if (!/\b(?:text\/html|application\/xhtml\+xml)\b/i.test(String(response.headers["content-type"] ?? ""))) {
+        if (!TYPE[want].test(String(response.headers["content-type"] ?? ""))) {
           response.resume();
-          return done({ kind: "not_html" });
+          return done({ kind: "wrong_type" });
         }
 
         const chunks: Buffer[] = [];
@@ -147,11 +175,11 @@ function fetchPinned(url: URL, pinned: Pinned, deadline: number): Promise<Fetche
         response.on("data", (chunk: Buffer) => {
           size += chunk.length;
           chunks.push(chunk);
-          // Enough to find a tag in the head. Stop reading rather than fail:
-          // the tags this looks for are near the top of a page.
-          if (size >= MAX_BYTES) done({ kind: "html", body: Buffer.concat(chunks).toString("utf8") });
+          // Stop reading rather than fail. A page's tags are near the top; a
+          // container cut short still has its configuration, which comes first.
+          if (size >= CAP[want]) done({ kind: "body", body: Buffer.concat(chunks).toString("utf8") });
         });
-        response.on("end", () => done({ kind: "html", body: Buffer.concat(chunks).toString("utf8") }));
+        response.on("end", () => done({ kind: "body", body: Buffer.concat(chunks).toString("utf8") }));
         response.on("error", () => done({ kind: "error" }));
       },
     );
@@ -160,6 +188,39 @@ function fetchPinned(url: URL, pinned: Pinned, deadline: number): Promise<Fetche
     request.on("error", () => done({ kind: "error" }));
     request.end();
   });
+}
+
+type Outcome = { ok: true; url: URL; body: string } | { ok: false; error: Failure; status: number };
+
+/**
+ * Fetches a URL through the whole fence: resolved, every address checked,
+ * connection pinned, redirects followed here (four at most) with each hop
+ * normalised and checked again.
+ */
+async function fetchFenced(start: URL, want: Want, deadline: number): Promise<Outcome> {
+  let url = start;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    const pinned = await resolvePublic(url.hostname);
+    if (!pinned) return { ok: false, error: "blocked", status: 400 };
+
+    const result = await fetchPinned(url, pinned, deadline, want);
+
+    if (result.kind === "redirect") {
+      let next: URL | null = null;
+      try {
+        next = normaliseTarget(new URL(result.location, url).href);
+      } catch {
+        next = null;
+      }
+      if (!next) return { ok: false, error: "blocked", status: 400 };
+      url = next;
+      continue;
+    }
+    if (result.kind === "wrong_type") return { ok: false, error: "not_html", status: 422 };
+    if (result.kind === "error") return { ok: false, error: "unreachable", status: 502 };
+    return { ok: true, url, body: result.body };
+  }
+  return { ok: false, error: "unreachable", status: 502 };
 }
 
 export async function POST(request: NextRequest) {
@@ -180,38 +241,48 @@ export async function POST(request: NextRequest) {
   }
   if (typeof input !== "string") return fail("invalid_url", 400);
 
-  let url = normaliseTarget(input);
-  if (!url) return fail("invalid_url", 400);
+  const target = normaliseTarget(input);
+  if (!target) return fail("invalid_url", 400);
 
-  const deadline = now + TIMEOUT_MS;
+  const page = await fetchFenced(target, "page", now + TIMEOUT_MS);
+  if (!page.ok) return fail(page.error, page.status);
 
-  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-    const pinned = await resolvePublic(url.hostname);
-    if (!pinned) return fail("blocked", 400);
+  const scanned = scanPage(page.body, page.url);
 
-    const result = await fetchPinned(url, pinned, deadline);
-
-    if (result.kind === "redirect") {
-      let next: URL | null = null;
-      try {
-        next = normaliseTarget(new URL(result.location, url).href);
-      } catch {
-        next = null;
-      }
-      if (!next) return fail("blocked", 400);
-      url = next;
-      continue;
+  // The second pass. The container URL came out of a stranger's page, so it is
+  // normalised and fenced exactly like the address the visitor typed. If it
+  // cannot be reached, the page result still stands on its own.
+  let inContainer: Findings | null = null;
+  let containerRead = false;
+  const containerUrl = scanned.container?.url ? normaliseTarget(scanned.container.url) : null;
+  if (containerUrl) {
+    const script = await fetchFenced(containerUrl, "script", Date.now() + TIMEOUT_MS);
+    if (script.ok) {
+      inContainer = scanContainer(script.body);
+      containerRead = true;
+    } else {
+      // The kind of failure only, never the URL: enough to see in the
+      // platform logs why containers are not being read, nothing about whose.
+      console.warn("tracking-check: container not read:", script.error);
     }
-    if (result.kind === "not_html") return fail("not_html", 422);
-    if (result.kind === "error") return fail("unreachable", 502);
-
-    return NextResponse.json(
-      // The host only, not the full URL: the path and query are the visitor's
-      // business and the result does not need them.
-      { ok: true, host: url.hostname, results: detect(result.body) },
-      { headers: { "Cache-Control": "no-store" } },
-    );
   }
 
-  return fail("unreachable", 502);
+  return NextResponse.json(
+    {
+      ok: true,
+      // The host only, not the full URL: the path and query are the visitor's
+      // business and the result does not need them.
+      host: page.url.hostname,
+      container: scanned.container
+        ? {
+            id: scanned.container.id,
+            host: scanned.container.host,
+            custom: scanned.container.custom,
+            read: containerRead,
+          }
+        : null,
+      results: combine(scanned.findings, inContainer),
+    },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }

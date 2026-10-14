@@ -4972,3 +4972,46 @@ a.wordmark:hover {
   justify-content: center;
 }
 
+/* The tracking check's three states: found in the page, found inside the
+   container (green as well, with a small label saying where), and not found
+   in what could be read (neutral, never red: absence from these two places
+   is not proof of absence). */
+.check__item {
+  grid-template-areas:
+    "mark name"
+    "mark state"
+    "mark detail";
+}
+
+.check__item[data-found="false"] .check__name {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.check__via {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--ok) 40%, var(--border));
+  border-radius: var(--radius-full);
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  color: var(--ok);
+}
+
+.check__detail {
+  grid-area: detail;
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--faint);
+  overflow-wrap: anywhere;
+}
+
+.check__container {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--text);
+}

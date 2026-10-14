@@ -42,7 +42,7 @@ To switch GTM on later: set the container id in `/admin/settings` (or `NEXT_PUBL
 | `scroll_depth` | Scrolling past 25, 50, 75 and 90% of the page. Once each per page. Not fired on a page shorter than the screen. | `percent`: `25` \| `50` \| `75` \| `90` | `Tracker.tsx` |
 | `form_start` | The first focus inside the enquiry form. Once per page load. | `form` (`contact`), `section` | `Tracker.tsx`, delegated |
 | `generate_lead` | A successful enquiry form submission. | `form` (`contact`), `platform` (the visitor's choice in the form, `other` if none), `event_id` | `LeadForm.tsx`, see the note below |
-| `tracking_check_run` | A free tracking check that returned a result. | `found` (how many of the four were found, 0 to 4). The address that was checked is not sent. | `TrackingCheck.tsx` |
+| `tracking_check_run` | A free tracking check that returned a result. | `found` (how many of the eight tools were found, in the page or in its GTM container, 0 to 8). The address that was checked is not sent. | `TrackingCheck.tsx` |
 | `consent_update` | Would fire when a consent choice is stored. Dormant: nothing calls `setConsent()`. | `consent_state` | `lib/consent.ts` |
 
 ### `generate_lead` is different, on purpose

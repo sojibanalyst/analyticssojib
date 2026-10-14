@@ -1086,7 +1086,7 @@ export const trackingDrawer = {
     form_start:
       "You started filling in the enquiry form. I record that it happened, not what you typed.",
     tracking_check_run:
-      "You ran the free tracking check. I record how many of the four things were found, not which site you checked.",
+      "You ran the free tracking check. I record how many tools were found, not which site you checked.",
   },
   explainOther: "An event from this page.",
   held: "Not sent: you are signed in to the console, so your own visits are left out.",
@@ -1131,23 +1131,34 @@ export const portfolioCopy = {
 export const trackingCheck = {
   eyebrow: "Free check",
   title: "What is on your page, in ten seconds",
-  body: "Enter a page address. I fetch its HTML once and tell you whether a Tag Manager container, GA4, the Meta pixel and a consent tool are visible in it.",
+  body: "Enter a page address. I read its HTML and, if it loads a Google Tag Manager container, the container too, and show you what tracking each one runs.",
   label: "Page address",
   placeholder: "yourstore.com",
   submit: "Check the page",
   checking: "Checking…",
   note: "The address is fetched once and not stored.",
-  resultFor: "Page source of",
+  resultFor: "Checked",
   names: {
     gtm: "Google Tag Manager",
     ga4: "Google Analytics 4",
+    google_ads: "Google Ads",
     meta_pixel: "Meta pixel",
+    tiktok: "TikTok pixel",
+    linkedin: "LinkedIn Insight Tag",
+    clarity: "Microsoft Clarity",
     consent: "Consent tool or Consent Mode",
   },
-  found: "Found in the page source",
-  notFound: "Not found in the page source",
+  /** The three states of a row. */
+  foundPage: "Found in the page source",
+  foundContainer: "Found inside the GTM container",
+  viaContainer: "via container",
+  notFound: "Not found in what we could see",
+  /** The line about the container itself, under the host. */
+  containerCustom: "The GTM container{id} loads from {host}, a custom loader: a server-side setup.",
+  containerGoogle: "The GTM container{id} loads from Google.",
+  containerUnread: "The container could not be read, so only the page source is shown.",
   disclaimer:
-    "This is a surface check of one page's HTML. It cannot see tags that a tag manager loads afterwards, and it does not tell you whether anything fires correctly, fires twice, or matches your orders. That is what the audit is for.",
+    "A surface check of one page and its container: it cannot tell whether tags fire correctly, fire twice or match your orders.",
   cta: "Book the full audit call",
   errors: {
     invalid_url: "That does not look like a web address. Try something like yourstore.com.",

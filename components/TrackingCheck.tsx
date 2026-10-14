@@ -7,23 +7,33 @@ import { trackingCheck as copy } from "@/content/site";
 import { track } from "@/lib/track";
 import type { CheckResult } from "@/lib/tracking-check";
 
+type Container = { id: string | null; host: string | null; custom: boolean; read: boolean };
+
 type State =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "done"; host: string; results: CheckResult[] }
+  | { status: "done"; host: string; container: Container | null; results: CheckResult[] }
   | { status: "error"; message: string };
 
+/** The sentence about the container, with its id and host put in. */
+function containerLine(container: Container): string {
+  if (!container.read) return copy.containerUnread;
+  const template = container.custom ? copy.containerCustom : copy.containerGoogle;
+  // An encoded id is not shown, so the sentence reads without one.
+  return template.replace("{id}", container.id ? ` ${container.id}` : "").replace("{host}", container.host ?? "");
+}
+
 /**
- * The free tracking check: a URL in, four lines out.
+ * The free tracking check: a URL in, one line per tool out.
  *
- * It asks this site's own route to fetch the page and look for a GTM
- * container, GA4, the Meta pixel and a consent tool in its HTML. The result is
- * worded as what was or was not FOUND IN THE PAGE SOURCE, because that is all
- * it knows: a tag loaded later by a tag manager is invisible to it, and the
- * panel says so before and after.
+ * It asks this site's own route to fetch the page and, when the page loads a
+ * GTM container, the container too. Each row says WHERE something was found:
+ * in the page source, or inside the container, which is where most tags on a
+ * well-built site live. "Not found" is worded as not found in what could be
+ * read, because a tag injected some other way is invisible to both.
  *
  * The URL goes to the route and nowhere else. The event this fires,
- * tracking_check_run, carries how many of the four were found and not which
+ * tracking_check_run, carries how many tools were found and not which
  * site was checked.
  *
  * The result region is a live region, so a screen reader hears the outcome
@@ -47,7 +57,7 @@ export function TrackingCheck() {
         body: JSON.stringify({ url: value }),
       });
       const body = (await response.json()) as
-        | { ok: true; host: string; results: CheckResult[] }
+        | { ok: true; host: string; container: Container | null; results: CheckResult[] }
         | { ok: false; error: keyof typeof copy.errors };
 
       if (!body.ok) {
@@ -55,7 +65,7 @@ export function TrackingCheck() {
         return;
       }
 
-      setState({ status: "done", host: body.host, results: body.results });
+      setState({ status: "done", host: body.host, container: body.container, results: body.results });
       track("tracking_check_run", { found: body.results.filter((r) => r.found).length });
     } catch {
       setState({ status: "error", message: copy.errors.unreachable });
@@ -111,17 +121,33 @@ export function TrackingCheck() {
               <p className="check__host">
                 {copy.resultFor} <code>{state.host}</code>
               </p>
+              {state.container ? <p className="check__container">{containerLine(state.container)}</p> : null}
               <ul className="check__list">
                 {state.results.map((result) => (
-                  <li key={result.id} className="check__item" data-found={result.found}>
+                  <li
+                    key={result.id}
+                    className="check__item"
+                    data-found={result.found}
+                    data-source={result.source ?? undefined}
+                  >
                     <span className="check__mark" aria-hidden="true">
-                      {result.found ? "✓" : "?"}
+                      {result.found ? "✓" : "–"}
                     </span>
-                    <span className="check__name">{copy.names[result.id]}</span>
+                    <span className="check__name">
+                      {copy.names[result.id]}
+                      {result.source === "container" ? (
+                        <span className="check__via">{copy.viaContainer}</span>
+                      ) : null}
+                    </span>
                     <span className="check__state">
-                      {result.found ? copy.found : copy.notFound}
+                      {result.source === "page"
+                        ? copy.foundPage
+                        : result.source === "container"
+                          ? copy.foundContainer
+                          : copy.notFound}
                       {result.evidence ? <code> {result.evidence}</code> : null}
                     </span>
+                    {result.detail ? <span className="check__detail">{result.detail}</span> : null}
                   </li>
                 ))}
               </ul>
