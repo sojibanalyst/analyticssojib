@@ -42,7 +42,18 @@ export type Service = {
   title: string;
   body: string;
   bullets: string[];
+  /**
+   * The small event stream inside the card: what this service looks like in
+   * a debugger. Each line is a mark and a short string, 26 characters at most
+   * so it fits the narrowest card. `ok` is a check that passed or an event
+   * that arrived, `warn` is a defect found, `flow` is data moving.
+   *
+   * Illustrative of the work, not a log from a client.
+   */
+  stream: StreamLine[];
 };
+
+export type StreamLine = { mark: "ok" | "warn" | "flow"; text: string };
 
 export type CaseStat = { value: string; unit?: string; label: string };
 
@@ -179,7 +190,12 @@ export type StackItem = {
 export const site = {
   name: "Sojib H.",
   fullName: "Sojib Hossain",
-  wordmark: { first: "SOJIB", accent: "_", last: "ANALYTICS" },
+  /**
+   * The logo text. "Sojib", with a full stop in the accent colour. It was
+   * SOJIB_ANALYTICS, which did not match the domain (analyticssojib) or the
+   * name used everywhere else on the page.
+   */
+  wordmark: { first: "Sojib", accent: ".", last: "" },
   headline:
     "Google Tag Manager & Google Analytics 4 | Server-Side, Meta Pixel, CAPI",
   role: "Web analytics and tracking specialist",
@@ -252,26 +268,85 @@ export const whatsappDisplay = "+880 1304 095126";
 /* Navigation                                                                  */
 /* -------------------------------------------------------------------------- */
 
-// The design had five items and a non-clickable wordmark, which left the
-// sub-pages (/tracking-plan, /blog/*, /case-studies/*) with no way back to the
-// home page from the header. HOME is explicit and the wordmark links too.
-// FAQ stays in the footer to keep the row from crowding.
+// One page per topic, so the header links to pages, not to anchors on the
+// homepage. The wordmark is the way home. BLOG and FAQ live in the footer to
+// keep the row from crowding at tablet widths.
 export const nav: NavLink[] = [
-  { label: "HOME", href: "/" },
-  { label: "SERVICES", href: "/#services" },
-  { label: "WORK", href: "/#work" },
-  { label: "REVIEWS", href: "/#reviews" },
-  { label: "ABOUT", href: "/#about" },
-  { label: "BLOG", href: "/#blog" },
+  { label: "SERVICES", href: "/services" },
+  { label: "CASE STUDIES", href: "/case-studies" },
+  { label: "WORK", href: "/work" },
+  { label: "REVIEWS", href: "/reviews" },
+  { label: "ABOUT", href: "/about" },
 ];
 
 export const footerNav: NavLink[] = [
-  { label: "WORK", href: "/#work" },
-  { label: "SERVICES", href: "/#services" },
-  { label: "BLOG", href: "/#blog" },
-  { label: "FAQ", href: "/#faq" },
+  { label: "SERVICES", href: "/services" },
+  { label: "CASE STUDIES", href: "/case-studies" },
+  { label: "WORK", href: "/work" },
+  { label: "REVIEWS", href: "/reviews" },
+  { label: "ABOUT", href: "/about" },
+  { label: "BLOG", href: "/blog" },
+  { label: "FAQ", href: "/services#faq" },
   { label: "CONTACT", href: "/#contact" },
 ];
+
+/**
+ * The pages behind the nav: each one's head, metadata, and the teaser on the
+ * homepage that points at it. A teaser says enough to decide whether to click
+ * and ends in exactly one link.
+ */
+export const pages = {
+  services: {
+    eyebrow: "Services",
+    title: "Tracking work, priced before it starts",
+    description:
+      "Tracking audits, GA4 and GTM builds, server-side tagging, Meta CAPI and Google Ads conversions, by Sojib H. Fixed prices, written scope, and how the work runs.",
+    lead: "Four engagements, each with a fixed price agreed before any work starts. Below them: how the work runs, and the questions people ask before booking.",
+    teaserLink: "See services, process and pricing →",
+  },
+  caseStudies: {
+    eyebrow: "Case files",
+    title: "Case studies",
+    description:
+      "Tracking case studies by Sojib H.: what was broken, what was rebuilt, and the before and after reconciled against the client's own order data.",
+    lead: "Engagements written up in full. Each one reconciles against the client's own order data, and each has its own page with the detail.",
+    teaserTitle: "Fixed, and provable",
+    teaserLink: "Read all case studies →",
+    filterLabel: "Filter case studies",
+    filterAll: "All",
+    filterShowing: "case studies showing",
+  },
+  work: {
+    teaserTitle: "Selected projects",
+    teaserLink: "See all projects →",
+  },
+  reviews: {
+    eyebrow: "Reviews",
+    title: "What clients said",
+    description:
+      "Video and written reviews from Sojib H.'s clients on Upwork, quoted as they were written.",
+    lead: "Recorded and written by clients after Upwork engagements, quoted as they were written.",
+    teaserTitle: "Clients on the record",
+    teaserLink: "Read every review →",
+    filterLabel: "Filter reviews by service",
+    filterAll: "All",
+    filterShowing: "reviews showing",
+  },
+  about: {
+    eyebrow: "About",
+    title: "About Sojib",
+    description:
+      "Sojib H., web analytics and tracking specialist in Dhaka: how I work, what I hold, the live event stream from this site, and a free tracking check.",
+    lead: "Who you would be working with, how I work, and two things you can try here: the live event stream from this site and a free tracking check.",
+    teaserLink: "More about me →",
+  },
+  ctaBand: {
+    title: "Want to know where your numbers leak?",
+    body: "A 30-minute call, no deck. If your tracking is fine I will say so.",
+    cta: "BOOK A 30-MIN CALL →",
+    write: "OR WRITE TO ME",
+  },
+} as const;
 
 export const ctaLabel = "BOOK A 30-MIN CALL";
 
@@ -295,6 +370,30 @@ export const hero = {
   secondaryHref: "#services",
   imageAlt:
     "Sojib, web analytics and tracking specialist, in front of analytics dashboards",
+  /**
+   * The small round photo beside the name. To change it, replace
+   * public/avatar.jpg with a square image (192px or larger); nothing else
+   * needs to move. The large portrait lives in the About section and is
+   * public/about.jpg, swapped the same way.
+   */
+  avatar: { src: "/avatar.jpg", alt: "Sojib H." },
+  /**
+   * The pipeline diagram. What it draws is the service: events leave a
+   * browser, reach a server container on a first-party subdomain, and fan out
+   * to the platforms, with the purchase deduplicated on Meta.
+   *
+   * `server.host` is a PLACEHOLDER until the real server container exists.
+   * It is the conventional name for one on this domain, not a live endpoint.
+   */
+  pipeline: {
+    label:
+      "Diagram of a tracking pipeline. Events page_view, add_to_cart and purchase leave the browser, reach a server-side Google Tag Manager container on a first-party subdomain, and are forwarded to GA4, Meta and Google Ads. On Meta the purchase is marked deduplicated.",
+    browser: { title: "yourstore.com", caption: "BROWSER" },
+    server: { title: "Server GTM", host: "sgtm.analyticssojib.com", caption: "FIRST-PARTY" },
+    events: ["page_view", "add_to_cart", "purchase"],
+    platforms: ["GA4", "Meta", "Google Ads"],
+    dedupe: "Deduplicated ✓",
+  },
 } as const;
 
 /* -------------------------------------------------------------------------- */
@@ -314,8 +413,16 @@ export const hero = {
  * does not expose either, so neither has been re-verified and neither has been
  * changed. If you update them, update them from the profile page.
  */
-export const upworkReviewCount = "27";
-export const upworkJobCount = "53";
+/**
+ * 12 Oct 2026: every figure below was supplied by Sojib from the profile page
+ * on that date (100% Job Success, Top Rated, 54 jobs, 29 reviews, 5.0). This
+ * block and `proof` are the ONE place they are typed; everything on the site
+ * that shows a figure reads it from here.
+ */
+export const upworkReviewCount = "29";
+export const upworkJobCount = "54";
+export const upworkRating = "5.0";
+export const upworkJobSuccess = "100%";
 
 /**
  * ONE LINE, NOT A DASHBOARD.
@@ -369,14 +476,16 @@ export const announcement = {
 } as const;
 
 export const proof = {
-  rating: "4.9",
+  rating: upworkRating,
+  jobSuccess: upworkJobSuccess,
   reviews: upworkReviewCount,
   projects: upworkJobCount,
   badge: "TOP RATED",
   verifyLabel: "VERIFIED ON UPWORK",
-  chip: "TOP RATED · 4.9★",
-  contactChip: `TOP RATED · 4.9★ · ${upworkJobCount} PROJECTS`,
-  rate: "$30/hr",
+  chip: `TOP RATED · ${upworkJobSuccess} JOB SUCCESS`,
+  /** The line beside the avatar in the hero. */
+  trustLine: `Top Rated · ${upworkJobSuccess} Job Success`,
+  contactChip: `TOP RATED · ${upworkRating}★ · ${upworkJobCount} PROJECTS`,
 } as const;
 
 /* -------------------------------------------------------------------------- */
@@ -406,8 +515,6 @@ export const stack: StackItem[] = [
   { label: "TIKTOK", icon: "tiktok", fill: "#FFFFFF", themed: "tiktok", size: 17 },
   { label: "SNAPCHAT", icon: "snapchat", fill: "#FFFC00", themed: "snapchat", size: 17 },
   { label: "REDDIT", icon: "reddit", fill: "#FF4500", size: 18 },
-  { label: "CLAUDE", icon: "claude", fill: "#D97757", size: 18 },
-  { label: "CHATGPT", icon: "openai", fill: "#FFFFFF", themed: "openai", size: 17 },
 ];
 
 /**
@@ -441,6 +548,29 @@ export const integrationsLabel = "CRM + AUTOMATION";
 
 export const symptoms = {
   title: "Does this look familiar?",
+  eyebrow: "The problem",
+  /**
+   * The mini dashboard beside the cards.
+   *
+   * THESE FIGURES ARE ILLUSTRATIVE, and the panel says so on screen. They are
+   * not a client's numbers. They exist to show the shape of the problem: one
+   * order table, and two platforms that each disagree with it in a different
+   * direction. `truth` is the figure all three settle on.
+   */
+  dashboard: {
+    title: "Revenue · last 30 days",
+    note: "Example data",
+    currency: "$",
+    truth: 48210,
+    tiles: [
+      { source: "Shopify", metric: "Order revenue", value: 48210 },
+      { source: "GA4", metric: "Purchase revenue", value: 39870 },
+      { source: "Meta Ads", metric: "Reported purchase value", value: 61450 },
+    ],
+    mismatched: "3 sources, 3 different numbers",
+    reconciled: "Reconciled",
+    reconciledNote: "Every source agrees with the order table.",
+  },
   items: [
     {
       tag: "▲ MISMATCH",
@@ -471,9 +601,10 @@ export const symptoms = {
 /* -------------------------------------------------------------------------- */
 
 export const services = {
+  eyebrow: "Services",
   title: "Four ways in",
   footnote:
-    "Scope-dependent. Fixed price agreed before any work starts. No hourly billing, no surprise invoices.",
+    "Scope-dependent. A fixed price is agreed before any work starts, so there are no surprise invoices.",
   items: [
     {
       code: "S-01",
@@ -486,6 +617,13 @@ export const services = {
         "Event-to-order reconciliation",
         "Consent Mode v2 check",
         "Loom walkthrough + fix plan",
+      ],
+      stream: [
+        { mark: "ok", text: "purchase fires once" },
+        { mark: "warn", text: "duplicate event_id" },
+        { mark: "ok", text: "begin_checkout params" },
+        { mark: "warn", text: "ga4 revenue ≠ orders" },
+        { mark: "ok", text: "consent_mode_v2 set" },
       ],
     },
     {
@@ -500,6 +638,13 @@ export const services = {
         "Deduplicated event IDs",
         "Shopify / WooCommerce / custom",
       ],
+      stream: [
+        { mark: "flow", text: "page_view → sgtm" },
+        { mark: "flow", text: "add_to_cart → sgtm" },
+        { mark: "flow", text: "purchase → sgtm" },
+        { mark: "ok", text: "first-party cookie set" },
+        { mark: "flow", text: "sgtm → GA4 · Meta · Ads" },
+      ],
     },
     {
       code: "S-03",
@@ -513,6 +658,13 @@ export const services = {
         "Deduplication rules",
         "Parity report, weekly",
       ],
+      stream: [
+        { mark: "ok", text: "event_id shared" },
+        { mark: "ok", text: "Meta CAPI deduplicated" },
+        { mark: "ok", text: "enhanced_conversions on" },
+        { mark: "flow", text: "purchase → TikTok API" },
+        { mark: "ok", text: "events match orders" },
+      ],
     },
     {
       code: "S-04",
@@ -524,6 +676,13 @@ export const services = {
         "BigQuery export + models",
         "Looker Studio dashboards",
         "Anomaly alerts",
+      ],
+      stream: [
+        { mark: "flow", text: "ga4 → bigquery export" },
+        { mark: "flow", text: "join orders + ad_cost" },
+        { mark: "ok", text: "model daily_revenue" },
+        { mark: "ok", text: "looker_studio refreshed" },
+        { mark: "warn", text: "anomaly_check: 1 flag" },
       ],
     },
   ] satisfies Service[],
@@ -540,6 +699,16 @@ export const work = {
   intro:
     "Two engagements, written up in full. Each reconciles against the client's own order data; click through for the detail.",
   readMore: "READ THE FULL CASE →",
+  /** The grid of smaller projects under the case files. Items are in Supabase. */
+  featuredTitle: "Selected projects",
+  moreTitle: "More work",
+  moreAll: "All of it on Upwork",
+  moreGo: "Read the project",
+  /** The link under the grid, to the page with every project. */
+  showAll: "See all projects",
+  videoMark: "Client video",
+  /** Heading over the compact cards, once there are more than two case files. */
+  moreCases: "More case files",
   screenshotPending: "Case screenshot pending",
   cases: [
     {
@@ -772,7 +941,13 @@ export const reviews = {
     },
   ] as Testimonial[],
 
-  writtenTitle: "WRITTEN REVIEWS",
+  writtenTitle: "Written reviews",
+  /** The small mark on every written review card. */
+  verified: "Verified on Upwork",
+  readAll: "Read all reviews",
+  readMore: "Read more",
+  readLess: "Show less",
+  hideAll: "Hide the full list",
   /**
    * The design ships an 8-slide written-review carousel. Upwork blocks
    * automated reads of the profile (HTTP 403), so these cannot be pulled in
@@ -781,7 +956,7 @@ export const reviews = {
    * `placeholder: true` as each one is filled.
    */
   written: Array.from({ length: 8 }, (_, i) => ({
-    quote: `Upwork review ${i + 1} — paste the client's own words here, unedited.`,
+    quote: `Upwork review ${i + 1}: paste the client's own words here, unedited.`,
     attribution: `AWAITING REVIEW ${i + 1} OF 8`,
     placeholder: true,
   })) satisfies WrittenReview[],
@@ -823,7 +998,7 @@ export const process = {
 
 export const about = {
   title: "I only do measurement.",
-  body: "No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed 53 projects.",
+  body: `No websites, no ads management, no growth retainers. Two years on tracking alone. That is why I can usually tell you within a day whether your problem is a tag, a template, a consent banner or a checkout extension. I’m based in Dhaka and work with clients across US and EU timezones, mostly through Upwork, where I’ve completed ${upworkJobCount} projects.`,
   pullquote:
     "I show my working. Every claim I make about your data comes with the query, the tag or the report behind it, so you can check it without taking my word for anything.",
   pullquoteAttribution: "SOJIB H. · DHAKA, BANGLADESH · UTC+6",
@@ -919,3 +1094,145 @@ export const leadForm = {
   privacy:
     "Goes to me, nobody else. No list, no sequence, no newsletter you did not ask for.",
 };
+
+/* -------------------------------------------------------------------------- */
+/* "This site, tracked live"                                                    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Every claim in this block is about what the code does, so check the code
+ * before changing a word: app/api/events/recent/route.ts and the
+ * public_recent_events view it reads.
+ */
+export const livePanel = {
+  eyebrow: "Live",
+  title: "This site, tracked live",
+  body: "This site runs its own first-party event collector. These are its latest events: the event name, the page, and the time. No IP addresses, no ids, nothing that identifies a visitor.",
+  status: "Live",
+  source: "/api/collect",
+  loading: "Reading the collector…",
+  empty: "No events to show yet.",
+  note: "Refreshes every 10 seconds. Query strings are removed before anything is shown.",
+} as const;
+
+/* -------------------------------------------------------------------------- */
+/* "See what I'm tracking about you"                                            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The drawer that lists the events this visitor's own browser has sent.
+ *
+ * Plain English, and only what is true. Each sentence in `explain` describes
+ * what lib/track.ts and components/Tracker.tsx send for that event. If an
+ * event changes, change its sentence in the same commit.
+ */
+export const trackingDrawer = {
+  button: "What I'm tracking about you",
+  title: "What this site has recorded about your visit",
+  close: "Close",
+  intro:
+    "Everything below was sent by your browser to this site's own collector since this page loaded. The list lives in this tab only. Reload and it starts again.",
+  empty: "Nothing has been sent yet.",
+  explain: {
+    page_view: "You opened a page. This is how I know which pages get read.",
+    scroll_depth:
+      "You scrolled past a quarter, half, three quarters or 90% of the page. It shows me where people stop reading.",
+    cta_click: "You pressed a button. I record which button and which section it was in.",
+    book_call_click:
+      "You opened the booking calendar. Nothing is booked until you choose a time there.",
+    whatsapp_click: "You followed a link to WhatsApp. I see the click, never the conversation.",
+    case_study_view: "You opened a case study. I record which one.",
+    review_video_play:
+      "You started a client video. YouTube is only loaded at this moment, not before.",
+    form_start:
+      "You started filling in the enquiry form. I record that it happened, not what you typed.",
+    tracking_check_run:
+      "You ran the free tracking check. I record how many tools were found, not which site you checked.",
+  },
+  explainOther: "An event from this page.",
+  held: "Not sent: you are signed in to the console, so your own visits are left out.",
+  never:
+    "With each event the collector stores the time and the page address, including anything after a question mark in it. It does not store your IP address.",
+  privacyLink: "Read the privacy notice",
+} as const;
+
+/* -------------------------------------------------------------------------- */
+/* Portfolio project pages (/work/<slug>)                                       */
+/* -------------------------------------------------------------------------- */
+
+export const portfolioCopy = {
+  back: "← All projects",
+  backHome: "← Back to the homepage",
+  indexEyebrow: "Portfolio",
+  indexTitle: "All projects",
+  indexDescription:
+    "Tracking projects by Sojib H.: GA4, Google Tag Manager, server-side tagging, Meta CAPI, Google Ads conversions and more, each with its own write-up.",
+  /** Follows the count: "52 tracking projects, ...". */
+  indexLead: "tracking projects, as they appear on my Upwork portfolio. You can also",
+  clientLabel: "Client:",
+  skillsLabel: "Tools and platforms",
+  upwork: "View my Upwork portfolio",
+  /** The same link inside a sentence on the index page. */
+  upworkInline: "view my Upwork portfolio",
+  videoLabel: "Play the client's video review",
+  videoBadge: "CLIENT VIDEO",
+  galleryLabel: "Screenshots from the project",
+  /** Put before a screenshot description on the button that enlarges it. */
+  enlarge: "Enlarge screenshot",
+  filterLabel: "Filter projects by skill",
+  filterAll: "All",
+  filterShowing: "projects showing",
+  /** Under the grid: the projects with no screenshots, which are not shown. */
+  moreOnUpwork: "more projects, without screenshots, are on my Upwork profile",
+} as const;
+
+/* -------------------------------------------------------------------------- */
+/* The free tracking check                                                      */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Honest about what it is: a look at one page's HTML. Every line of copy here
+ * says "found in the page source" rather than "installed", because a tag that
+ * a tag manager loads after the page arrives cannot be seen this way. Do not
+ * sharpen the wording into a claim the check cannot support.
+ */
+export const trackingCheck = {
+  eyebrow: "Free check",
+  title: "What is on your page, in ten seconds",
+  body: "Enter a page address. I read its HTML and, if it loads a Google Tag Manager container, the container too, and show you what tracking each one runs.",
+  label: "Page address",
+  placeholder: "yourstore.com",
+  submit: "Check the page",
+  checking: "Checking…",
+  note: "The address is fetched once and not stored.",
+  resultFor: "Checked",
+  names: {
+    gtm: "Google Tag Manager",
+    ga4: "Google Analytics 4",
+    google_ads: "Google Ads",
+    meta_pixel: "Meta pixel",
+    tiktok: "TikTok pixel",
+    linkedin: "LinkedIn Insight Tag",
+    clarity: "Microsoft Clarity",
+    consent: "Consent tool or Consent Mode",
+  },
+  /** The three states of a row. */
+  foundPage: "Found in the page source",
+  foundContainer: "Found inside the GTM container",
+  viaContainer: "via container",
+  notFound: "Not found in what we could see",
+  /** The line about the container itself, under the host. */
+  containerCustom: "The GTM container{id} loads from {host}, a custom loader: a server-side setup.",
+  containerGoogle: "The GTM container{id} loads from Google.",
+  containerUnread: "The container could not be read, so only the page source is shown.",
+  disclaimer:
+    "A surface check of one page and its container: it cannot tell whether tags fire correctly, fire twice or match your orders.",
+  cta: "Book the full audit call",
+  errors: {
+    invalid_url: "That does not look like a web address. Try something like yourstore.com.",
+    blocked: "That address cannot be checked. It has to be a public website.",
+    unreachable: "The page did not answer in time, or refused the request. Some sites block automated checks.",
+    not_html: "That address did not return a web page.",
+    rate_limited: "Too many checks in a short time. Give it a minute.",
+  },
+} as const;

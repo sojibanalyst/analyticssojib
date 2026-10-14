@@ -31,7 +31,6 @@ export default function NotFound() {
           lineHeight: 1.1,
           fontWeight: 700,
           letterSpacing: "-0.025em",
-          textTransform: "uppercase",
           textWrap: "balance",
         }}
       >
@@ -47,8 +46,8 @@ export default function NotFound() {
         }}
       >
         The link is either out of date or was never right. Most of{" "}
-        {site.domain} is one page — the services, the case studies, the reviews
-        and how to reach me are all sections of the homepage — so start there
+        {site.domain} is one page: the services, the case studies, the reviews
+        and how to reach me are all sections of the homepage, so start there
         and it is a scroll to any of them.
       </p>
       <Link href="/" className="btn btn-primary">

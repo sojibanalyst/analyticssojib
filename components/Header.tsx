@@ -10,13 +10,14 @@ import { toggleTheme, useTheme } from "@/lib/theme";
 
 /**
  * `items` defaults to the full nav. The marketing layout passes a shorter one
- * when nothing has been published: the BLOG entry points at /#blog, and that
- * anchor does not exist on a homepage whose WRITING section rendered nothing,
- * so the link would scroll nowhere.
+ * when an entry would lead to an empty page.
  */
 export function Header({ items = nav }: { items?: NavLink[] }) {
   const theme = useTheme();
-  const onHome = usePathname() === "/";
+  const pathname = usePathname();
+  // A page's own entry, and its children: /work/<slug> marks WORK.
+  const current = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`) ? ("page" as const) : undefined;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const burgerRef = useRef<HTMLButtonElement>(null);
@@ -101,7 +102,7 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
       <header className="site-header" data-scrolled={scrolled}>
         {/* The wordmark is the conventional way home, so it is a link, not
             the design's plain span. */}
-        <Link href="/" className="wordmark" aria-label={`${site.name} — home`}>
+        <Link href="/" className="wordmark" aria-label={`${site.name}, home`}>
           {site.wordmark.first}
           <span style={{ color: "var(--ink)" }} aria-hidden="true">
             {site.wordmark.accent}
@@ -114,7 +115,7 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
             <Link
               key={item.href}
               href={item.href}
-              aria-current={item.href === "/" && onHome ? "page" : undefined}
+              aria-current={current(item.href)}
             >
               {item.label}
             </Link>
@@ -187,7 +188,7 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
                 href={item.href}
                 onClick={closeMenu}
                 className="menu-link"
-                aria-current={item.href === "/" && onHome ? "page" : undefined}
+                aria-current={current(item.href)}
               >
                 {item.label}
               </Link>

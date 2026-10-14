@@ -69,24 +69,11 @@
   color: var(--text);
 }
 
-/* The WRITING section renders only when a post is finished, which flips the
-   parity of everything below it. Rather than teaching the page to count, the
-   two sections after it swap tones when it is present. Self-healing: finish a
-   post in the console and the rhythm stays correct with no deploy. */
-#faq {
-  background: var(--tone-sunk);
-}
-
+/* The contact block ends the homepage. The section before it is WRITING
+   (sunk) when a post is finished and the about teaser (plain) when not, so
+   raised differs from both. */
 #contact {
   background: var(--tone-raised);
-}
-
-#blog ~ #faq {
-  background: var(--tone-raised);
-}
-
-#blog ~ #contact {
-  background: var(--tone-sunk);
 }
 
 .section-head {
@@ -97,10 +84,14 @@
   font-family: var(--font-prose);
 }
 
+/* The mono label. 13px, uppercase, tracked out: the same voice as an event
+   name, which is the point. */
 .eyebrow {
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
   font-size: var(--text-label);
-  letter-spacing: 0.14em;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   white-space: nowrap;
   color: var(--ink);
 }
@@ -109,13 +100,16 @@
   color: var(--muted);
 }
 
+/* Sentence case now. Space Grotesk set in capitals at this size shouts, and
+   the mono eyebrow above it already carries the uppercase. */
 .h2 {
   margin: 0;
-  font-family: var(--font-prose);
+  font-family: var(--font-display);
   font-size: var(--text-h2);
   font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.02em;
-  text-transform: uppercase;
+  text-wrap: balance;
 }
 
 /* Elevation --------------------------------------------------------------
@@ -204,7 +198,8 @@ a.doc-button:hover {
   align-items: center;
   padding: 12px clamp(16px, 2vw, 22px);
   border-bottom: 1px solid var(--border);
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
+  text-transform: uppercase;
   font-size: var(--text-label);
   letter-spacing: 0.1em;
   color: var(--muted);
@@ -376,17 +371,6 @@ a.doc-button:hover {
 
 /* Review carousel -------------------------------------------------------- */
 
-.review-track {
-  display: flex;
-  transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .review-track {
-    transition: none;
-  }
-}
-
 .review-slide {
   flex: 0 0 100%;
   min-width: 0;
@@ -432,12 +416,11 @@ a.doc-button:hover {
 .contact-title {
   margin: 0;
   max-width: 26ch;
-  font-family: var(--font-prose);
+  font-family: var(--font-display);
   font-size: var(--text-display);
   line-height: 1.1;
   font-weight: 700;
-  letter-spacing: -0.025em;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -669,35 +652,39 @@ a.doc-button:hover {
   border-radius: var(--radius-sm);
   cursor: pointer;
   white-space: nowrap;
-  transition: border-color 150ms ease, color 150ms ease, background 150ms ease,
-    box-shadow 180ms ease;
+  transition: border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out), background var(--dur-micro) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
 }
 
-/* 800 rather than 700, and a touch larger: the extra stroke weight is what
-   makes dark-on-red legible at this size, more than the colour change does. */
+/* The primary action: the signal green as a FILL, dark text on it, in both
+   themes. --accent-strong rather than --accent, because in light --accent is
+   the darker green that text needs and a button wants the bright one. */
 .btn-primary {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--accent-strong);
+  color: var(--on-accent-strong);
   font-size: var(--text-small);
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   padding: 15px 22px;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--accent-strong);
 }
 
+/* A soft glow rather than a lift in brightness: the button is already the
+   brightest thing on the screen. */
 .btn-primary:hover {
-  color: var(--on-accent);
-  filter: brightness(1.08);
-  box-shadow: var(--elev-2);
+  color: var(--on-accent-strong);
+  box-shadow: var(--glow);
 }
 
+/* The secondary action: an outline. */
 .btn-ghost {
   border: 1px solid var(--border);
   color: var(--text);
   background: transparent;
   font-size: var(--text-small);
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   padding: 14px 20px;
 }
 
@@ -705,7 +692,6 @@ a.doc-button:hover {
   border-color: var(--ink);
   color: var(--ink);
   background: var(--raise-2);
-  box-shadow: var(--elev-2);
 }
 
 /* Small chrome ----------------------------------------------------------- */
@@ -718,7 +704,8 @@ a.doc-button:hover {
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   padding: 6px 11px;
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
+  text-transform: uppercase;
   font-size: var(--text-label);
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -736,7 +723,8 @@ a.pill:hover {
   border-radius: var(--radius-sm);
   padding: 4px 9px;
   white-space: nowrap;
-  font-family: var(--font-prose);
+  font-family: var(--font-data);
+  text-transform: uppercase;
   font-size: var(--text-label);
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -927,12 +915,11 @@ a.pill:hover {
    contrast against the portrait. */
 .hero-h1 {
   margin: 0;
-  font-family: var(--font-prose);
+  font-family: var(--font-display);
   font-size: var(--text-h1);
-  line-height: 1.08;
+  line-height: 1.04;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
   text-wrap: pretty;
   color: var(--hero-text);
 }
@@ -1041,7 +1028,7 @@ a.pill:hover {
    and keeps the last one, so declaring -webkit- last silently drops the
    standard property and the blur disappears in Chrome. */
 .site-header[data-scrolled="true"] {
-  background: rgba(244, 244, 242, 0.78);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
   -webkit-backdrop-filter: saturate(150%) blur(14px);
   backdrop-filter: saturate(150%) blur(14px);
   border-bottom-color: var(--border);
@@ -1052,7 +1039,7 @@ a.pill:hover {
 }
 
 [data-theme="dark"] .site-header[data-scrolled="true"] {
-  background: rgba(10, 10, 11, 0.72);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
 }
 
 .wordmark {
@@ -1503,7 +1490,7 @@ a.wordmark:hover {
 [data-motion="on"] [data-reveal="shown"] {
   /* `both` so the from-state holds through the stagger delay instead of
      flashing the element at full opacity while it waits its turn. */
-  animation: reveal-rise 400ms cubic-bezier(0.22, 0.61, 0.36, 1)
+  animation: reveal-rise var(--dur-reveal) var(--ease-out)
     var(--reveal-delay, 0ms) both;
 }
 
@@ -1523,8 +1510,8 @@ a.wordmark:hover {
   .btn,
   .pill {
     transition-property: box-shadow, background-color, border-color, color, transform;
-    transition-duration: 180ms;
-    transition-timing-function: ease;
+    transition-duration: var(--dur-micro);
+    transition-timing-function: var(--ease-out);
   }
 
   .note-card:hover,
@@ -1951,17 +1938,19 @@ a.wordmark:hover {
    first and then hide it. This is plain CSS behind the media query, so it
    starts at first paint and needs no JavaScript at all.
 
-   The H1 and the portrait are deliberately excluded. The headline is almost
-   certainly the Largest Contentful Paint element, and animating its opacity
-   from zero delays the moment the browser records that paint. On a site that
-   sells measurement, spending a real Core Web Vitals number on a flourish
-   would be the wrong trade. The supporting elements assemble around a
-   headline that is simply there. */
+   The H1 and the lead paragraph are deliberately excluded. One of the two
+   is the Largest Contentful Paint element: the headline on a wide screen, and
+   the paragraph on a phone, where it wraps to seven lines and covers more of
+   the screen than the headline does. Animating either from opacity zero
+   delays the moment the browser records that paint. Measured on a throttled
+   phone, the paragraph's fade put LCP a full second after first paint. On a
+   site that sells measurement, spending a real Core Web Vitals number on a
+   flourish would be the wrong trade. The supporting elements assemble around
+   text that is simply there. */
 @media (prefers-reduced-motion: no-preference) {
   .hero-badge,
-  .hero-lead,
   .hero-ctas,
-  .hero-trust {
+  .hero-id {
     animation: reveal-rise 560ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
 
@@ -1969,16 +1958,12 @@ a.wordmark:hover {
     animation-delay: 60ms;
   }
 
-  .hero-lead {
-    animation-delay: 160ms;
-  }
-
   .hero-ctas {
-    animation-delay: 250ms;
+    animation-delay: 200ms;
   }
 
-  .hero-trust {
-    animation-delay: 330ms;
+  .hero-id {
+    animation-delay: 300ms;
   }
 }
 
@@ -2229,7 +2214,7 @@ a.wordmark:hover {
 }
 
 [data-motion="on"] .section-head[data-reveal="shown"] .h2 {
-  animation: h2-wipe 760ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: h2-wipe var(--dur-reveal) var(--ease-out) both;
 }
 
 /* Tools band, centred =====================================================
@@ -2377,17 +2362,40 @@ a.wordmark:hover {
       tall; blurring something that size every frame is a real cost for an
       effect nobody reads at that scale. Section-level blocks keep the plain
       rise. */
+/* No blur in the base version. A filter cannot be animated on the compositor
+   ("filter-related property may move pixels", in Lighthouse's words), so
+   every card that arrived this way was repainted on the main thread for each
+   frame of its entrance, and the tools strip does it to twenty items at once
+   as the page loads. On a phone that is the difference between a smooth
+   first scroll and a stuttering one. */
 @keyframes reveal-focus {
   from {
     opacity: 0;
     transform: translateY(18px) scale(0.97);
-    filter: blur(7px);
   }
 
   to {
     opacity: 1;
     transform: none;
-    filter: blur(0);
+  }
+}
+
+/* A mouse-driven machine has the headroom, so it keeps the focus pull. A
+   keyframes rule inside a media query replaces the one above where it
+   matches. */
+@media (hover: hover) and (pointer: fine) {
+  @keyframes reveal-focus {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.97);
+      filter: blur(7px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
   }
 }
 
@@ -2398,14 +2406,14 @@ a.wordmark:hover {
 
 [data-motion="on"] .grid4 > [data-reveal="shown"],
 [data-motion="on"] [data-stagger] > [data-reveal="shown"] {
-  animation: reveal-focus 720ms var(--ease-spring) both;
+  animation: reveal-focus var(--dur-reveal) var(--ease-out) both;
   animation-delay: var(--reveal-delay, 0ms);
 }
 
 /* Section-level blocks: same spring, no blur. */
 [data-motion="on"] [data-reveal="shown"] {
-  animation-timing-function: var(--ease-spring);
-  animation-duration: 620ms;
+  animation-timing-function: var(--ease-out);
+  animation-duration: var(--dur-reveal);
 }
 
 /* 2. THE TOOLS BAND IS SCROLL-LINKED, NOT FIRED ONCE.
@@ -2555,4 +2563,3256 @@ a.wordmark:hover {
   letter-spacing: 0;
   white-space: normal;
   font-weight: 700;
+}
+
+/* ==========================================================================
+   2026 design system: shared pieces
+   ==========================================================================
+
+   The components in components/ui. Everything here reads its colours from the
+   tokens in globals.css; nothing below is a hex. */
+
+/* EventChip ----------------------------------------------------------------
+   A line from a tag debugger, as a pill:  ● purchase → GA4 · Meta · Ads */
+
+.evt-chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.evt-chip__dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.evt-chip__name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.evt-chip__arrow {
+  color: var(--accent-2);
+}
+
+.evt-chip__dest {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evt-chip[data-state="broken"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+}
+
+.evt-chip[data-state="broken"] .evt-chip__dot {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 18%, transparent);
+}
+
+.evt-chip[data-state="broken"] .evt-chip__name {
+  color: var(--danger);
+}
+
+.evt-chip[data-state="idle"] .evt-chip__dot {
+  background: var(--faint);
+  box-shadow: none;
+}
+
+/* StatCard -----------------------------------------------------------------
+   One figure and what it measures. The label comes first in the markup (it is
+   the term) and second on screen, hence the reversed column. */
+
+.stat-card {
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
+}
+
+.stat-card__label {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-card__value {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.stat-card__unit {
+  margin-left: 2px;
+  font-size: 0.5em;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.stat-card[data-tone="good"] .stat-card__value {
+  color: var(--ok);
+}
+
+.stat-card[data-tone="bad"] .stat-card__value {
+  color: var(--danger);
+}
+
+/* Section tones carry the dot grid too ---------------------------------------
+   The body paints it, but a section with a tone of its own covers the body.
+   Sunk and ink sections get it back; raised sections stay clean, so the grid
+   reads as the floor the raised ones sit on rather than as wallpaper. */
+
+.section--sunk,
+.section--ink {
+  background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* ==========================================================================
+   Hero, 2026: copy on one side, the pipeline on the other
+   ==========================================================================
+
+   The rules further up this file were written for a full-bleed photograph
+   with a scrim over it. The photograph is gone, so the geometry that existed
+   to keep the headline inside the dark part of it goes too. These come last
+   on purpose: same specificity as the rules they replace, later in the file. */
+
+.hero {
+  display: block;
+  min-height: 0;
+  overflow: clip;
+  /* No tone of its own, so the body's dot grid shows through. */
+  background: transparent;
+}
+
+.hero-grid {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
+  padding: 40px 18px 56px;
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    padding: 64px max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2)) 72px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 4vw, 72px);
+    padding-block: 72px 88px;
+  }
+}
+
+.hero-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* An eyebrow, not a button: tinted, outlined, mono. The filled version put a
+   second loud green block directly above the primary action. */
+.hero-badge {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  color: var(--ink);
+  font-family: var(--font-data);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+}
+
+/* Smaller than --text-h1. That token is sized for a heading with the whole
+   measure to itself; this one has half of it, and at 68px the sentence broke
+   across four lines and pushed the name and the proof below the fold. */
+.hero-h1 {
+  max-width: none;
+  font-size: clamp(36px, 4.3vw, 58px);
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.hero-h1__accent {
+  color: var(--ink);
+}
+
+.hero-lead {
+  max-width: 52ch;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.hero-ctas .btn-ghost {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.hero-ctas .btn-ghost:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* Who is speaking: avatar, name, and the one line of proof. A link, because
+   the proof is checkable and this is where it is checked. */
+.hero-id {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 8px;
+  color: inherit;
+}
+
+.hero-id__avatar {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  object-fit: cover;
+}
+
+.hero-id__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.hero-id__name {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hero-id__trust {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.hero-id:hover .hero-id__trust {
+  color: var(--ink);
+}
+
+.hero-visual {
+  /* Written by components/hero/HeroParallax.tsx, each from -1 to 1. Zero
+     until it runs, and it only runs for a mouse on a wide screen. */
+  --px: 0;
+  --py: 0;
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-visual__glow {
+  position: absolute;
+  inset: -12% -6%;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent-2) 16%, transparent),
+    transparent 72%
+  );
+  transform: translate(calc(var(--px) * -14px), calc(var(--py) * -14px));
+  transition: transform 600ms var(--ease-out);
+}
+
+.hero-visual__legend {
+  position: relative;
+  margin: 0;
+  max-width: 100%;
+}
+
+/* Pipeline -----------------------------------------------------------------
+   The diagram in components/hero/PipelineSvg.tsx: a static SVG, and a layer of
+   plain elements on top of it that carries all the motion.
+
+   THE RULE FOR EVERYTHING ANIMATED HERE: transform and opacity, nothing else.
+   Those two run on the compositor. Anything else (fill, stroke, offset-path,
+   a colour) makes the browser recalculate style and repaint on the main
+   thread for every frame of an animation that never ends, which on a slow
+   phone is most of the main thread. See the note in the component for what
+   that measured. */
+
+.pipe {
+  position: relative;
+  display: block;
+  width: 100%;
+  /* The overlay sizes itself in container units, so this is the container.
+     The height comes from the aspect-ratio set inline. */
+  container-type: size;
+  transform: translate(calc(var(--px) * 8px), calc(var(--py) * 8px));
+  transition: transform 600ms var(--ease-out);
+}
+
+.pipe svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Two layouts of the same nodes; see the note in the component. */
+.pipe--wide {
+  display: none;
+  max-width: 640px;
+}
+
+.pipe--tall {
+  max-width: 360px;
+}
+
+@media (min-width: 640px) {
+  .pipe--wide {
+    display: block;
+  }
+
+  .pipe--tall {
+    display: none;
+  }
+}
+
+/* The drawing. Sizes are SVG user units; the drawing scales with its box. */
+
+.pipe-lines path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent-2) 55%, var(--border));
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  stroke-linecap: round;
+}
+
+.pipe-node rect {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.pipe-node .pipe-skel {
+  fill: var(--border);
+  stroke: none;
+}
+
+.pipe-rule {
+  fill: none;
+  stroke: var(--border);
+}
+
+.pipe-chrome {
+  fill: var(--border);
+}
+
+.pipe-node--server rect {
+  stroke: var(--accent);
+}
+
+.pipe-mono {
+  font-family: var(--font-data);
+  font-size: 12px;
+  fill: var(--text);
+}
+
+.pipe-mono--dim {
+  fill: var(--muted);
+}
+
+.pipe-host {
+  font-size: 10.5px;
+  fill: var(--ink);
+}
+
+.pipe-cap {
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--faint);
+}
+
+.pipe-cap--accent {
+  fill: var(--ink);
+}
+
+.pipe-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  fill: var(--text);
+}
+
+.pipe-title--sm {
+  font-size: 15px;
+}
+
+.pipe-row-dot {
+  fill: var(--accent);
+}
+
+/* The motion layer. Every child is placed in viewBox units times --u, which
+   the component sets to one viewBox unit in container units. */
+
+.pipe-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pipe-fx > *,
+.pipe-dot {
+  position: absolute;
+}
+
+/* What is visible with no animation at all: the server's soft glow and the
+   badge. Dots, row highlights and platform rings only exist in motion. */
+
+.pipe-fx__row {
+  border-radius: calc(5 * var(--u));
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  opacity: 0;
+}
+
+.pipe-fx__glow {
+  border-radius: calc(20 * var(--u));
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  opacity: 0.35;
+}
+
+.pipe-fx__hit {
+  box-sizing: border-box;
+  border: 1.5px solid var(--accent);
+  border-radius: calc(12 * var(--u));
+  opacity: 0;
+}
+
+.pipe-fx__badge {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--ink);
+  font-family: var(--font-data);
+  font-size: calc(11 * var(--u));
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pipe-fx__event {
+  inset: 0;
+}
+
+.pipe-dot {
+  left: 0;
+  top: 0;
+  width: calc(9 * var(--u));
+  height: calc(9 * var(--u));
+  margin: calc(-4.5 * var(--u)) 0 0 calc(-4.5 * var(--u));
+  border-radius: var(--radius-full);
+  background: var(--accent-2);
+  opacity: 0;
+  transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
+}
+
+.pipe-dot--trunk {
+  background: var(--accent);
+}
+
+/* One loop is 12s and an event starts every 4s. Each event's elements carry
+   --d, its offset into the loop. Within an event's own 12s:
+
+     0 to 9%     the dot crosses from the browser to the server
+     10 to 20%   three dots fan out to the platforms, in two straight legs
+     22% on      (purchase only) the deduplicated badge appears on Meta
+
+   The server and the platforms are hit by every event, so their pulses run on
+   a 4s loop instead and need no offset. */
+@media (prefers-reduced-motion: no-preference) {
+  .pipe-fx__row {
+    animation: pipe-row 12s linear var(--d, 0s) infinite;
+  }
+
+  .pipe-dot--trunk {
+    animation: pipe-trunk 12s linear var(--d, 0s) infinite;
+  }
+
+  .pipe-dot--branch {
+    animation: pipe-branch 12s linear var(--d, 0s) infinite;
+  }
+
+  .pipe-fx__badge {
+    opacity: 0;
+    animation: pipe-badge 12s var(--ease-out) var(--d, 0s) infinite;
+  }
+
+  .pipe-fx__glow {
+    animation: pipe-server 4s var(--ease-out) infinite;
+  }
+
+  .pipe-fx__hit {
+    animation: pipe-hit 4s var(--ease-out) infinite;
+  }
+
+  /* Off screen, it stops. components/hero/HeroParallax.tsx sets the attribute
+     when the hero has scrolled away. A compositor animation is cheap, not
+     free, and nobody is watching this one from the reviews section. */
+  .hero[data-offscreen] .pipe-fx * {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes pipe-row {
+  0%,
+  22% {
+    opacity: 1;
+  }
+
+  27%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pipe-trunk {
+  0% {
+    transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
+    opacity: 0;
+  }
+
+  1% {
+    opacity: 1;
+  }
+
+  9% {
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
+    opacity: 1;
+  }
+
+  10%,
+  100% {
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
+    opacity: 0;
+  }
+}
+
+@keyframes pipe-branch {
+  0%,
+  9% {
+    transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
+    opacity: 0;
+  }
+
+  10% {
+    transform: translate(calc(var(--x0) * var(--u)), calc(var(--y0) * var(--u)));
+    opacity: 1;
+  }
+
+  15% {
+    transform: translate(calc(var(--xm) * var(--u)), calc(var(--ym) * var(--u)));
+    opacity: 1;
+  }
+
+  20% {
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
+    opacity: 1;
+  }
+
+  21%,
+  100% {
+    transform: translate(calc(var(--x1) * var(--u)), calc(var(--y1) * var(--u)));
+    opacity: 0;
+  }
+}
+
+@keyframes pipe-badge {
+  0%,
+  21% {
+    opacity: 0;
+  }
+
+  25%,
+  64% {
+    opacity: 1;
+  }
+
+  72%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The trunk dot arrives 1.08s into each 4s: 27%. */
+@keyframes pipe-server {
+  0%,
+  24% {
+    opacity: 0.35;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  60%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+/* The branch dots arrive 2.4s into each 4s: 60%. */
+@keyframes pipe-hit {
+  0%,
+  57% {
+    opacity: 0;
+  }
+
+  63%,
+  78% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* About: the portrait ------------------------------------------------------ */
+
+.about-aside {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.about-photo {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center top;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+/* ==========================================================================
+   The problem, as a scroll story
+   ==========================================================================
+
+   components/symptoms. A dashboard whose three numbers disagree, four cards
+   that say why, and the numbers settling on one at the end. */
+
+.story__pin {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.story__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .story__layout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px;
+    align-items: center;
+  }
+}
+
+.story__cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .story__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.story__card {
+  padding: 22px;
+  gap: 10px;
+}
+
+/* Red, and this is one of the few places it is allowed: these are the broken
+   states the rest of the page is about fixing. */
+.story__tag {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--danger);
+}
+
+.story__title {
+  margin: 0;
+  font-size: var(--text-lead);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.story__body {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* A card waits, then arrives. Only in the two moving modes, which only exist
+   once the component has run; before that, and under reduced motion, every
+   card is simply there. */
+.story:is([data-mode="pinned"], [data-mode="flow"]) .story__card {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+}
+
+.story:is([data-mode="pinned"], [data-mode="flow"]) .story__card[data-on="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* The pin. A sticky panel inside a tall section, and the height is here in
+   the stylesheet rather than added by a script, so it is part of the first
+   paint and nothing below it ever moves. The query is the same test the
+   component makes before it switches to pinned mode. */
+@media (min-width: 1024px) and (min-height: 680px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .story {
+    min-height: 300vh;
+    justify-content: flex-start;
+  }
+
+  .story__pin {
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+    min-height: 100vh;
+    /* Room for the floating header, which sits over the top of the panel. */
+    padding-block: 96px 32px;
+    justify-content: center;
+  }
+}
+
+/* The dashboard ------------------------------------------------------------ */
+
+.dash {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-2);
+}
+
+.dash__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Dashed, so the label reads as a note about the panel and not part of it. */
+.dash__note {
+  padding: 2px 10px;
+  border: 1px dashed var(--border-input);
+  border-radius: var(--radius-full);
+  color: var(--faint);
+}
+
+.dash__tiles {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.dash__tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "source value"
+    "source drift";
+  column-gap: 12px;
+  align-items: baseline;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  transition: border-color var(--dur-reveal) var(--ease-out);
+}
+
+.dash__source {
+  grid-area: source;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dash__metric {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.dash__value {
+  grid-area: value;
+  margin: 0;
+  justify-self: end;
+  font-family: var(--font-data);
+  font-size: var(--text-h4);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  transition: color var(--dur-reveal) var(--ease-out);
+}
+
+.dash__drift {
+  grid-area: drift;
+  margin: 0;
+  justify-self: end;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--muted);
+}
+
+.dash[data-reconciled="false"] .dash__tile[data-off="true"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+}
+
+.dash[data-reconciled="false"] .dash__tile[data-off="true"] :is(.dash__value, .dash__drift) {
+  color: var(--danger);
+}
+
+.dash[data-reconciled="true"] .dash__tile {
+  border-color: color-mix(in srgb, var(--ok) 40%, var(--border));
+}
+
+.dash[data-reconciled="true"] .dash__value {
+  color: var(--ok);
+}
+
+.dash__status {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--danger);
+}
+
+.dash__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.dash[data-reconciled="true"] .dash__status {
+  color: var(--ok);
+}
+
+.dash__status-label {
+  font-weight: 700;
+}
+
+.dash__status-note {
+  font-family: var(--font-prose);
+  font-size: var(--text-small);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+}
+
+/* The ending, repeated under the cards where nothing is pinned. On a wide
+   screen the dashboard is beside the cards the whole time, so it is not
+   needed there. */
+.story__end {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--ok) 40%, var(--border));
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--muted);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
+}
+
+.story__end[data-on="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.story__end-label {
+  flex-basis: 100%;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ok);
+}
+
+.story__end-item b {
+  font-weight: 700;
+  color: var(--ok);
+}
+
+@media (min-width: 1024px) {
+  .story__end {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Services
+   ========================================================================== */
+
+.svc-grid {
+  gap: 16px;
+}
+
+.service-card {
+  padding: 24px 22px;
+  gap: 14px;
+}
+
+.svc-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.svc-title {
+  margin: 0;
+  font-size: var(--text-h4);
+  line-height: 1.15;
+}
+
+/* The price gets a line of its own. In the meta row it shared a baseline with
+   the duration and wrapped under it on the narrowest cards. */
+.svc-price {
+  margin: -6px 0 0;
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.svc-body {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.svc-bullets {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.svc-bullets span {
+  color: var(--ok);
+}
+
+.svc-footnote {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--faint);
+  text-align: center;
+}
+
+/* The event stream. Three lines tall; the track is twice the list, and one
+   loop moves it by exactly half its own height. */
+.svc-stream {
+  --line: 24px;
+  height: calc(var(--line) * 3);
+  overflow: hidden;
+  padding-inline: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  /* Lines fade in and out at the edges instead of being cut by them. */
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+}
+
+.svc-stream__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.svc-stream__line {
+  height: var(--line);
+  line-height: var(--line);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  /* JetBrains Mono joins "→" to what follows it into one long arrow. Fine in
+     code, wrong here, where the arrow is a mark in its own column. */
+  font-variant-ligatures: none;
+  color: var(--muted);
+}
+
+.svc-stream__mark {
+  display: inline-block;
+  width: 1.4em;
+  font-weight: 700;
+  color: var(--ok);
+}
+
+.svc-stream__line[data-mark="warn"] .svc-stream__mark {
+  color: var(--danger);
+}
+
+.svc-stream__line[data-mark="flow"] .svc-stream__mark {
+  color: var(--accent-2);
+}
+
+@keyframes svc-stream {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .svc-stream__track {
+    animation: svc-stream 12s linear infinite paused;
+  }
+
+  /* A pointer that can hover: the stream runs while the card is hovered. */
+  @media (hover: hover) {
+    .service-card:hover .svc-stream__track {
+      animation-play-state: running;
+    }
+  }
+
+  /* Touch: there is no hover, so it runs once the card has been on screen.
+     data-inview is set by components/Motion.tsx. */
+  @media (hover: none) {
+    .svc-stream[data-inview="shown"] .svc-stream__track {
+      animation-play-state: running;
+    }
+  }
+}
+
+/* ==========================================================================
+   More work: the small cards under the case files
+   ========================================================================== */
+
+.more-work {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.more-work__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.more-work__title {
+  margin: 0;
+  font-size: var(--text-h4);
+}
+
+.more-work__all {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.more-work__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .more-work__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .more-work__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.more-work__grid > li {
+  display: flex;
+}
+
+/* The whole card is the link, so it lifts: a lift is a promise that the thing
+   can be clicked, and this one can. */
+.more-card {
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 132px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  color: var(--text);
+  transition: border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.more-card:hover {
+  border-color: var(--ink);
+  background: var(--raise-2);
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.more-card__index {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.more-card__title {
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.more-card__go {
+  margin-top: auto;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more-card:hover {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Written reviews: two drifting rows, a swipe row on phones, a full grid
+   ==========================================================================
+
+   components/sections/WrittenReviews.tsx and components/ui/ReviewCard.tsx. */
+
+.rv {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.rv__title {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rv__more {
+  display: flex;
+  justify-content: center;
+}
+
+/* The card ----------------------------------------------------------------- */
+
+.rv-card {
+  /* Not decoration. The card holds a visually hidden "5 out of 5 stars", which
+     is absolutely positioned. Without a positioned ancestor inside the
+     scrolling row, that text is laid out against the page instead, 5,000px to
+     the right, and the whole page scrolls sideways to reach it. */
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
+}
+
+.rv-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+.rv-card__stars {
+  font-size: var(--text-small);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.rv-card__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-data);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.rv-card__quote {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+/* Seven lines. Long enough that most reviews are whole, short enough that the
+   one 850-character review does not set the height of the row. */
+.rv-card[data-clamp] .rv-card__quote {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 7;
+  line-clamp: 7;
+  overflow: hidden;
+}
+
+.rv-card__by {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* Phones first: one row, swiped ------------------------------------------- */
+
+.rv-rows {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.rv-rows::-webkit-scrollbar {
+  display: none;
+}
+
+/* The two rows and their tracks dissolve, so every card is a direct item of
+   the one scrolling row. */
+.rv-row,
+.rv-track {
+  display: contents;
+}
+
+.rv-item {
+  flex: 0 0 86%;
+  max-width: 360px;
+  list-style: none;
+  scroll-snap-align: start;
+}
+
+.rv-item--copy {
+  display: none;
+}
+
+/* Wide screens: two rows that drift --------------------------------------- */
+
+@media (min-width: 768px) {
+  .rv-rows {
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+    scroll-snap-type: none;
+    padding-bottom: 0;
+    /* Cards arrive and leave through a fade rather than a hard edge. */
+    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  }
+
+  .rv-row {
+    display: block;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .rv-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rv-track {
+    display: flex;
+    width: max-content;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* A margin, not a gap: the loop moves the track by exactly half its width,
+     and a gap would leave that half one gutter short. */
+  .rv-item {
+    flex: 0 0 360px;
+    margin-right: 14px;
+    scroll-snap-align: none;
+  }
+}
+
+@keyframes rv-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .rv-row {
+    overflow: hidden;
+  }
+
+  .rv-item--copy {
+    display: block;
+  }
+
+  /* Only once the component has added the second copy of each row. Before
+     that there is nothing to loop into, and the row would drift off into
+     empty space. */
+  .rv-rows[data-loop] .rv-track {
+    animation: rv-drift var(--rv-duration, 60s) linear infinite;
+  }
+
+  .rv-row[data-dir="right"] .rv-track {
+    animation-direction: reverse;
+  }
+
+  /* Anything that moves on its own stops for a pointer and for focus. */
+  .rv-rows:hover .rv-track,
+  .rv-rows:focus-within .rv-track {
+    animation-play-state: paused;
+  }
+}
+
+/* The full list ------------------------------------------------------------ */
+
+.rv-grid {
+  columns: 1;
+  column-gap: 14px;
+}
+
+.rv-grid[hidden] {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .rv-grid {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rv-grid {
+    columns: 3;
+  }
+}
+
+.rv-grid__item {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}
+
+/* ==========================================================================
+   "This site, tracked live"
+   ========================================================================== */
+
+.live {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .live {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 72px);
+  }
+}
+
+.live__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.live__body {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.live__panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-2);
+  overflow: hidden;
+}
+
+.live__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.live__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ok);
+}
+
+.live__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--ok);
+}
+
+@keyframes live-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .live__pulse {
+    animation: live-pulse 1.8s ease-in-out infinite;
+  }
+}
+
+/* A fixed height for eight rows, so the panel is the same size before the
+   first response, with three events and with twelve. Nothing below it moves
+   when the data arrives. */
+.live__list,
+.live__empty {
+  box-sizing: border-box;
+  height: 320px;
+  margin: 0;
+}
+
+.live__list {
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.live__empty {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--faint);
+}
+
+.live__row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+}
+
+.live__name {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.live__path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.live__time {
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.live__note {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: var(--text-label);
+  color: var(--faint);
+}
+
+/* ==========================================================================
+   "What I'm tracking about you": the button and the drawer
+   ========================================================================== */
+
+/* Bottom left. The contact dock owns the bottom right. Below the header's
+   z-index, like the dock, and for the same reason. */
+.track-fab {
+  position: fixed;
+  z-index: 40;
+  left: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--raise-3);
+  box-shadow: var(--elev-3);
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color var(--dur-micro) var(--ease-out);
+}
+
+.track-fab:hover {
+  border-color: var(--ink);
+}
+
+.track-fab__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+}
+
+.track-fab__count {
+  min-width: 1.6em;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--ink);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* On a phone the label would run under the contact dock, so the button keeps
+   its dot and its count and the label goes to screen readers only. */
+@media (max-width: 639px) {
+  .track-fab__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.track-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--tone-ink) 70%, transparent);
+}
+
+.track-drawer {
+  position: fixed;
+  z-index: 61;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: min(440px, 100vw);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--elev-3);
+}
+
+@keyframes track-drawer-in {
+  from {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .track-drawer {
+    animation: track-drawer-in var(--dur-micro) var(--ease-out);
+  }
+}
+
+.track-drawer__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.track-drawer__title {
+  margin: 0;
+  font-size: var(--text-h4);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.track-drawer__close {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  cursor: pointer;
+}
+
+.track-drawer__close:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.track-drawer__intro,
+.track-drawer__empty {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.track-drawer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.track-row {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.track-row__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.track-row__name {
+  color: var(--ink);
+  font-size: var(--text-small);
+  font-weight: 500;
+}
+
+.track-row__time {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--faint);
+}
+
+.track-row__what {
+  margin: 6px 0 0;
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.track-row__meta,
+.track-row__held {
+  margin: 6px 0 0;
+  font-family: var(--font-data);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  color: var(--faint);
+}
+
+.track-row__held {
+  color: var(--warn);
+}
+
+.track-drawer__foot {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.track-drawer__foot p {
+  margin: 0 0 8px;
+}
+
+.track-drawer__foot a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The wordmark is a name now, not a label: set in the display face at a size
+   that reads as a logo. Last in the file so it follows the header rules it
+   adjusts. */
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   No content-visibility on the sections, on purpose
+   ==========================================================================
+
+   It was tried: content-visibility: auto on every section below the first
+   screen, to skip their layout until they were near the viewport. It cut the
+   first layout task by about a quarter on a throttled phone.
+
+   It also broke the navigation. A skipped section is a 900px placeholder, and
+   the real ones are up to 4,000px tall, so a click on "Reviews" scrolled to
+   where the section would be if everything above it were 900px, and landed
+   in the middle of the case files. A header link that goes to the wrong
+   place is a worse problem than a slower first layout, so it is gone. Do not
+   put it back without a link test at every breakpoint. */
+
+
+/* ==========================================================================
+   Portfolio: featured cards, the folded grid, compact cases, project pages
+   ========================================================================== */
+
+.more-work__grid--featured {
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .more-work__grid--featured {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.more-card[data-featured] {
+  min-height: 260px;
+  padding: 22px;
+  background: var(--raise-2);
+}
+
+.more-card[data-featured] .more-card__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.more-card__cover {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.more-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 1.2em;
+}
+
+.more-card__video {
+  margin-left: auto;
+  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  border-radius: var(--radius-full);
+  font-family: var(--font-data);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* Four lines of the write-up; the page has the rest. */
+.more-card__desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  font-size: var(--text-small);
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.more-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.more-card__skill {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-data);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* Project pages (/work/<slug>) --------------------------------------------- */
+
+.pf {
+  gap: 28px;
+}
+
+.pf__back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pf__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pf__title {
+  margin: 0;
+  max-width: 26ch;
+  font-size: var(--text-display);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.pf__client {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.pf__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .pf__body:has(.pf__video) {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: clamp(32px, 4vw, 64px);
+  }
+}
+
+.pf__text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.pf__desc {
+  margin: 0;
+  max-width: 68ch;
+  font-size: var(--text-lead);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.pf__skills {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pf__video {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.pf__gallery {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .pf__gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pf__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+/* ==========================================================================
+   The free tracking check
+   ========================================================================== */
+
+.check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .check {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 72px);
+  }
+}
+
+.check__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.check__body {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.check__panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-2);
+}
+
+.check__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.check__label {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.check__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 16px or more, always: below that, iOS zooms the page when the field is
+   focused and does not zoom back. */
+.check__input {
+  flex: 1 1 220px;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: 16px;
+}
+
+.check__input::placeholder {
+  color: var(--faint);
+}
+
+.check__submit {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius-sm);
+  background: var(--accent-strong);
+  color: var(--on-accent-strong);
+  font-family: var(--font-prose);
+  font-size: var(--text-small);
+  font-weight: 700;
+  cursor: pointer;
+  transition: box-shadow var(--dur-micro) var(--ease-out);
+}
+
+.check__submit:hover {
+  box-shadow: var(--glow);
+}
+
+.check__submit:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+@media (max-width: 479px) {
+  .check__submit {
+    flex: 1 1 100%;
+  }
+}
+
+.check__note {
+  margin: 0;
+  font-size: var(--text-label);
+  color: var(--faint);
+}
+
+.check__result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.check__result:empty {
+  display: none;
+}
+
+.check__error {
+  margin: 0;
+  color: var(--danger);
+}
+
+.check__host {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.check__host code {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.check__list {
+  list-style: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.check__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "mark name"
+    "mark state";
+  column-gap: 12px;
+  align-items: baseline;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+/* Found is green. Not found is NOT red: the check cannot tell "missing" from
+   "loaded some other way", so it gets the neutral colour and a question mark. */
+.check__mark {
+  grid-area: mark;
+  width: 1.2em;
+  font-family: var(--font-data);
+  font-weight: 700;
+  color: var(--faint);
+}
+
+.check__item[data-found="true"] .check__mark {
+  color: var(--ok);
+}
+
+.check__name {
+  grid-area: name;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+.check__state {
+  grid-area: state;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.check__item[data-found="true"] .check__state code {
+  color: var(--ink);
+}
+
+.check__disclaimer {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.more-work__more {
+  display: flex;
+  justify-content: center;
+}
+
+/* The tracking check's three states: found in the page, found inside the
+   container (green as well, with a small label saying where), and not found
+   in what could be read (neutral, never red: absence from these two places
+   is not proof of absence). */
+.check__item {
+  grid-template-areas:
+    "mark name"
+    "mark state"
+    "mark detail";
+}
+
+.check__item[data-found="false"] .check__name {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.check__via {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--ok) 40%, var(--border));
+  border-radius: var(--radius-full);
+  font-family: var(--font-data);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  color: var(--ok);
+}
+
+.check__detail {
+  grid-area: detail;
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--faint);
+  overflow-wrap: anywhere;
+}
+
+.check__container {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--text);
+}
+
+/* One page, one job ----------------------------------------------------------
+   The head of every page behind the nav, the CTA band that ends them, and the
+   homepage teasers that point at them. */
+
+.page-head {
+  gap: 16px;
+  padding-block: var(--pad-section) var(--pad-band);
+}
+
+.page-head__title {
+  margin: 0;
+  max-width: 22ch;
+  font-size: var(--text-display);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.page-head__lead {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--text-lead);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Sunk, because every page it ends finishes on a plain or raised section. */
+.cta-band {
+  background: var(--tone-sunk);
+  gap: 22px;
+}
+
+@media (min-width: 900px) {
+  .cta-band {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.cta-band__text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cta-band__title {
+  margin: 0;
+  font-size: var(--text-h3);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.cta-band__body {
+  margin: 0;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.cta-band__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.teaser__foot {
+  display: flex;
+}
+
+.teaser__body {
+  margin: 0;
+  max-width: 60ch;
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.teaser__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.svc-teaser {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+@media (min-width: 640px) {
+  .svc-teaser {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .svc-teaser {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.svc-teaser > li {
+  display: flex;
+}
+
+/* The whole card is the link. The accent rule along the top grows from the
+   left on hover: scaleX, so it is a transform and never a repaint. */
+.svc-teaser__card {
+  position: relative;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 22px 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
+  color: var(--text);
+  transition: border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.svc-teaser__card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 320ms var(--ease-out);
+}
+
+.svc-teaser__card:hover {
+  border-color: var(--ink);
+  background: var(--raise-2);
+  color: var(--text);
+  transform: translateY(-4px);
+}
+
+.svc-teaser__card:hover::before,
+.svc-teaser__card:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.svc-teaser__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.svc-teaser__body {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.svc-teaser__foot {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.svc-teaser__foot .svc-price {
+  margin: 0;
+}
+
+.svc-teaser__go {
+  color: var(--ink);
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.svc-teaser__card:hover .svc-teaser__go {
+  transform: translateX(4px);
+}
+
+/* Case cards in the homepage deck ------------------------------------------- */
+
+.case-stack__card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-2);
+  overflow: hidden;
+}
+
+.case-stack__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  padding: clamp(18px, 2.4vw, 30px);
+}
+
+@media (min-width: 900px) {
+  .case-stack__body {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    align-items: center;
+  }
+}
+
+.case-stack__text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.case-stack__title {
+  margin: 0;
+  font-size: var(--text-h3);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.case-stack__desc {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.case-stack__tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Project cards in the homepage deck ---------------------------------------- */
+
+.pdeck {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-2);
+  box-shadow: var(--elev-2);
+  color: var(--text);
+  transition: border-color var(--dur-micro) var(--ease-out);
+}
+
+.pdeck:hover {
+  border-color: var(--ink);
+  color: var(--text);
+}
+
+@media (min-width: 900px) {
+  .pdeck {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    min-height: min(440px, 62vh);
+  }
+}
+
+.pdeck__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 900px) {
+  .pdeck__media {
+    aspect-ratio: auto;
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
+  }
+}
+
+.pdeck__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  transition: transform 700ms var(--ease-out);
+}
+
+.pdeck:hover .pdeck__img {
+  transform: scale(1.06);
+}
+
+.pdeck__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--faint);
+}
+
+.pdeck__text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(18px, 2.4vw, 32px);
+  min-width: 0;
+}
+
+.pdeck__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pdeck__count {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.pdeck__title {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.pdeck__desc {
+  color: var(--muted);
+  line-height: 1.6;
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.pdeck__go {
+  margin-top: auto;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pdeck__go span {
+  display: inline-block;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.pdeck:hover .pdeck__go span {
+  transform: translateX(5px);
+}
+
+/* Video review cards -------------------------------------------------------- */
+
+.review-slide__count {
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.review-slide__verified {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  color: var(--result);
+}
+
+.review-slide__lead {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.review-slide__by {
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.review-more {
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+
+/* In a deck a portrait video must fit on screen with its caption, so it is
+   sized from the viewport height rather than its own. */
+.deck .review-slide {
+  --yt-portrait-h: min(58vh, 520px);
+}
+
+/* Every slide the same height, landscape or portrait, so a taller card never
+   shows below a shorter one stacked on top of it. */
+.deck .review-slide__media {
+  height: var(--yt-portrait-h);
+}
+
+@media (max-width: 699px) {
+  .deck .review-slide {
+    --yt-portrait-h: min(44vh, 380px);
+  }
+
+  .deck .review-slide__body {
+    padding-block: 18px;
+  }
+}
+
+/* About, short, on the homepage --------------------------------------------- */
+
+.about-teaser {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+
+@media (min-width: 760px) {
+  .about-teaser {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 56px);
+  }
+}
+
+.about-teaser__photo {
+  width: 160px;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+@media (min-width: 760px) {
+  .about-teaser__photo {
+    width: 100%;
+  }
+}
+
+/* Beside a photo the heading reads from the left, like the text under it. */
+.about-teaser .section-head {
+  justify-content: flex-start;
+  text-align: left;
+  margin-inline: 0;
+}
+
+.about-teaser__text {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+/* Decks ------------------------------------------------------------------------
+   components/ui/Deck.tsx. Cards that arrive one at a time as the page scrolls.
+
+   HOLD: each card is sticky just below the header, 16px lower than the one
+   before, and the next slides up over it. Sticky is layout the compositor
+   scrolls on its own; nothing runs per frame.
+
+   RISE AND TIP BACK, where the browser can tie an animation to scroll: each
+   card rises into place as it enters, and the card underneath tips back,
+   shrinks and darkens while the next covers it, on the NEXT card's view
+   timeline (--deck-next, set per card in Deck.tsx). The card itself never
+   goes translucent; the darkening is an overlay fading in on top of it, so
+   nothing underneath shows through. Transform and opacity only, so the
+   compositor runs them off the main thread. They follow the scroll, so
+   scrolling back up plays them backwards.
+
+   Under reduced motion none of this applies: the deck is a list. */
+
+.deck {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.deck__card {
+  position: relative;
+  border-radius: var(--radius-lg);
+}
+
+.deck__card > * {
+  width: 100%;
+}
+
+.deck__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-height: 600px) {
+  .deck {
+    gap: 14vh;
+  }
+
+  .deck__item {
+    position: sticky;
+    top: calc(92px + var(--i, 0) * 16px);
+  }
+}
+
+@keyframes deck-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(140px) scale(0.9) rotate(var(--deck-tilt, 0deg));
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes deck-back {
+  to {
+    transform: perspective(1400px) rotateX(9deg) scale(0.9);
+  }
+}
+
+@keyframes deck-dim {
+  to {
+    opacity: 0.6;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .deck__item {
+      animation: deck-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+
+    .deck__item:nth-child(odd) {
+      --deck-tilt: -2.5deg;
+    }
+
+    .deck__item:nth-child(even) {
+      --deck-tilt: 2.5deg;
+    }
+
+    .deck__card {
+      transform-origin: 50% 0;
+      animation: deck-back linear both;
+      animation-timeline: var(--deck-next);
+      animation-range: entry 10% cover 45%;
+    }
+
+    .deck__card::after {
+      animation: deck-dim linear both;
+      animation-timeline: var(--deck-next);
+      animation-range: entry 10% cover 45%;
+    }
+
+    /* The last card is never covered. */
+    .deck__item:last-child .deck__card,
+    .deck__item:last-child .deck__card::after {
+      animation: none;
+    }
+  }
+}
+
+/* A deck of cards taller than a phone screen holds on wide screens only, and
+   a card that is never covered is never tipped back. */
+@media (max-width: 899px) {
+  .deck--wide {
+    gap: 24px;
+  }
+
+  .deck--wide .deck__item {
+    position: static;
+  }
+
+  .deck--wide .deck__card,
+  .deck--wide .deck__card::after {
+    animation: none !important;
+  }
+}
+
+/* Filter chips ----------------------------------------------------------------
+   /work, /case-studies and /reviews. Toggle buttons: aria-pressed is the state
+   and the style follows it, so the look cannot disagree with what a screen
+   reader is told. */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--raise-1);
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.chip:hover {
+  border-color: var(--ink);
+  color: var(--text);
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.chip__n {
+  opacity: 0.7;
+}
+
+/* The /work masonry ----------------------------------------------------------
+   CSS columns: each card keeps its own height and the columns fill top to
+   bottom. A new filter mounts a new list, and its cards rise in one after
+   another. */
+
+.work-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.masonry {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 1;
+  column-gap: 18px;
+}
+
+@media (min-width: 640px) {
+  .masonry {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1100px) {
+  .masonry {
+    columns: 3;
+  }
+}
+
+.masonry__item {
+  display: flex;
+  break-inside: avoid;
+  margin-bottom: 18px;
+}
+
+.more-card[data-masonry] .more-card__cover {
+  aspect-ratio: auto;
+  max-height: 420px;
+}
+
+.more-card[data-masonry] .more-card__cover {
+  transition: transform 600ms var(--ease-out);
+}
+
+.more-card[data-masonry] {
+  overflow: hidden;
+}
+
+.more-card[data-masonry]:hover .more-card__cover {
+  transform: scale(1.04);
+}
+
+@keyframes masonry-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .masonry__item {
+    animation: masonry-in 520ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+}
+
+.work-more {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.06em;
+}
+
+/* Lightbox ---------------------------------------------------------------------
+   components/Lightbox.tsx. The screenshot buttons look like the images they
+   wrap, with a zoom cursor and a focus ring; the dialog is the full screen. */
+
+.shot-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.shot-open img {
+  transition: transform 500ms var(--ease-out);
+}
+
+.shot-open:hover img {
+  transform: scale(1.02);
+}
+
+.lightbox {
+  box-sizing: border-box;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: clamp(56px, 6vw, 72px) clamp(12px, 6vw, 88px) 24px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  touch-action: pan-y;
+}
+
+.lightbox[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox::backdrop {
+  background: var(--bg);
+  opacity: 0.94;
+}
+
+.lightbox__figure {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.lightbox__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 180px);
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elev-2);
+  user-select: none;
+}
+
+.lightbox__caption {
+  max-width: 72ch;
+  text-align: center;
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.lightbox__count {
+  margin-right: 10px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.lightbox__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 24px;
+  color: var(--text);
+}
+
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text);
+}
+
+.lightbox__nav:hover {
+  transform: translateY(-50%);
+}
+
+.lightbox__nav--prev {
+  left: clamp(6px, 2vw, 24px);
+}
+
+.lightbox__nav--next {
+  right: clamp(6px, 2vw, 24px);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox__img {
+    animation: lightbox-in 240ms var(--ease-out);
+  }
+}
+
+/* Filtered lists ---------------------------------------------------------------- */
+
+.masonry__item > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.case-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* /reviews: five lines, then "Read more" opens the rest in place. */
+.rv-card[data-expandable] .rv-card__quote {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
+.rv-card__more {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.rv-card__more:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

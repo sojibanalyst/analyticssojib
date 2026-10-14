@@ -71,7 +71,6 @@ export default async function BlogPost({ params }: Params) {
               lineHeight: 1.1,
               fontWeight: 700,
               letterSpacing: "-0.025em",
-              textTransform: "uppercase",
               textWrap: "balance",
             }}
           >

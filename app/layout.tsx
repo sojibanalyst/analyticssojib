@@ -10,8 +10,8 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.role}`,
-    template: `%s — ${site.name}`,
+    default: `${site.name} | ${site.role}`,
+    template: `%s | ${site.name}`,
   },
   description: site.description,
   applicationName: site.domain,
@@ -30,12 +30,15 @@ export const metadata: Metadata = {
     "Looker Studio",
     "analytics consultant",
   ],
-  alternates: { canonical: site.url },
+  // No canonical here. Declared in the root layout it was inherited by every
+  // route that did not set its own, so /admin and /book both told crawlers
+  // they were the homepage. Each public page declares its own; the homepage's
+  // is in app/(marketing)/page.tsx.
   openGraph: {
     type: "website",
     url: site.url,
     siteName: site.domain,
-    title: `${site.name} — ${site.role}`,
+    title: `${site.name} | ${site.role}`,
     description: site.description,
     locale: "en_US",
   },
@@ -43,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: site.twitterHandle,
     creator: site.twitterHandle,
-    title: `${site.name} — ${site.role}`,
+    title: `${site.name} | ${site.role}`,
     description: site.description,
   },
   robots: {
@@ -55,18 +58,18 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f4f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
-  ],
-  colorScheme: "light dark",
+  // One colour, not a light/dark pair keyed on the operating system: the theme
+  // is the visitor's choice on this site, dark unless they switch, and the
+  // browser chrome should match the page they are actually looking at.
+  themeColor: "#0a0e14",
+  colorScheme: "dark light",
 };
 
 /**
- * Applied before paint so a stored theme never flashes. Light is the default,
- * so anything other than an explicit "dark" resolves to light.
+ * Applied before paint so a stored theme never flashes. Dark is the default,
+ * so anything other than an explicit "light" resolves to dark.
  */
-const themeBootstrap = `(function(){try{var t=localStorage.getItem("sf-theme-2");document.documentElement.dataset.theme=t==="dark"?"dark":"light";}catch(e){document.documentElement.dataset.theme="light";}})();`;
+const themeBootstrap = `(function(){try{var t=localStorage.getItem("sf-theme-3");document.documentElement.dataset.theme=t==="light"?"light":"dark";}catch(e){document.documentElement.dataset.theme="dark";}})();`;
 
 /**
  * Consent Mode v2, declared before GTM loads.
@@ -100,11 +103,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     // The font variables must live on :root — Tailwind's @theme resolves
-    // --font-prose/--font-data there, and a var() that cannot resolve makes the
+    // --font-display/--font-prose/--font-data there, and a var() that cannot resolve makes the
     // whole font-family declaration invalid.
     <html
       lang="en"
-      data-theme="light"
+      data-theme="dark"
       className={fontVariables}
       suppressHydrationWarning
     >

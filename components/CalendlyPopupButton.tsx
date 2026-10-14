@@ -28,7 +28,12 @@ export function CalendlyPopupButton({ children, className, placement }: Props) {
       // in a new tab, so this fires before the modifier check rather than
       // after it. Counting only the clicks that happen to open a popup would
       // undercount the thing the whole site is for.
-      track("book_call_click", { placement: placement ?? "unknown" });
+      // `section` is the name every other event uses for where it happened;
+      // `placement` stays because bookings recorded before it are keyed on it.
+      track("book_call_click", {
+        placement: placement ?? "unknown",
+        section: placement ?? "unknown",
+      });
 
       // Let modified clicks (new tab, etc.) behave normally.
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;

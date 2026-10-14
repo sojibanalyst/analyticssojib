@@ -18,12 +18,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Writing",
     description:
-      "Notes on GA4, Google Tag Manager, server-side tagging, Meta CAPI and Consent Mode v2 — written from the reconciliation work, not from a keyword list.",
+      "Notes on GA4, Google Tag Manager, server-side tagging, Meta CAPI and Consent Mode v2, written from the reconciliation work, not from a keyword list.",
     alternates: { canonical: url },
     openGraph: {
       type: "website",
       url,
-      title: `Writing — ${site.name}`,
+      title: `Writing | ${site.name}`,
       description:
         "Notes on GA4, Google Tag Manager, server-side tagging, Meta CAPI and Consent Mode v2.",
     },

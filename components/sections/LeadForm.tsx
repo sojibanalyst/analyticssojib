@@ -29,6 +29,10 @@ export function LeadForm() {
   const [state, formAction] = useActionState(submitLead, initial);
   const statusRef = useRef<HTMLParagraphElement>(null);
   const fired = useRef<string | null>(null);
+  // What the visitor picked in the platform select, kept for the dataLayer
+  // push. The form is gone by the time the push happens, so it is read as it
+  // changes. "other" is what the server records when nothing was chosen.
+  const platform = useRef("other");
 
   /**
    * generate_lead reaches the dataLayer here, and ONLY the dataLayer.
@@ -56,6 +60,7 @@ export function LeadForm() {
     fired.current = key;
     pushEvent("generate_lead", {
       form: "contact",
+      platform: platform.current,
       ...(state.eventId ? { event_id: state.eventId } : {}),
     });
   }, [state]);
@@ -113,7 +118,14 @@ export function LeadForm() {
         </div>
         <div className="lead-form__field">
           <label htmlFor="lead-platform">{copy.platform}</label>
-          <select id="lead-platform" name="platform" defaultValue="">
+          <select
+            id="lead-platform"
+            name="platform"
+            defaultValue=""
+            onChange={(e) => {
+              platform.current = e.target.value || "other";
+            }}
+          >
             <option value="">{copy.platformDefault}</option>
             <option value="shopify">Shopify</option>
             <option value="woocommerce">WooCommerce</option>

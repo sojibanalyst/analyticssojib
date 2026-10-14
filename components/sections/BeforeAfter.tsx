@@ -1,4 +1,4 @@
-import { ScrambleValue } from "@/components/ScrambleValue";
+import { CountValue } from "@/components/CountValue";
 import { type CaseStudy } from "@/content/site";
 
 /**
@@ -26,14 +26,14 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           </span>
           <span
             style={{
-              fontFamily: "var(--font-prose)",
+              fontFamily: "var(--font-data)",
               fontSize: "var(--text-h2)",
               fontWeight: 500,
               color: "var(--faint)",
               letterSpacing: "-0.03em",
             }}
           >
-            <ScrambleValue value={metric.before} />
+            <CountValue value={metric.before} />
           </span>
         </div>
 
@@ -54,7 +54,7 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
               style={{
                 position: "absolute",
                 inset: `0 ${100 - metric.beforePct}% 0 0`,
-                background: "var(--faint)",
+                background: "var(--danger)",
               }}
             />
           </div>
@@ -87,13 +87,13 @@ export function BeforeAfter({ metric }: { metric: CaseStudy["metric"] }) {
           </span>
           <span
             style={{
-              fontFamily: "var(--font-prose)",
+              fontFamily: "var(--font-data)",
               fontSize: "var(--text-h2)",
               fontWeight: 800,
               letterSpacing: "-0.03em",
             }}
           >
-            <ScrambleValue value={metric.after} />
+            <CountValue value={metric.after} />
           </span>
         </div>
       </div>

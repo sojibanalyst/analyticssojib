@@ -20,13 +20,25 @@ const ROUTES = [
   ["/blog/consent-mode-v2-without-losing-data", 200],
   ["/case-studies/shopify-purchase-accuracy-rebuild", 200],
   ["/case-studies/meta-roas-deduplication", 200],
+  // Portfolio project pages, added in the 2026 redesign. One featured, one not.
+  ["/work", 200, "All projects"],
+  ["/work/server-side-tracking-using-stape-io", 200],
+  ["/work/ga4-custom-report-setup", 200],
+  ["/work/this-project-does-not-exist", 404],
   ["/tracking-plan", 200],
   ["/privacy", 200],
   ["/terms", 200],
   ["/sitemap.xml", 200],
   ["/robots.txt", 200],
   ["/manifest.webmanifest", 200],
-  ["/services", 308],
+  // /services redirected (308) to /#services until it became a page of its
+  // own in the one-page-one-job split. The URL kept working throughout; it
+  // now answers 200 instead of a redirect.
+  ["/services", 200, "Four ways in"],
+  // The pages behind the nav, added in the same split.
+  ["/case-studies", 200, "Case studies"],
+  ["/reviews", 200, "What clients said"],
+  ["/about", 200, "About Sojib"],
   ["/this-route-does-not-exist", 404],
   // An /admin path that does not exist. Signed out it is the middleware that
   // answers, exactly as it does for a real console screen; signed in it now
@@ -38,11 +50,19 @@ const ROUTES = [
   // the one that matters: /admin must never render to a stranger.
   ["/admin", 307],
   ["/admin/settings", 307],
+  ["/admin/portfolio", 307],
   ["/admin/login", 200, "Email"],
 
   // The collector accepts POST only. A GET returning 405 is the check that it
   // exists and has not quietly become a page.
   ["/api/collect", 405],
+
+  // The tracking check accepts POST only, like the collector.
+  ["/api/tracking-check", 405],
+
+  // The public read behind the live panel. JSON with an `events` array, and
+  // nothing else at the top level.
+  ["/api/events/recent", 200, '"events"'],
 ];
 
 let failed = 0;

@@ -27,6 +27,62 @@ function newEventId(): string {
   return `e_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
+/* --------------------------------------------------------------------------
+   Own traffic
+
+   Somebody signed in to the console is the owner, and the owner's clicks are
+   not visitors. The console itself is already outside the tracker (it is not
+   mounted in the (admin) group); this covers the other half, the owner
+   browsing the public site in the same browser.
+
+   The test is the Supabase auth cookie, which @supabase/ssr sets readable by
+   script. It is a presence check and nothing more: the value is never read,
+   and nothing is unlocked by it. A stale cookie after sign-out only means a
+   few of the owner's own events go uncounted, which is the safe direction.
+   -------------------------------------------------------------------------- */
+const ADMIN_COOKIE = /(?:^|; )sb-[^=;]+-auth-token(?:\.\d+)?=/;
+
+export function isOwnTraffic(): boolean {
+  return typeof document !== "undefined" && ADMIN_COOKIE.test(document.cookie);
+}
+
+/* --------------------------------------------------------------------------
+   What this visit has sent
+
+   A plain in-memory list of the events this page has fired, for the "See what
+   I'm tracking about you" drawer. It lives in the tab and nowhere else: it is
+   not written to storage and is gone on reload, because it is a mirror of
+   what was sent, not a second copy of it.
+   -------------------------------------------------------------------------- */
+export type SentEvent = {
+  id: string;
+  name: string;
+  at: number;
+  path: string;
+  params: TrackParams;
+  /** False when the event was held back as the owner's own traffic. */
+  sent: boolean;
+};
+
+const MAX_LOG = 100;
+let log: SentEvent[] = [];
+const listeners = new Set<() => void>();
+
+function record(entry: SentEvent) {
+  // A new array each time: useSyncExternalStore compares by identity.
+  log = [...log, entry].slice(-MAX_LOG);
+  for (const listener of listeners) listener();
+}
+
+export function getSentEvents(): SentEvent[] {
+  return log;
+}
+
+export function subscribeSentEvents(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
 /**
  * Fire an event.
  *
@@ -37,6 +93,19 @@ export function track(name: string, params: TrackParams = {}): string {
   const eventId = newEventId();
 
   try {
+    const own = isOwnTraffic();
+
+    record({
+      id: eventId,
+      name,
+      at: Date.now(),
+      path: location.pathname,
+      params,
+      sent: !own,
+    });
+
+    if (own) return eventId;
+
     const consent = currentConsent();
 
     // Browser path — GTM decides what to do with it under Consent Mode.

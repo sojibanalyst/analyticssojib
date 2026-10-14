@@ -34,6 +34,12 @@ export function Parallax() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Not on touch. This writes a custom property to every screenshot on every
+    // scrolled frame, which means a style recalculation per frame while a
+    // thumb is moving the page. 22px of drift is not worth one dropped frame
+    // on the device most visitors are holding.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
     const els = [...document.querySelectorAll<HTMLElement>("[data-par]")];
     if (els.length === 0) return;
 

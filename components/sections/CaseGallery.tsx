@@ -71,11 +71,11 @@ export function CaseGallery({ shots, label }: { shots: CaseShot[]; label: string
         onKeyDown={onKeyDown}
         tabIndex={single ? -1 : 0}
         role="group"
-        aria-label={`${label} — evidence screenshots`}
+        aria-label={`${label}, evidence screenshots`}
         data-track="1"
         className="case-gallery__track"
       >
-        {shots.map((shot, i) => (
+        {shots.map((shot) => (
           <figure key={shot.src} className="case-gallery__item">
             <div className="case-shot" data-par>
               <Image
@@ -83,7 +83,7 @@ export function CaseGallery({ shots, label }: { shots: CaseShot[]; label: string
                 alt={shot.alt}
                 fill
                 sizes="(max-width: 1279px) 100vw, 1232px"
-                loading={i === 0 ? "eager" : "lazy"}
+                loading="lazy"
                 style={{ objectFit: "cover" }}
               />
             </div>

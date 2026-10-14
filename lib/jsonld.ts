@@ -33,7 +33,7 @@ export const professionalServiceJsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "@id": `${site.url}/#service`,
-  name: `${site.name} — Analytics & Tracking`,
+  name: `${site.name} | Analytics & Tracking`,
   url: site.url,
   description: site.description,
   email: `mailto:${site.email}`,

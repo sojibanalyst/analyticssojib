@@ -1,253 +1,180 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { reviews, type WrittenReview } from "@/content/site";
+import { useEffect, useId, useState } from "react";
+
+import { FilterList } from "@/components/FilterList";
+import { pages, reviews, type WrittenReview } from "@/content/site";
+import { REVIEW_FILTERS, groupsOf } from "@/lib/filters";
+import { ReviewCard } from "@/components/ui/ReviewCard";
 
 /**
- * The design's written-review carousel: a scroll-snapped track with dots, an
- * index counter and arrow buttons, 3 cards visible on desktop, 2 on tablet,
- * 1 on mobile.
+ * The written reviews, built for many.
  *
- * The pager is driven from the track's own scroll position rather than from
- * React state alone, so dragging, arrow keys and the buttons all stay in sync.
+ * WIDE SCREENS: two rows that drift in opposite directions. Each row's cards
+ * are rendered twice so the loop has no seam, and the second copy is hidden
+ * from screen readers and removed from the tab order. The rows stop while a
+ * pointer is over them or while anything inside has focus, which is the rule
+ * for content that moves on its own.
+ *
+ * PHONES: the same cards become one row you swipe. No second copy, no motion
+ * of its own; scroll snapping does the settling.
+ *
+ * REDUCED MOTION: the rows do not drift at any width. They scroll sideways by
+ * hand instead.
+ *
+ * EVERYWHERE: "Read all reviews" opens every review in full, in columns. The
+ * moving rows clamp long quotes so the cards stay one height; the grid is
+ * where nothing is cut.
+ *
+ * A placeholder row from the console is never rendered as a review. With no
+ * real reviews at all, the whole block renders nothing.
  */
-export function WrittenReviews({ items }: { items: WrittenReview[] }) {
-  const N = items.length;
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [index, setIndex] = useState(0);
-  const lockRef = useRef(false);
-  const lockTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+export function WrittenReviews({
+  items,
+  all = false,
+  moving = false,
+}: {
+  items: WrittenReview[];
+  /** Every review in full, as a grid: /reviews. */
+  all?: boolean;
+  /** Only the moving rows, with no "read all" toggle: the homepage, which
+   *  links to /reviews instead. */
+  moving?: boolean;
+}) {
+  const real = items.filter((item) => !item.placeholder && item.quote.trim() !== "");
+  const [open, setOpen] = useState(false);
+  const gridId = useId();
 
-  const step = useCallback(() => {
-    const el = trackRef.current;
-    const first = el?.firstElementChild as HTMLElement | null;
-    if (!el || !first) return 0;
-    return first.getBoundingClientRect().width + 14;
+  /**
+   * The second copy of each row exists only to close the loop, so it is only
+   * rendered where there is a loop: a wide screen with motion allowed, and
+   * only after hydration. In the server's HTML it would be every review a
+   * second time, for every visitor, including the phones that never show it.
+   * The drift is switched on by the same flag, so a row never starts moving
+   * before the copy that makes it seamless is there.
+   */
+  const [loop, setLoop] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px) and (prefers-reduced-motion: no-preference)");
+    const sync = () => setLoop(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
   }, []);
 
-  const go = useCallback(
-    (n: number) => {
-      const el = trackRef.current;
-      const s = step();
-      if (!el || !s) return;
-      const max = Math.max(0, Math.round((el.scrollWidth - el.clientWidth) / s));
-      const i = Math.max(0, Math.min(n, max));
-      setIndex(i);
-      // Ignore the scroll events this animation emits, or mid-flight
-      // positions rewrite the index.
-      lockRef.current = true;
-      clearTimeout(lockTimer.current);
-      lockTimer.current = setTimeout(() => {
-        lockRef.current = false;
-      }, 700);
-      el.scrollTo({ left: i * s, behavior: "smooth" });
-    },
-    [step],
+  if (!real.length) return null;
+
+  // Alternate cards between the rows, so each row gets a mix of long and short
+  // rather than the first ten and the last ten.
+  const rows = [real.filter((_, i) => i % 2 === 0), real.filter((_, i) => i % 2 === 1)].filter(
+    (row) => row.length > 0,
   );
 
-  useEffect(() => () => clearTimeout(lockTimer.current), []);
+  const card = (item: WrittenReview, clamp: boolean) => (
+    <ReviewCard
+      quote={item.quote}
+      attribution={item.attribution}
+      verifiedLabel={reviews.verified}
+      clamp={clamp}
+    />
+  );
 
-  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const s = step();
-    if (!s || lockRef.current) return;
-    const i = Math.round(e.currentTarget.scrollLeft / s);
-    if (i !== index) setIndex(i);
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "ArrowRight") {
-      e.preventDefault();
-      go(index + 1);
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      go(index - 1);
-    }
-  };
+  // On /reviews every review is the point of the page: all of them, in
+  // columns, filterable by the service they mention, each cut at five lines
+  // with a "Read more" where it is longer. Nothing moves.
+  if (all) {
+    return (
+      <div className="rv">
+        <h3 className="rv__title">{reviews.writtenTitle}</h3>
+        <FilterList
+          entries={real.map((item) => ({
+            key: item.attribution + item.quote.slice(0, 24),
+            groups: groupsOf(`${item.attribution} ${item.quote}`, REVIEW_FILTERS),
+            node: (
+              <ReviewCard
+                quote={item.quote}
+                attribution={item.attribution}
+                verifiedLabel={reviews.verified}
+                expandable={{ more: reviews.readMore, less: reviews.readLess }}
+              />
+            ),
+          }))}
+          order={REVIEW_FILTERS.map((rule) => rule.label)}
+          label={pages.reviews.filterLabel}
+          allLabel={pages.reviews.filterAll}
+          showingLabel={pages.reviews.filterShowing}
+          listClassName="masonry"
+        />
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "14px",
-          flexWrap: "wrap",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-prose)",
-            fontSize: "var(--text-label)",
-            letterSpacing: "0.14em",
-            color: "var(--muted)",
-          }}
-        >
-          {reviews.writtenTitle}
-        </span>
-
-        <div className="written-pager">
-          {/* Eight dots plus the counter and arrows do not fit a 360px screen;
-              the dots drop away there and the arrows carry the interaction. */}
-          <div className="written-dots">
-            {items.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => go(i)}
-                aria-label={`Go to written review ${i + 1}`}
-                aria-current={i === index || undefined}
-                style={{
-                  boxSizing: "border-box",
-                  width: "20px",
-                  minHeight: "44px",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: 0,
-                  padding: 0,
-                  background: "transparent",
-                  cursor: "pointer",
-                }}
-              >
-                <span
-                  style={{
-                    width: "14px",
-                    height: "6px",
-                    borderRadius: "var(--radius-full)",
-                    background: i === index ? "var(--accent)" : "var(--border)",
-                  }}
-                />
-              </button>
-            ))}
-          </div>
-
-          <span
-            aria-live="polite"
-            style={{
-              fontFamily: "var(--font-prose)",
-              fontSize: "var(--text-label)",
-              letterSpacing: "0.08em",
-              whiteSpace: "nowrap",
-              color: "var(--muted)",
-              minWidth: "54px",
-            }}
-          >
-            {String(index + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
-          </span>
-
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button
-              type="button"
-              onClick={() => go(index - 1)}
-              aria-label="Previous written review"
-              className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              onClick={() => go(index + 1)}
-              aria-label="Next written review"
-              className="icon-btn"
-              style={{ color: "var(--text)", fontSize: "var(--text-small)" }}
-            >
-              →
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="rv">
+      <h3 className="rv__title">{reviews.writtenTitle}</h3>
 
       <div
-        ref={trackRef}
-        onScroll={onScroll}
-        onKeyDown={onKeyDown}
-        tabIndex={0}
+        className="rv-rows"
         role="group"
-        aria-label="Client written reviews"
-        data-track="1"
-        className="written-track"
-        data-stagger
+        aria-label={reviews.writtenTitle}
+        data-loop={loop || undefined}
       >
-        {items.map((item, i) => (
-          <figure key={i} className="written-card" data-placeholder={item.placeholder}>
-            {/*
-              An empty slot renders as an empty slot.
-
-              It used to render ★★★★★ VERIFIED above a note I had written to
-              myself — "paste the client's own words here, unedited" — so eight
-              unfilled slots put eight verified five-star reviews on a page
-              whose headline is that wrong data makes every decision a guess.
-              /admin/reviews already promised placeholders "render on the live
-              site as clearly-labelled empty slots — never as a real quote";
-              this is that sentence becoming true.
-
-              No stars, no badge, no body. The figcaption below still labels
-              the slot ("AWAITING REVIEW 1 OF 8"), which is the honest thing to
-              show and the only thing left showing.
-
-              Keyed off the same derived `placeholder` flag as everything else
-              — a slot stops being a placeholder when it stops containing the
-              placeholder text, and there is no second switch to forget.
-            */}
-            {item.placeholder ? (
-              /* Not even hollow stars: five empty stars still reads as a
-                 rating of zero, and it would still be five star characters on
-                 a page that should have none until a client has actually said
-                 something. */
-              <span
-                style={{
-                  fontFamily: "var(--font-prose)",
-                  fontSize: "var(--text-label)",
-                  letterSpacing: "0.1em",
-                  color: "var(--faint)",
-                }}
-              >
-                EMPTY SLOT
-              </span>
-            ) : (
-              <span
-                style={{
-                  fontFamily: "var(--font-prose)",
-                  fontSize: "var(--text-label)",
-                  letterSpacing: "0.1em",
-                  color: "var(--result)",
-                }}
-              >
-                ★★★★★ VERIFIED
-              </span>
-            )}
-
-            {item.placeholder ? null : (
-              <blockquote
-                style={{
-                  margin: 0,
-                  fontSize: "var(--text-body)",
-                  lineHeight: 1.6,
-                  color: "var(--text)",
-                  textWrap: "pretty",
-                }}
-              >
-                {item.quote}
-              </blockquote>
-            )}
-            <figcaption
-              style={{
-                fontFamily: "var(--font-prose)",
-                fontSize: "var(--text-label)",
-                letterSpacing: "0.08em",
-                color: "var(--muted)",
-                borderTop: "1px solid var(--border)",
-                paddingTop: "14px",
-                marginTop: "auto",
-              }}
-            >
-              {item.attribution}
-            </figcaption>
-          </figure>
+        {rows.map((row, r) => (
+          <div
+            key={r}
+            className="rv-row"
+            data-dir={r % 2 === 0 ? "left" : "right"}
+            // Speed follows length, so a row of ten does not race past at the
+            // pace that suits a row of three.
+            style={{ ["--rv-duration" as string]: `${Math.max(row.length * 9, 30)}s` }}
+          >
+            <ul className="rv-track">
+              {row.map((item) => (
+                <li key={item.attribution + item.quote.slice(0, 24)} className="rv-item">
+                  {card(item, true)}
+                </li>
+              ))}
+              {loop &&
+                row.map((item) => (
+                <li
+                  key={`copy-${item.attribution + item.quote.slice(0, 24)}`}
+                  className="rv-item rv-item--copy"
+                  aria-hidden="true"
+                  inert
+                >
+                  {card(item, true)}
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
       </div>
-    </>
+
+      {moving ? null : (
+      <div className="rv__more">
+        <button
+          type="button"
+          className="btn btn-ghost"
+          aria-expanded={open}
+          aria-controls={gridId}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? reviews.hideAll : `${reviews.readAll} (${real.length})`}
+        </button>
+      </div>
+      )}
+
+      {moving ? null : (
+      <div id={gridId} className="rv-grid" hidden={!open}>
+        {open
+          ? real.map((item) => (
+              <div key={item.attribution + item.quote.slice(0, 24)} className="rv-grid__item">
+                {card(item, false)}
+              </div>
+            ))
+          : null}
+      </div>
+      )}
+    </div>
   );
 }
