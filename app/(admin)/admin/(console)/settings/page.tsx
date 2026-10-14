@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import Link from "next/link";
 import { AdminState } from "@/components/admin/Table";
 import { SavingForm } from "@/components/admin/SavingForm";
@@ -20,17 +21,11 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Settings</h1>
-        <p>
-          Site-wide configuration, none of it secret. Destination credentials
-          are not on this page — they are set on{" "}
-          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, encrypted into
-          Supabase Vault, and never sent back to the browser. A screenshot of
-          either page cannot leak one, because neither page has ever been given
-          the value to show.
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        subtitle={"Site-wide configuration. Nothing here is secret."}
+        help="Destination credentials live on Destinations, encrypted, and are never sent back to the browser."
+      />
 
       {error ? (
         <section className="admin-card">

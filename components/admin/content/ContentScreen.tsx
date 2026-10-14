@@ -67,7 +67,11 @@ export function ContentScreen({ kind, rows }: { kind: ContentKind; rows: AnyRow[
   /* List state ------------------------------------------------------------ */
 
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<FilterKey>("all");
+  // ?filter=… opens the list already filtered: the dashboard links here.
+  const [filter, setFilter] = useState<FilterKey>(() => {
+    const wanted = params.get("filter");
+    return wanted === "live" || wanted === "notLive" || wanted === "check" || wanted === "noImages" ? wanted : "all";
+  });
   const [sort, setSort] = useState<SortKey>("order");
   const [visibleOverride, setVisibleOverride] = useState<Record<string, boolean>>({});
   const [orderOverride, setOrderOverride] = useState<string[] | null>(null);

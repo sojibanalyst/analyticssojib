@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { createClient } from "@/lib/supabase/server";
 
@@ -25,15 +26,11 @@ export default async function SessionsPage() {
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Sessions</h1>
-        <p>
-          First touch is written once and never overwritten; last touch is
-          rewritten on every visit. That split is what lets a lead be credited
-          to the campaign that originally found them rather than to the reload
-          that happened to be last.
-        </p>
-      </div>
+      <PageHeader
+        title="Sessions"
+        subtitle={"First touch is kept; last touch updates on every visit."}
+        help="That split lets a lead be credited to the campaign that first found them, not the visit that happened to be last."
+      />
 
       <section className="admin-card">
         {error ? (

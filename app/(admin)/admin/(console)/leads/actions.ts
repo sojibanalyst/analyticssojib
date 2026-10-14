@@ -7,37 +7,6 @@ import { LEAD_STATUSES, type LeadStatus } from "./statuses";
 import { ACTION_ERRORS, fail, ok, type ActionState } from "@/lib/action-state";
 
 /**
- * Move a lead along the pipeline.
- *
- * Checks the allowlist here as well as in the layout, because a Server Action
- * is a POST endpoint of its own: it can be invoked directly, and the layout
- * guard that protects the page does not run for it. The RLS policy is still
- * the layer that actually holds — this write goes through the caller's own
- * session, so a non-admin's request is denied by the database whatever this
- * code does.
- */
-export async function setLeadStatus(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const user = await getUser();
-  if (!isAllowedEmail(user?.email)) return fail(ACTION_ERRORS.notAllowed);
-
-  const id = String(formData.get("id") ?? "");
-  const status = String(formData.get("status") ?? "") as LeadStatus;
-  if (!id) return fail(ACTION_ERRORS.noId);
-  if (!LEAD_STATUSES.includes(status)) return fail("That is not a valid status.");
-
-  const supabase = await createClient();
-  const { error } = await supabase.from("leads").update({ status }).eq("id", id);
-  if (error) return fail(error.message);
-
-  revalidatePath("/admin/leads");
-  revalidatePath("/admin");
-  return ok(`Marked ${status}.`);
-}
-
-/**
  * Archive, erase, rescue.
  *
  * Two different operations on purpose, and the difference is the point.
@@ -148,4 +117,49 @@ export async function eraseRejection(
 
   revalidatePath("/admin/leads");
   return ok("Erased.");
+}
+
+/**
+ * Move a lead along the pipeline.
+ *
+ * Checks the allowlist here as well as in the layout, because a Server Action
+ * is a POST endpoint of its own: it can be invoked directly, and the layout
+ * guard that protects the page does not run for it. The RLS policy is still
+ * the layer that actually holds — this write goes through the caller's own
+ * session, so a non-admin's request is denied by the database whatever this
+ * code does.
+ *
+ * Called with plain arguments by the list, the board (a drag, or the status
+ * menu) and the dashboard.
+ */
+export async function changeLeadStatus(id: string, status: string): Promise<ActionState> {
+  const user = await getUser();
+  if (!isAllowedEmail(user?.email)) return fail(ACTION_ERRORS.notAllowed);
+  if (!id) return fail(ACTION_ERRORS.noId);
+  if (!LEAD_STATUSES.includes(status as LeadStatus)) return fail("That is not a valid status.");
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("leads").update({ status: status as LeadStatus }).eq("id", id);
+  if (error) return fail(error.message);
+
+  revalidatePath("/admin/leads");
+  revalidatePath("/admin");
+  return ok(`Moved to ${status}`);
+}
+
+/** Sojib's own notes on a lead. Nothing else about the lead changes. */
+export async function saveLeadNotes(id: string, notes: string): Promise<ActionState> {
+  const user = await getUser();
+  if (!isAllowedEmail(user?.email)) return fail(ACTION_ERRORS.notAllowed);
+  if (!id) return fail(ACTION_ERRORS.noId);
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("leads")
+    .update({ notes: typeof notes === "string" ? notes.trim().slice(0, 5000) || null : null })
+    .eq("id", id);
+  if (error) return fail(error.message);
+
+  revalidatePath("/admin/leads");
+  return ok("Notes saved");
 }

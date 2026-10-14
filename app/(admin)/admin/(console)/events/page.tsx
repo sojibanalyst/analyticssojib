@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import Link from "next/link";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { createClient } from "@/lib/supabase/server";
@@ -51,22 +52,11 @@ export default async function EventsPage({
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Live events</h1>
-        <p>
-          The {LIMIT} most recent {filtering ? `${filtering} ` : ""}events,
-          newest first. `event_id` is the deduplication key — the same string
-          is sent from the browser and from the server, so both resolve to one
-          conversion downstream. Hover a timestamp for the exact time.
-        </p>
-        <p>
-          Consent reads <em>Not asked</em> while the site has no consent
-          interface: nobody was shown a choice, so nothing was granted and
-          nothing was refused. Events are still recorded; sessions are not,
-          because a session identifier needs permission this site has not
-          asked for.
-        </p>
-      </div>
+      <PageHeader
+        title="Live events"
+        subtitle={`The ${LIMIT} most recent ${filtering ? `${filtering} ` : ""}events, newest first.`}
+        help="event_id is the deduplication key: the browser and the server send the same one. Consent reads Not asked while the site shows no consent choice; events are recorded, sessions are not."
+      />
 
       {/* prefetch={false} throughout: every chip points at this page, which
           runs two Supabase queries per render, and Next prefetches any Link in

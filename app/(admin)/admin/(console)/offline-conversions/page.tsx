@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { SavingForm } from "@/components/admin/SavingForm";
 import { createClient } from "@/lib/supabase/server";
@@ -39,15 +40,11 @@ export default async function OfflineConversionsPage({
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Offline conversions</h1>
-        <p>
-          Sending the outcome back to the ad platform, so it optimises for
-          customers rather than for form fills. Every lead that does not go
-          gets a reason — an upload that reports &ldquo;12 of 40 sent&rdquo;
-          and forgets the other 28 is how these quietly stop working.
-        </p>
-      </div>
+      <PageHeader
+        title="Offline conversions"
+        subtitle={"Send outcomes back to the ad platform. Every skipped lead gets a reason."}
+        help="So the platform optimises for customers, not form fills."
+      />
 
       <section className="admin-card">
         <h2>Build a batch</h2>

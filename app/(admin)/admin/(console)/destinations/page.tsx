@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/admin/ui/Basics";
 import { AdminState, AdminTable, Ago } from "@/components/admin/Table";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { SavingForm } from "@/components/admin/SavingForm";
@@ -55,18 +56,11 @@ export default async function DestinationsPage() {
 
   return (
     <>
-      <div className="admin-pagehead">
-        <h1>Destinations</h1>
-        <p>
-          Where server-side events are forwarded. Identifiers like a
-          measurement ID are ordinary settings — they appear in the page source
-          of any site running the tag, so hiding them here would be theatre.
-          Credentials are different: they are encrypted into Supabase Vault,
-          which holds its key outside the database, and this screen can never
-          read one back. It shows you the last four characters so you can tell
-          which one is loaded, and nothing more.
-        </p>
-      </div>
+      <PageHeader
+        title="Destinations"
+        subtitle={"Where server-side events are forwarded."}
+        help="Ids like a measurement ID are ordinary settings. Credentials are encrypted in Supabase Vault and never shown again; you see the last four characters only."
+      />
 
       <section className="admin-card">
         {destinations.error ? (
