@@ -16,7 +16,7 @@ export default async function SettingsPage() {
 
   const { data, error } = await supabase
     .from("settings")
-    .select("site_name, contact_email, calendly_url, gtm_container_id, gtm_head_code, sgtm_endpoint, default_currency, retention_days")
+    .select("site_name, contact_email, calendly_url, gtm_container_id, gtm_head_code, lab_gtm_container_id, lab_gtm_head_code, sgtm_endpoint, default_currency, retention_days")
     .maybeSingle();
 
   return (
@@ -66,6 +66,33 @@ export default async function SettingsPage() {
                 Paste the &lt;head&gt; snippet from GTM as is. When set, it is used instead of the container ID.
               </p>
             </div>
+
+            <fieldset className="admin-field admin-labset">
+              <legend>Tracking lab (/lab)</legend>
+              <p className="admin-note">
+                The demo store&rsquo;s own container, for practice. It runs on /lab only; the site&rsquo;s container never does.
+              </p>
+              <label htmlFor="lab_gtm_container_id">Lab GTM container ID</label>
+              <input
+                id="lab_gtm_container_id"
+                name="lab_gtm_container_id"
+                defaultValue={data?.lab_gtm_container_id ?? ""}
+                placeholder="GTM-XXXXXXX"
+                pattern="^GTM-[A-Z0-9]{4,10}$"
+                spellCheck={false}
+              />
+              <label htmlFor="lab_gtm_head_code">Lab GTM head code</label>
+              <textarea
+                id="lab_gtm_head_code"
+                name="lab_gtm_head_code"
+                rows={6}
+                defaultValue={data?.lab_gtm_head_code ?? ""}
+                placeholder="Optional. Paste a custom loader snippet here instead of the ID."
+                spellCheck={false}
+                className="admin-mono"
+              />
+              <p className="admin-note">Empty both to run the lab with no container.</p>
+            </fieldset>
 
             <div className="admin-field">
               <label htmlFor="site_name">Site name</label>

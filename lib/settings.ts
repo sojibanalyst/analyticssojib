@@ -32,6 +32,9 @@ export type SiteSettings = {
   gtmContainerId: string | null;
   /** The GTM <head> snippet pasted in the console, as stored. */
   gtmHeadCode: string | null;
+  /** The tracking lab's own container (/lab only), id or pasted snippet. */
+  labGtmContainerId: string | null;
+  labGtmHeadCode: string | null;
   siteName: string | null;
   contactEmail: string | null;
   calendlyUrl: string | null;
@@ -42,6 +45,8 @@ export type SiteSettings = {
 const FALLBACK: SiteSettings = {
   gtmContainerId: null,
   gtmHeadCode: null,
+  labGtmContainerId: null,
+  labGtmHeadCode: null,
   siteName: null,
   contactEmail: null,
   calendlyUrl: null,
@@ -89,12 +94,18 @@ export async function getSettings(): Promise<SiteSettings> {
     // see migration 20260815020001.
     const { data, error } = await settingsClient()
       .from("public_site_settings")
-      .select("gtm_container_id, gtm_head_code")
+      .select("gtm_container_id, gtm_head_code, lab_gtm_container_id, lab_gtm_head_code")
       .maybeSingle();
 
     if (error || !data) return FALLBACK;
 
-    return { ...FALLBACK, gtmContainerId: data.gtm_container_id, gtmHeadCode: data.gtm_head_code };
+    return {
+      ...FALLBACK,
+      gtmContainerId: data.gtm_container_id,
+      gtmHeadCode: data.gtm_head_code,
+      labGtmContainerId: data.lab_gtm_container_id,
+      labGtmHeadCode: data.lab_gtm_head_code,
+    };
   } catch {
     return FALLBACK;
   }
@@ -129,4 +140,30 @@ export async function getGtmHeadScripts(): Promise<{ scripts: HeadScript[]; cont
   if (!gtmHeadCode?.trim()) return null;
   const parsed = parseGtmSnippet(gtmHeadCode);
   return parsed.ok ? { scripts: parsed.scripts, containerId: parsed.containerId } : null;
+}
+
+/**
+ * The tracking lab's container, from the console and nowhere else: the pasted
+ * snippet when it parses, otherwise Google's standard snippet for the id, or
+ * null for no container. Only the lab layout renders this.
+ */
+export async function getLabGtm(): Promise<{ scripts: HeadScript[]; containerId: string | null } | null> {
+  const { labGtmContainerId, labGtmHeadCode } = await getSettings();
+  if (labGtmHeadCode?.trim()) {
+    const parsed = parseGtmSnippet(labGtmHeadCode);
+    if (parsed.ok) return { scripts: parsed.scripts, containerId: parsed.containerId };
+  }
+  const id = (labGtmContainerId ?? "").trim().toUpperCase();
+  if (!GTM_ID_PATTERN.test(id)) return null;
+  return {
+    containerId: id,
+    scripts: [
+      {
+        inline: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');`,
+      },
+    ],
+  };
 }

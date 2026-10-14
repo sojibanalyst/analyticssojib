@@ -3312,3 +3312,17 @@
   padding: 36px 16px;
   text-align: center;
 }
+
+/* The tracking lab's settings, set apart from the site's own. */
+.admin .admin-labset {
+  margin: 6px 0;
+  padding: 14px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+.admin .admin-labset legend {
+  padding: 0 6px;
+  color: var(--ink);
+  font-weight: 700;
+}

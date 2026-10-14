@@ -347,7 +347,8 @@
   background: var(--surface);
 }
 
-.lab-gtm label {
+.lab-gtm__title {
+  margin: 0;
   font-weight: 600;
 }
 

@@ -4,24 +4,19 @@ import { useEffect, useState } from "react";
 
 import { PUSH_EVENT, pushLog, readCart } from "@/lib/lab/store";
 
-const GTM_KEY = "lab-gtm-id";
-const GTM_ID = /^GTM-[A-Z0-9]{4,10}$/;
-
 /**
- * The lab's frame: a header, the "demo store" notice, the test container
- * loader and the dataLayer inspector.
+ * The lab's frame: a header, the "demo store" notice, which GTM container is
+ * loaded, and the dataLayer inspector.
  *
- * TEST CONTAINER: the site's real GTM container never runs on /lab (see
- * components/GoogleTagManager.tsx). Here you can load your own test container
- * by id. It is remembered in this browser only and loaded only on lab pages.
+ * CONTAINER: the site's real GTM container never runs on /lab (see
+ * components/GoogleTagManager.tsx). The lab's own container is set on
+ * /admin/settings and rendered by app/lab/layout.tsx; this only says which.
  *
  * Links between lab pages are plain <a>, so each page is a full load and fires
  * its own page view, like a classic store.
  */
-export function LabShell({ children }: { children: React.ReactNode }) {
+export function LabShell({ children, container }: { children: React.ReactNode; container: string | null }) {
   const [count, setCount] = useState(0);
-  const [gtm, setGtm] = useState("");
-  const [loaded, setLoaded] = useState<string | null>(null);
 
   useEffect(() => {
     const sync = () => setCount(readCart().reduce((n, l) => n + l.quantity, 0));
@@ -29,39 +24,6 @@ export function LabShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("lab:cart", sync);
     return () => window.removeEventListener("lab:cart", sync);
   }, []);
-
-  useEffect(() => {
-    let saved = "";
-    try {
-      saved = localStorage.getItem(GTM_KEY) ?? "";
-    } catch {
-      // No storage: nothing remembered.
-    }
-    if (!GTM_ID.test(saved)) return;
-    // Remembered from a previous visit; the server cannot know it.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setGtm(saved);
-    setLoaded(saved);
-    const w = window as Window & { dataLayer?: unknown[] };
-    w.dataLayer = w.dataLayer ?? [];
-    w.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtm.js?id=${saved}`;
-    document.head.appendChild(script);
-  }, []);
-
-  const save = (event: React.FormEvent) => {
-    event.preventDefault();
-    const id = gtm.trim().toUpperCase();
-    try {
-      if (id) localStorage.setItem(GTM_KEY, id);
-      else localStorage.removeItem(GTM_KEY);
-    } catch {
-      // Not remembered.
-    }
-    location.reload();
-  };
 
   return (
     <div className="lab">
@@ -87,23 +49,14 @@ export function LabShell({ children }: { children: React.ReactNode }) {
       </main>
 
       <section className="lab-tools" aria-label="Tracking tools">
-        <form className="lab-gtm" onSubmit={save}>
-          <label htmlFor="lab-gtm-id">Test GTM container</label>
-          <input
-            id="lab-gtm-id"
-            value={gtm}
-            onChange={(event) => setGtm(event.target.value)}
-            placeholder="GTM-XXXXXXX"
-            spellCheck={false}
-            pattern="^[Gg][Tt][Mm]-[A-Za-z0-9]{4,10}$"
-          />
-          <button type="submit" disabled={!gtm.trim() && !loaded}>
-            {!gtm.trim() && loaded ? "Remove container" : "Load container"}
-          </button>
+        <div className="lab-gtm">
+          <p className="lab-gtm__title">GTM container</p>
           <p className="lab-hint">
-            {loaded ? `Loaded: ${loaded}. Only on lab pages, only in this browser.` : "No container loaded. Events still go to window.dataLayer."}
+            {container
+              ? `Loaded: ${container}. Set on /admin/settings, under Tracking lab.`
+              : "None. Set the lab's container on /admin/settings, under Tracking lab. Events still go to window.dataLayer."}
           </p>
-        </form>
+        </div>
         <Inspector />
       </section>
 
