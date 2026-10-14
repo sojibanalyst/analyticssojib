@@ -19,6 +19,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 1,
     },
+    // The pages behind the nav.
+    ...["/services", "/case-studies", "/reviews", "/about"].map((path) => ({
+      url: `${site.url}${path}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
+    })),
     {
       url: `${site.url}/tracking-plan`,
       lastModified: now,

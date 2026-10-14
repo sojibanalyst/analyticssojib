@@ -31,7 +31,14 @@ const ROUTES = [
   ["/sitemap.xml", 200],
   ["/robots.txt", 200],
   ["/manifest.webmanifest", 200],
-  ["/services", 308],
+  // /services redirected (308) to /#services until it became a page of its
+  // own in the one-page-one-job split. The URL kept working throughout; it
+  // now answers 200 instead of a redirect.
+  ["/services", 200, "Four ways in"],
+  // The pages behind the nav, added in the same split.
+  ["/case-studies", 200, "Case studies"],
+  ["/reviews", 200, "What clients said"],
+  ["/about", 200, "About Sojib"],
   ["/this-route-does-not-exist", 404],
   // An /admin path that does not exist. Signed out it is the middleware that
   // answers, exactly as it does for a real console screen; signed in it now

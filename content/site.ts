@@ -268,26 +268,79 @@ export const whatsappDisplay = "+880 1304 095126";
 /* Navigation                                                                  */
 /* -------------------------------------------------------------------------- */
 
-// The design had five items and a non-clickable wordmark, which left the
-// sub-pages (/tracking-plan, /blog/*, /case-studies/*) with no way back to the
-// home page from the header. HOME is explicit and the wordmark links too.
-// FAQ stays in the footer to keep the row from crowding.
+// One page per topic, so the header links to pages, not to anchors on the
+// homepage. The wordmark is the way home. BLOG and FAQ live in the footer to
+// keep the row from crowding at tablet widths.
 export const nav: NavLink[] = [
-  { label: "HOME", href: "/" },
-  { label: "SERVICES", href: "/#services" },
-  { label: "WORK", href: "/#work" },
-  { label: "REVIEWS", href: "/#reviews" },
-  { label: "ABOUT", href: "/#about" },
-  { label: "BLOG", href: "/#blog" },
+  { label: "SERVICES", href: "/services" },
+  { label: "CASE STUDIES", href: "/case-studies" },
+  { label: "WORK", href: "/work" },
+  { label: "REVIEWS", href: "/reviews" },
+  { label: "ABOUT", href: "/about" },
 ];
 
 export const footerNav: NavLink[] = [
-  { label: "WORK", href: "/#work" },
-  { label: "SERVICES", href: "/#services" },
-  { label: "BLOG", href: "/#blog" },
-  { label: "FAQ", href: "/#faq" },
+  { label: "SERVICES", href: "/services" },
+  { label: "CASE STUDIES", href: "/case-studies" },
+  { label: "WORK", href: "/work" },
+  { label: "REVIEWS", href: "/reviews" },
+  { label: "ABOUT", href: "/about" },
+  { label: "BLOG", href: "/blog" },
+  { label: "FAQ", href: "/services#faq" },
   { label: "CONTACT", href: "/#contact" },
 ];
+
+/**
+ * The pages behind the nav: each one's head, metadata, and the teaser on the
+ * homepage that points at it. A teaser says enough to decide whether to click
+ * and ends in exactly one link.
+ */
+export const pages = {
+  services: {
+    eyebrow: "Services",
+    title: "Tracking work, priced before it starts",
+    description:
+      "Tracking audits, GA4 and GTM builds, server-side tagging, Meta CAPI and Google Ads conversions, by Sojib H. Fixed prices, written scope, and how the work runs.",
+    lead: "Four engagements, each with a fixed price agreed before any work starts. Below them: how the work runs, and the questions people ask before booking.",
+    teaserLink: "See services, process and pricing →",
+  },
+  caseStudies: {
+    eyebrow: "Case files",
+    title: "Case studies",
+    description:
+      "Tracking case studies by Sojib H.: what was broken, what was rebuilt, and the before and after reconciled against the client's own order data.",
+    lead: "Engagements written up in full. Each one reconciles against the client's own order data, and each has its own page with the detail.",
+    teaserTitle: "Fixed, and provable",
+    teaserLink: "Read all case studies →",
+  },
+  work: {
+    teaserTitle: "Selected projects",
+    teaserLink: "See all projects →",
+  },
+  reviews: {
+    eyebrow: "Reviews",
+    title: "What clients said",
+    description:
+      "Video and written reviews from Sojib H.'s clients on Upwork, quoted as they were written.",
+    lead: "Recorded and written by clients after Upwork engagements, quoted as they were written.",
+    teaserTitle: "Clients on the record",
+    teaserLink: "Read every review →",
+  },
+  about: {
+    eyebrow: "About",
+    title: "About Sojib",
+    description:
+      "Sojib H., web analytics and tracking specialist in Dhaka: how I work, what I hold, the live event stream from this site, and a free tracking check.",
+    lead: "Who you would be working with, how I work, and two things you can try here: the live event stream from this site and a free tracking check.",
+    teaserLink: "More about me →",
+  },
+  ctaBand: {
+    title: "Want to know where your numbers leak?",
+    body: "A 30-minute call, no deck. If your tracking is fine I will say so.",
+    cta: "BOOK A 30-MIN CALL →",
+    write: "OR WRITE TO ME",
+  },
+} as const;
 
 export const ctaLabel = "BOOK A 30-MIN CALL";
 

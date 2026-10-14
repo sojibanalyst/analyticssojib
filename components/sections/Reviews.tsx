@@ -14,9 +14,12 @@ import { WrittenReviews } from "@/components/sections/WrittenReviews";
 export function Reviews({
   items,
   written,
+  all = false,
 }: {
   items: Testimonial[];
   written: WrittenReview[];
+  /** Every written review in full, as on /reviews. */
+  all?: boolean;
 }) {
   const N = items.length;
   const [index, setIndex] = useState(0);
@@ -196,7 +199,7 @@ export function Reviews({
         </div>
       </div>
 
-      <WrittenReviews items={written} />
+      <WrittenReviews items={written} all={all} />
 
       <p
         style={{

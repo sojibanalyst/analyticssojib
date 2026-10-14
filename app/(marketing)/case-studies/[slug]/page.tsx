@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { site, work } from "@/content/site";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
+import { CtaBand } from "@/components/sections/CtaBand";
 import { canClaimReconciliation, hasMetric } from "@/lib/case-study";
 import { getCaseStudies, getCaseStudy } from "@/lib/content";
 
@@ -211,11 +212,12 @@ export default async function CaseStudyPage({ params }: Params) {
             <Link href="/tracking-plan" className="btn btn-primary">
               READ THE PLAN BEHIND THIS WORK →
             </Link>
-            <Link href="/#work" className="btn btn-ghost">
+            <Link href="/case-studies" className="btn btn-ghost">
               ← ALL CASE FILES
             </Link>
           </div>
         </article>
+        <CtaBand />
       </main>
     </>
   );

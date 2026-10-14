@@ -27,7 +27,7 @@ import { ReviewCard } from "@/components/ui/ReviewCard";
  * A placeholder row from the console is never rendered as a review. With no
  * real reviews at all, the whole block renders nothing.
  */
-export function WrittenReviews({ items }: { items: WrittenReview[] }) {
+export function WrittenReviews({ items, all = false }: { items: WrittenReview[]; all?: boolean }) {
   const real = items.filter((item) => !item.placeholder && item.quote.trim() !== "");
   const [open, setOpen] = useState(false);
   const gridId = useId();
@@ -65,6 +65,23 @@ export function WrittenReviews({ items }: { items: WrittenReview[] }) {
       clamp={clamp}
     />
   );
+
+  // On /reviews every review is the point of the page, so it is the grid,
+  // whole, with nothing to open and nothing moving.
+  if (all) {
+    return (
+      <div className="rv">
+        <h3 className="rv__title">{reviews.writtenTitle}</h3>
+        <div className="rv-grid">
+          {real.map((item) => (
+            <div key={item.attribution + item.quote.slice(0, 24)} className="rv-grid__item">
+              {card(item, false)}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rv">

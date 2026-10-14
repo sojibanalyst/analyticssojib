@@ -51,7 +51,7 @@ export const trackingPlanMeta = {
     ctaNote:
       "This is what you get in week one. If your setup needs it, the call is free.",
     secondary: "SEE THE CASE FILES →",
-    secondaryHref: "/#work",
+    secondaryHref: "/case-studies",
   },
 } as const;
 

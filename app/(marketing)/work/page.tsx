@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ProjectCard } from "@/components/ProjectCard";
+import { CtaBand } from "@/components/sections/CtaBand";
 import { portfolioCopy, site, upworkUrl } from "@/content/site";
 import { getPortfolioItems } from "@/lib/content";
 
@@ -38,7 +39,7 @@ export default async function WorkIndexPage() {
   return (
     <main id="main">
       <section className="section pf" aria-labelledby="work-index-title">
-        <Link href="/#work" className="pf__back">
+        <Link href="/#projects" className="pf__back">
           {portfolioCopy.backHome}
         </Link>
 
@@ -74,6 +75,8 @@ export default async function WorkIndexPage() {
           ))}
         </ul>
       </section>
+
+      <CtaBand />
     </main>
   );
 }

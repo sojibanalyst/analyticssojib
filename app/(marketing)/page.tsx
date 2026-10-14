@@ -4,24 +4,16 @@ import { Hero } from "@/components/sections/Hero";
 import { StatBand } from "@/components/sections/StatBand";
 import { StackStrip } from "@/components/sections/StackStrip";
 import { Symptoms } from "@/components/sections/Symptoms";
-import { Services } from "@/components/sections/Services";
-import { Work } from "@/components/sections/Work";
-import { Reviews } from "@/components/sections/Reviews";
-import { Process } from "@/components/sections/Process";
-import { About } from "@/components/sections/About";
-import { Notes } from "@/components/sections/Notes";
-import { LiveEvents } from "@/components/LiveEvents";
-import { TrackingCheck } from "@/components/TrackingCheck";
-import { Faq } from "@/components/sections/Faq";
-import { Contact } from "@/components/sections/Contact";
 import {
-  getCaseStudies,
-  getFaqs,
-  getPortfolioItems,
-  getPosts,
-  getVideoReviews,
-  getWrittenReviews,
-} from "@/lib/content";
+  AboutTeaser,
+  CasesTeaser,
+  ProjectsTeaser,
+  ReviewsTeaser,
+  ServicesTeaser,
+} from "@/components/sections/Teasers";
+import { Notes } from "@/components/sections/Notes";
+import { Contact } from "@/components/sections/Contact";
+import { getCaseStudies, getPortfolioItems, getPosts, getWrittenReviews } from "@/lib/content";
 
 /**
  * Prerendered at build time and refreshed hourly — still ○ in the build
@@ -38,15 +30,20 @@ export const revalidate = 3600;
  *  by this page and by every other route that did not set one. */
 export const metadata: Metadata = { alternates: { canonical: site.url } };
 
+/**
+ * The homepage is a set of teasers, one per page behind the nav, each ending
+ * in one link to that page. The full services, case studies, projects,
+ * reviews, FAQ, live events and tracking check each live on their own page,
+ * once. The contact block is here, at the bottom, and nowhere else; the other
+ * pages end in the CTA band.
+ */
 export default async function Home() {
-  // One round trip each, in parallel. Sequential awaits here would add four
-  // round trips to every build.
-  const [cases, videoReviews, writtenReviews, posts, faqs, portfolio] = await Promise.all([
+  // One round trip each, in parallel. Sequential awaits here would add a
+  // round trip per read to every build.
+  const [cases, writtenReviews, posts, portfolio] = await Promise.all([
     getCaseStudies(),
-    getVideoReviews(),
     getWrittenReviews(),
     getPosts(),
-    getFaqs(),
     getPortfolioItems(),
   ]);
 
@@ -57,15 +54,12 @@ export default async function Home() {
         <StatBand />
         <StackStrip />
         <Symptoms />
-        <Services />
-        <Work cases={cases} more={portfolio} />
-        <Reviews items={videoReviews} written={writtenReviews} />
-        <Process />
-        <About />
-        <LiveEvents />
+        <ServicesTeaser />
+        <CasesTeaser cases={cases} />
+        <ProjectsTeaser items={portfolio} />
+        <ReviewsTeaser written={writtenReviews} />
+        <AboutTeaser />
         <Notes posts={posts} />
-        <TrackingCheck />
-        <Faq items={faqs} />
         <Contact />
       </main>
     </>

@@ -27,18 +27,18 @@ export default async function MarketingLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   /**
    * The WRITING section hides itself when nothing is finished (see
-   * components/sections/Notes.tsx), and both nav entries for it point at
-   * /#blog — an anchor that then does not exist. A link that scrolls nowhere
-   * is worse than no link, so the entry goes with the section.
+   * components/sections/Notes.tsx), and the footer entry for it points at
+   * /blog, an index with nothing on it. A link to an empty page is worse than
+   * no link, so the entry goes with the section.
    *
    * Read through lib/content's cached client, the same as every other content
    * read, so this stays a build-time value and no page becomes dynamic.
    */
   const published = await getPublishedPosts();
   const hideWriting = published.length === 0;
-  const headerNav = hideWriting ? nav.filter((item) => item.href !== "/#blog") : nav;
+  const headerNav = hideWriting ? nav.filter((item) => item.href !== "/blog") : nav;
   const footerLinks = hideWriting
-    ? footerNav.filter((item) => item.href !== "/#blog")
+    ? footerNav.filter((item) => item.href !== "/blog")
     : footerNav;
 
   return (
