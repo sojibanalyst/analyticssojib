@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import { useToast } from "@/components/admin/ui/Toast";
 import { ACTION_IDLE, type ActionState } from "@/lib/action-state";
 
 /**
@@ -14,8 +15,8 @@ import { ACTION_IDLE, type ActionState } from "@/lib/action-state";
  *
  * Three things fix that, and all three are needed:
  *   - the button disables and reads "Saving…" while the action is in flight
- *   - a status line announces the result through role="status"/aria-live, so
- *     it reaches a screen reader as well as an eye
+ *   - the result arrives as a toast (announced to screen readers), and stays
+ *     as a line under the button
  *   - the result is the action's own return value, not an assumption that
  *     submitting means succeeding
  */
@@ -36,6 +37,13 @@ export function SavingForm({
   variant?: "ghost" | "danger";
 }) {
   const [state, formAction] = useActionState(action, ACTION_IDLE);
+  const toast = useToast();
+
+  // Every result also arrives as a toast, which is what is announced; the line
+  // under the button stays as the visible record beside the form.
+  useEffect(() => {
+    if (state.status !== "idle") toast({ message: state.message, tone: state.status === "error" ? "error" : "ok" });
+  }, [state, toast]);
 
   return (
     <form action={formAction} className={className}>
@@ -73,8 +81,6 @@ function FormStatus({ state }: { state: ActionState }) {
     <p
       className="admin-formstatus"
       data-state={showing ? (failed ? "error" : "ok") : "idle"}
-      role="status"
-      aria-live="polite"
     >
       {showing ? (
         <>

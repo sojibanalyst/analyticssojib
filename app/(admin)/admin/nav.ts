@@ -12,16 +12,16 @@
 export type NavItem = {
   href: string;
   label: string;
-  /**
-   * Two characters shown when the sidebar collapses to a 60px rail. Spelled
-   * out per item rather than sliced off the label, so no two collide by
-   * accident. There is no icon set here on purpose: this is a monospace
-   * console, and a letter pair reads better than a borrowed glyph.
-   */
+  /** Two letters, kept for the command palette and as a fallback label. The
+   *  sidebar rail shows the icon from components/admin/ui/icons.tsx. */
   short: string;
   ready: boolean;
   /** Shown on stubs so the phase that delivers the screen is visible. */
   phase?: string;
+  /** Which count, if any, shows as a badge beside the link. */
+  badge?: "newLeads" | "postDrafts" | "caseDrafts" | "portfolioHidden" | "reviewsHidden";
+  /** The "New ..." action this screen offers, in the top bar and Ctrl+K. */
+  create?: string;
 };
 
 export type NavGroup = {
@@ -71,6 +71,7 @@ export const navGroups: NavGroup[] = [
         label: "Leads",
         short: "LD",
         ready: true,
+        badge: "newLeads",
       },
       {
         href: "/admin/offline-conversions",
@@ -88,30 +89,39 @@ export const navGroups: NavGroup[] = [
         label: "Posts",
         short: "PO",
         ready: true,
+        badge: "postDrafts",
+        create: "New post",
       },
       {
         href: "/admin/case-studies",
         label: "Case studies",
         short: "CS",
         ready: true,
+        badge: "caseDrafts",
+        create: "New case study",
       },
       {
         href: "/admin/portfolio",
         label: "Portfolio",
         short: "PF",
         ready: true,
+        badge: "portfolioHidden",
+        create: "New project",
       },
       {
         href: "/admin/reviews",
         label: "Reviews",
         short: "RV",
         ready: true,
+        badge: "reviewsHidden",
+        create: "New review",
       },
       {
         href: "/admin/faqs",
         label: "FAQs",
         short: "FQ",
         ready: true,
+        create: "New FAQ",
       },
     ],
   },
@@ -127,3 +137,26 @@ export const navGroups: NavGroup[] = [
     ],
   },
 ];
+
+export type BadgeCounts = Partial<Record<NonNullable<NavItem["badge"]>, number>>;
+
+/** The nav item a path belongs to: its own entry, or the closest parent. */
+export function navItemFor(pathname: string): NavItem | undefined {
+  const items = navGroups.flatMap((group) => group.items);
+  return (
+    items.find((item) => item.href === pathname) ??
+    items
+      .filter((item) => item.href !== "/admin" && pathname.startsWith(`${item.href}/`))
+      .sort((a, b) => b.href.length - a.href.length)[0]
+  );
+}
+
+/** The group a nav item sits in, for the breadcrumb. */
+export function navGroupFor(item: NavItem): NavGroup | undefined {
+  return navGroups.find((group) => group.items.includes(item));
+}
+
+/** The URL that opens a screen's "New ..." form. */
+export function createHref(item: NavItem): string {
+  return `${item.href}?new=1`;
+}

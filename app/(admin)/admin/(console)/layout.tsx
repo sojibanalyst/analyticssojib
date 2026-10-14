@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { isAllowedEmail } from "@/lib/auth";
-import { getUser } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { signOut } from "../actions";
+import type { BadgeCounts } from "../nav";
 
 /**
  * Everything behind the door.
@@ -26,17 +27,35 @@ export default async function ConsoleLayout({
   }
 
   return (
-    <AdminShell
-      email={user!.email!}
-      signOut={
-        <form action={signOut}>
-          <button type="submit" className="admin-button" data-variant="ghost">
-            Sign out
-          </button>
-        </form>
-      }
-    >
+    <AdminShell email={user!.email!} signOut={signOut} counts={await badgeCounts()}>
       {children}
     </AdminShell>
   );
+}
+
+/**
+ * The numbers beside the sidebar links: new leads, drafts, hidden items.
+ *
+ * Count-only queries (head: true), in parallel, through the admin's own
+ * session. A count that fails is left out rather than shown as zero: a badge
+ * that says nothing is waiting when the query broke would be a lie.
+ */
+async function badgeCounts(): Promise<BadgeCounts> {
+  const supabase = await createClient();
+  const count = { count: "exact" as const, head: true };
+  const [leads, posts, cases, portfolio, reviews] = await Promise.all([
+    supabase.from("leads").select("id", count).eq("status", "new").is("archived_at", null),
+    supabase.from("posts").select("id", count).or("status.eq.draft,is_draft.eq.true"),
+    supabase.from("case_studies").select("id", count).eq("status", "draft"),
+    supabase.from("portfolio_items").select("id", count).eq("published", false),
+    supabase.from("reviews").select("id", count).eq("published", false),
+  ]);
+  const pick = (r: { count: number | null; error: unknown }) => (r.error ? undefined : (r.count ?? undefined));
+  return {
+    newLeads: pick(leads),
+    postDrafts: pick(posts),
+    caseDrafts: pick(cases),
+    portfolioHidden: pick(portfolio),
+    reviewsHidden: pick(reviews),
+  };
 }

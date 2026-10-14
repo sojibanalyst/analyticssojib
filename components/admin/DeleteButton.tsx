@@ -1,10 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import { useToast } from "@/components/admin/ui/Toast";
 import { ACTION_IDLE, type ActionState } from "@/lib/action-state";
-
-
 
 function Submit({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -43,6 +42,11 @@ export function DeleteButton({
   label: string;
 }) {
   const [state, formAction] = useActionState(action, ACTION_IDLE);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (state.status !== "idle") toast({ message: state.message, tone: state.status === "error" ? "error" : "ok" });
+  }, [state, toast]);
 
   return (
     <form action={formAction} className="admin-inline-form admin-danger">
