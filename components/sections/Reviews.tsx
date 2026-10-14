@@ -11,6 +11,9 @@ import { LiteYouTube } from "@/components/LiteYouTube";
 import { WrittenReviews } from "@/components/sections/WrittenReviews";
 import { Deck } from "@/components/ui/Deck";
 
+/** Written reviews in the homepage rows. */
+const HOME_WRITTEN = 10;
+
 /**
  * The video reviews, then the written ones.
  *
@@ -34,6 +37,12 @@ export function Reviews({
   home?: boolean;
 }) {
   const N = items.length;
+  // The homepage rows carry the first ten in the order set in the console;
+  // every one of them is on /reviews. All twenty in the rows doubled the
+  // section and, through the client props, the page payload with it.
+  const rows = home
+    ? written.filter((item) => !item.placeholder && item.quote.trim() !== "").slice(0, HOME_WRITTEN)
+    : written;
 
   return (
     <section id="reviews" className="section section--raised" aria-labelledby="reviews-title">
@@ -81,7 +90,7 @@ export function Reviews({
         </Deck>
       ) : null}
 
-      <WrittenReviews items={written} all={all} moving={home} />
+      <WrittenReviews items={rows} all={all} moving={home} />
 
       {home ? (
         <div className="teaser__foot">
