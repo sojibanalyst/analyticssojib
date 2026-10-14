@@ -312,6 +312,9 @@ export const pages = {
     lead: "Engagements written up in full. Each one reconciles against the client's own order data, and each has its own page with the detail.",
     teaserTitle: "Fixed, and provable",
     teaserLink: "Read all case studies →",
+    filterLabel: "Filter case studies",
+    filterAll: "All",
+    filterShowing: "case studies showing",
   },
   work: {
     teaserTitle: "Selected projects",
@@ -325,6 +328,9 @@ export const pages = {
     lead: "Recorded and written by clients after Upwork engagements, quoted as they were written.",
     teaserTitle: "Clients on the record",
     teaserLink: "Read every review →",
+    filterLabel: "Filter reviews by service",
+    filterAll: "All",
+    filterShowing: "reviews showing",
   },
   about: {
     eyebrow: "About",
@@ -939,6 +945,8 @@ export const reviews = {
   /** The small mark on every written review card. */
   verified: "Verified on Upwork",
   readAll: "Read all reviews",
+  readMore: "Read more",
+  readLess: "Show less",
   hideAll: "Hide the full list",
   /**
    * The design ships an 8-slide written-review carousel. Upwork blocks
@@ -1169,6 +1177,13 @@ export const portfolioCopy = {
   videoLabel: "Play the client's video review",
   videoBadge: "CLIENT VIDEO",
   galleryLabel: "Screenshots from the project",
+  /** Put before a screenshot description on the button that enlarges it. */
+  enlarge: "Enlarge screenshot",
+  filterLabel: "Filter projects by skill",
+  filterAll: "All",
+  filterShowing: "projects showing",
+  /** Under the grid: the projects with no screenshots, which are not shown. */
+  moreOnUpwork: "more projects, without screenshots, are on my Upwork profile",
 } as const;
 
 /* -------------------------------------------------------------------------- */

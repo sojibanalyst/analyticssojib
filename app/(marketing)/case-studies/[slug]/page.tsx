@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { site, work } from "@/content/site";
+import { portfolioCopy, site, work } from "@/content/site";
+import { Lightbox } from "@/components/Lightbox";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { canClaimReconciliation, hasMetric } from "@/lib/case-study";
@@ -48,6 +49,7 @@ export default async function CaseStudyPage({ params }: Params) {
   return (
     <>
       <main id="main">
+        <Lightbox label={portfolioCopy.galleryLabel}>
         <article className="section" aria-labelledby="case-title">
           <div className="section-head">
             <span className="eyebrow">{item.code}</span>
@@ -166,7 +168,14 @@ export default async function CaseStudyPage({ params }: Params) {
                 .filter((shot) => shot.section === sec.heading)
                 .map((shot) => (
                   <figure key={shot.src} className="case-figure">
-                    <div className="case-shot">
+                    <button
+                      type="button"
+                      className="case-shot shot-open"
+                      data-lightbox
+                      data-src={shot.src}
+                      data-alt={shot.alt}
+                      aria-label={`${portfolioCopy.enlarge}: ${shot.alt}`}
+                    >
                       <Image
                         src={shot.src}
                         alt={shot.alt}
@@ -174,7 +183,7 @@ export default async function CaseStudyPage({ params }: Params) {
                         sizes="(max-width: 1279px) 100vw, 900px"
                         style={{ objectFit: "cover" }}
                       />
-                    </div>
+                    </button>
                     <figcaption className="case-gallery__caption">
                       {shot.caption}
                     </figcaption>
@@ -217,6 +226,7 @@ export default async function CaseStudyPage({ params }: Params) {
             </Link>
           </div>
         </article>
+        </Lightbox>
         <CtaBand />
       </main>
     </>

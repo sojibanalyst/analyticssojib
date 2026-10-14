@@ -5517,3 +5517,302 @@ a.wordmark:hover {
     animation: none !important;
   }
 }
+
+/* Filter chips ----------------------------------------------------------------
+   /work, /case-studies and /reviews. Toggle buttons: aria-pressed is the state
+   and the style follows it, so the look cannot disagree with what a screen
+   reader is told. */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--raise-1);
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.chip:hover {
+  border-color: var(--ink);
+  color: var(--text);
+}
+
+.chip[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.chip__n {
+  opacity: 0.7;
+}
+
+/* The /work masonry ----------------------------------------------------------
+   CSS columns: each card keeps its own height and the columns fill top to
+   bottom. A new filter mounts a new list, and its cards rise in one after
+   another. */
+
+.work-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.masonry {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 1;
+  column-gap: 18px;
+}
+
+@media (min-width: 640px) {
+  .masonry {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1100px) {
+  .masonry {
+    columns: 3;
+  }
+}
+
+.masonry__item {
+  display: flex;
+  break-inside: avoid;
+  margin-bottom: 18px;
+}
+
+.more-card[data-masonry] .more-card__cover {
+  aspect-ratio: auto;
+  max-height: 420px;
+}
+
+.more-card[data-masonry] .more-card__cover {
+  transition: transform 600ms var(--ease-out);
+}
+
+.more-card[data-masonry] {
+  overflow: hidden;
+}
+
+.more-card[data-masonry]:hover .more-card__cover {
+  transform: scale(1.04);
+}
+
+@keyframes masonry-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .masonry__item {
+    animation: masonry-in 520ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+}
+
+.work-more {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.06em;
+}
+
+/* Lightbox ---------------------------------------------------------------------
+   components/Lightbox.tsx. The screenshot buttons look like the images they
+   wrap, with a zoom cursor and a focus ring; the dialog is the full screen. */
+
+.shot-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.shot-open img {
+  transition: transform 500ms var(--ease-out);
+}
+
+.shot-open:hover img {
+  transform: scale(1.02);
+}
+
+.lightbox {
+  box-sizing: border-box;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: clamp(56px, 6vw, 72px) clamp(12px, 6vw, 88px) 24px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  touch-action: pan-y;
+}
+
+.lightbox[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox::backdrop {
+  background: var(--bg);
+  opacity: 0.94;
+}
+
+.lightbox__figure {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.lightbox__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 180px);
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elev-2);
+  user-select: none;
+}
+
+.lightbox__caption {
+  max-width: 72ch;
+  text-align: center;
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.lightbox__count {
+  margin-right: 10px;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.lightbox__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 24px;
+  color: var(--text);
+}
+
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text);
+}
+
+.lightbox__nav:hover {
+  transform: translateY(-50%);
+}
+
+.lightbox__nav--prev {
+  left: clamp(6px, 2vw, 24px);
+}
+
+.lightbox__nav--next {
+  right: clamp(6px, 2vw, 24px);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox__img {
+    animation: lightbox-in 240ms var(--ease-out);
+  }
+}
+
+/* Filtered lists ---------------------------------------------------------------- */
+
+.masonry__item > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.case-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* /reviews: five lines, then "Read more" opens the rest in place. */
+.rv-card[data-expandable] .rv-card__quote {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
+.rv-card__more {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.rv-card__more:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CalendlyPopupButton } from "@/components/CalendlyPopupButton";
+import { Lightbox } from "@/components/Lightbox";
 import { LiteYouTube } from "@/components/LiteYouTube";
 import { ctaLabel, portfolioCopy, site } from "@/content/site";
 import { getPortfolioItem, getPortfolioItems } from "@/lib/content";
@@ -120,20 +121,33 @@ export default async function PortfolioItemPage({ params }: Params) {
         </div>
 
         {item.images.length > 0 ? (
-          <ul className="pf__gallery" aria-label={portfolioCopy.galleryLabel}>
-            {item.images.map((image) => (
-              <li key={image.src} className="pf__shot">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={image.width}
-                  height={image.height}
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  loading="lazy"
-                />
-              </li>
-            ))}
-          </ul>
+          <Lightbox label={portfolioCopy.galleryLabel}>
+            <ul className="pf__gallery" aria-label={portfolioCopy.galleryLabel}>
+              {item.images.map((image) => (
+                <li key={image.src} className="pf__shot">
+                  <button
+                    type="button"
+                    className="shot-open"
+                    data-lightbox
+                    data-src={image.src}
+                    data-alt={image.alt}
+                    data-w={image.width}
+                    data-h={image.height}
+                    aria-label={`${portfolioCopy.enlarge}: ${image.alt}`}
+                  >
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      width={image.width}
+                      height={image.height}
+                      sizes="(min-width: 1024px) 50vw, 100vw"
+                      loading="lazy"
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </Lightbox>
         ) : null}
       </article>
     </main>

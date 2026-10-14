@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { ProjectCard } from "@/components/ProjectCard";
 import { CtaBand } from "@/components/sections/CtaBand";
+import { WorkGrid } from "@/components/WorkGrid";
 import { portfolioCopy, site, upworkUrl } from "@/content/site";
 import { getPortfolioItems } from "@/lib/content";
 
@@ -24,17 +24,17 @@ export const metadata: Metadata = {
 };
 
 /**
- * Every published project, on one page.
+ * Every published project with screenshots, on one page, filterable by skill
+ * (components/WorkGrid.tsx). Projects with no screenshots are left out of the
+ * grid and counted under it, with the link to Upwork where they all are; their
+ * own pages still exist and are still in the sitemap.
  *
- * This exists so the homepage does not have to carry all of them. It used to:
- * fifty cards inside a closed <details>, which was a third of that page's HTML
- * for something most visitors never opened. The homepage now shows the
- * featured projects and the first nine, and links here for the rest.
+ * The homepage shows six featured projects and links here for the rest.
  */
 export default async function WorkIndexPage() {
   const items = await getPortfolioItems();
-  const featured = items.filter((item) => item.featured);
-  const rest = items.filter((item) => !item.featured);
+  const withImages = items.filter((item) => item.images.length > 0);
+  const without = items.length - withImages.length;
 
   return (
     <main id="main">
@@ -57,23 +57,15 @@ export default async function WorkIndexPage() {
           </p>
         </div>
 
-        {featured.length > 0 && (
-          <ul className="more-work__grid more-work__grid--featured">
-            {featured.map((item) => (
-              <li key={item.slug}>
-                <ProjectCard item={item} />
-              </li>
-            ))}
-          </ul>
-        )}
+        <WorkGrid items={withImages} />
 
-        <ul className="more-work__grid">
-          {rest.map((item, i) => (
-            <li key={item.slug}>
-              <ProjectCard item={item} index={i} />
-            </li>
-          ))}
-        </ul>
+        {without > 0 ? (
+          <p className="work-more">
+            <a href={upworkUrl} target="_blank" rel="noopener">
+              {without} {portfolioCopy.moreOnUpwork} →
+            </a>
+          </p>
+        ) : null}
       </section>
 
       <CtaBand />

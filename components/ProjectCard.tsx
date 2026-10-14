@@ -15,7 +15,17 @@ import type { PortfolioItem } from "@/lib/content";
  * empty on purpose: the card's link already carries the project's title, and
  * a second description of the same thing is noise to a screen reader.
  */
-export function ProjectCard({ item, index }: { item: PortfolioItem; index?: number }) {
+export function ProjectCard({
+  item,
+  index,
+  masonry = false,
+}: {
+  item: PortfolioItem;
+  index?: number;
+  /** In the /work masonry: the screenshot at its own shape, and the write-up
+   *  on every card, so the columns get their varied heights from content. */
+  masonry?: boolean;
+}) {
   const cover = item.images[0];
 
   return (
@@ -23,6 +33,7 @@ export function ProjectCard({ item, index }: { item: PortfolioItem; index?: numb
       className="more-card"
       href={`/work/${item.slug}`}
       data-featured={item.featured || undefined}
+      data-masonry={masonry || undefined}
     >
       {cover ? (
         <Image
@@ -44,7 +55,7 @@ export function ProjectCard({ item, index }: { item: PortfolioItem; index?: numb
         {item.videoId ? <span className="more-card__video">{work.videoMark}</span> : null}
       </span>
       <span className="more-card__title">{item.title}</span>
-      {item.featured ? <span className="more-card__desc">{item.description}</span> : null}
+      {item.featured || masonry ? <span className="more-card__desc">{item.description}</span> : null}
       <span className="more-card__skills">
         {item.skills.slice(0, item.featured ? 5 : 3).map((skill) => (
           <span key={skill} className="more-card__skill">

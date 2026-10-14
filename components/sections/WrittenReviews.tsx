@@ -2,7 +2,9 @@
 
 import { useEffect, useId, useState } from "react";
 
-import { reviews, type WrittenReview } from "@/content/site";
+import { FilterList } from "@/components/FilterList";
+import { pages, reviews, type WrittenReview } from "@/content/site";
+import { REVIEW_FILTERS, groupsOf } from "@/lib/filters";
 import { ReviewCard } from "@/components/ui/ReviewCard";
 
 /**
@@ -77,19 +79,32 @@ export function WrittenReviews({
     />
   );
 
-  // On /reviews every review is the point of the page, so it is the grid,
-  // whole, with nothing to open and nothing moving.
+  // On /reviews every review is the point of the page: all of them, in
+  // columns, filterable by the service they mention, each cut at five lines
+  // with a "Read more" where it is longer. Nothing moves.
   if (all) {
     return (
       <div className="rv">
         <h3 className="rv__title">{reviews.writtenTitle}</h3>
-        <div className="rv-grid">
-          {real.map((item) => (
-            <div key={item.attribution + item.quote.slice(0, 24)} className="rv-grid__item">
-              {card(item, false)}
-            </div>
-          ))}
-        </div>
+        <FilterList
+          entries={real.map((item) => ({
+            key: item.attribution + item.quote.slice(0, 24),
+            groups: groupsOf(`${item.attribution} ${item.quote}`, REVIEW_FILTERS),
+            node: (
+              <ReviewCard
+                quote={item.quote}
+                attribution={item.attribution}
+                verifiedLabel={reviews.verified}
+                expandable={{ more: reviews.readMore, less: reviews.readLess }}
+              />
+            ),
+          }))}
+          order={REVIEW_FILTERS.map((rule) => rule.label)}
+          label={pages.reviews.filterLabel}
+          allLabel={pages.reviews.filterAll}
+          showingLabel={pages.reviews.filterShowing}
+          listClassName="masonry"
+        />
       </div>
     );
   }
