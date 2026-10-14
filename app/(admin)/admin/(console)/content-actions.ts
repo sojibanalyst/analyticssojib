@@ -58,11 +58,24 @@ export async function updateSettings(
     if (!parsed.ok) return fail(`GTM head code: ${parsed.reason}`);
   }
 
+  // The tracking lab's container: the same two checks, separately.
+  const labGtm = String(formData.get("lab_gtm_container_id") ?? "").trim().toUpperCase();
+  if (labGtm && !GTM_ID_PATTERN.test(labGtm)) {
+    return fail("Lab container ID looks like GTM-XXXXXXX: capitals and digits after the hyphen.");
+  }
+  const labHeadCode = String(formData.get("lab_gtm_head_code") ?? "").trim();
+  if (labHeadCode) {
+    const parsed = parseGtmSnippet(labHeadCode);
+    if (!parsed.ok) return fail(`Lab GTM head code: ${parsed.reason}`);
+  }
+
   const { error } = await supabase
     .from("settings")
     .update({
       gtm_container_id: gtm || null,
       gtm_head_code: headCode || null,
+      lab_gtm_container_id: labGtm || null,
+      lab_gtm_head_code: labHeadCode || null,
       site_name: String(formData.get("site_name") ?? "").trim() || null,
       contact_email: String(formData.get("contact_email") ?? "").trim() || null,
       calendly_url: String(formData.get("calendly_url") ?? "").trim() || null,

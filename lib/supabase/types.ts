@@ -1056,6 +1056,8 @@ export type Database = {
           gtm_container_id: string | null
           gtm_head_code: string | null
           id: boolean
+          lab_gtm_container_id: string | null
+          lab_gtm_head_code: string | null
           retention_days: number
           sgtm_endpoint: string | null
           site_name: string | null
@@ -1068,6 +1070,8 @@ export type Database = {
           gtm_container_id?: string | null
           gtm_head_code?: string | null
           id?: boolean
+          lab_gtm_container_id?: string | null
+          lab_gtm_head_code?: string | null
           retention_days?: number
           sgtm_endpoint?: string | null
           site_name?: string | null
@@ -1080,6 +1084,8 @@ export type Database = {
           gtm_container_id?: string | null
           gtm_head_code?: string | null
           id?: boolean
+          lab_gtm_container_id?: string | null
+          lab_gtm_head_code?: string | null
           retention_days?: number
           sgtm_endpoint?: string | null
           site_name?: string | null
@@ -1101,6 +1107,8 @@ export type Database = {
         Row: {
           gtm_container_id: string | null
           gtm_head_code: string | null
+          lab_gtm_container_id: string | null
+          lab_gtm_head_code: string | null
         }
         Relationships: []
       }
