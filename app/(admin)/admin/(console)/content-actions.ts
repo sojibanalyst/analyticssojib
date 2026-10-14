@@ -4,6 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { isAllowedEmail } from "@/lib/auth";
 import { CONTENT_TAG } from "@/lib/content/client";
 import { finishBlockedReason, toParagraphs } from "@/lib/post-body";
+import { parseGtmSnippet } from "@/lib/gtm-snippet";
 import { GTM_ID_PATTERN, SETTINGS_TAG } from "@/lib/settings";
 import { createClient, getUser } from "@/lib/supabase/server";
 import {
@@ -49,10 +50,19 @@ export async function updateSettings(
     return fail("Container ID looks like GTM-XXXXXXX: capitals and digits after the hyphen.");
   }
 
+  // The pasted <head> snippet: only <script> tags and comments, checked by the
+  // same parser the site uses to render it, so what saves is what renders.
+  const headCode = String(formData.get("gtm_head_code") ?? "").trim();
+  if (headCode) {
+    const parsed = parseGtmSnippet(headCode);
+    if (!parsed.ok) return fail(`GTM head code: ${parsed.reason}`);
+  }
+
   const { error } = await supabase
     .from("settings")
     .update({
       gtm_container_id: gtm || null,
+      gtm_head_code: headCode || null,
       site_name: String(formData.get("site_name") ?? "").trim() || null,
       contact_email: String(formData.get("contact_email") ?? "").trim() || null,
       calendly_url: String(formData.get("calendly_url") ?? "").trim() || null,

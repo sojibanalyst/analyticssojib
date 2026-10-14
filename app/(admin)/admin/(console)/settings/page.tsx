@@ -16,7 +16,7 @@ export default async function SettingsPage() {
 
   const { data, error } = await supabase
     .from("settings")
-    .select("site_name, contact_email, calendly_url, gtm_container_id, sgtm_endpoint, default_currency, retention_days")
+    .select("site_name, contact_email, calendly_url, gtm_container_id, gtm_head_code, sgtm_endpoint, default_currency, retention_days")
     .maybeSingle();
 
   return (
@@ -48,6 +48,22 @@ export default async function SettingsPage() {
               />
               <p className="admin-note">
                 Applies on the next page load. Empty means no container at all.
+              </p>
+            </div>
+
+            <div className="admin-field">
+              <label htmlFor="gtm_head_code">GTM head code</label>
+              <textarea
+                id="gtm_head_code"
+                name="gtm_head_code"
+                rows={8}
+                defaultValue={data?.gtm_head_code ?? ""}
+                placeholder="<!-- Google Tag Manager --> <script>...</script> <!-- End Google Tag Manager -->"
+                spellCheck={false}
+                className="admin-mono"
+              />
+              <p className="admin-note">
+                Paste the &lt;head&gt; snippet from GTM as is. When set, it is used instead of the container ID.
               </p>
             </div>
 
