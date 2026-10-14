@@ -51,7 +51,7 @@ export const DESTINATION_SPECS: Record<string, DestinationSpec> = {
       label: "Measurement ID",
       placeholder: "G-XXXXXXX",
       pattern: "^G-[A-Z0-9]{6,12}$",
-      patternHint: "Looks like G-XXXXXXX — capital G, a hyphen, then 6–12 capitals or digits.",
+      patternHint: "Looks like G-XXXXXXX: capital G, a hyphen, then 6 to 12 capitals or digits.",
       help: "Not a secret. It is in the page source of every site running GA4.",
     },
     secret: {

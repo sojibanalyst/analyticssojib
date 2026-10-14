@@ -35,7 +35,7 @@ export default async function SettingsPage() {
         </section>
       ) : (
         <section className="admin-card">
-          <SavingForm action={updateSettings}>
+          <SavingForm action={updateSettings} submitLabel="Save changes">
             <div className="admin-field">
               <label htmlFor="gtm_container_id">GTM container ID</label>
               <input
@@ -47,9 +47,7 @@ export default async function SettingsPage() {
                 spellCheck={false}
               />
               <p className="admin-note">
-                Takes effect on the next page load — no redeploy. Leave it empty
-                and no container script is rendered at all, rather than a broken
-                one.
+                Applies on the next page load. Empty means no container at all.
               </p>
             </div>
 
@@ -105,22 +103,13 @@ export default async function SettingsPage() {
         <h2>Set elsewhere, on purpose</h2>
         <p className="admin-note">
           <strong>Destination credentials</strong> are on{" "}
-          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, one per platform. Each
-          is stored encrypted and can be rotated from that screen without a
-          redeploy; an environment variable is still read as a fallback if no
-          value has been set there.
+          <Link href="/admin/destinations" prefetch={false}>Destinations</Link>, encrypted.
         </p>
         <p className="admin-note">
-          <strong>GTM container</strong> is set above and read at request time.{" "}
-          <code>NEXT_PUBLIC_GTM_ID</code> is still read as a fallback when the
-          field is empty, so a deployment configured before this existed keeps
-          working — but the field wins, and changing it needs no redeploy.
+          <strong>GTM container</strong>: the field above wins; <code>NEXT_PUBLIC_GTM_ID</code> is the fallback.
         </p>
         <p className="admin-note">
-          <strong>Retention</strong> is {data?.retention_days} days. Changing it
-          deletes data on a schedule, so it is a migration rather than a text
-          box — an accidental keystroke here should not be able to erase a
-          year of sessions.
+          <strong>Retention</strong> is {data?.retention_days} days. It changes by migration only, so a typo cannot delete data.
         </p>
       </section>
     </>

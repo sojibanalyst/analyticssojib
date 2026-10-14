@@ -56,8 +56,7 @@ export default async function EventMapPage() {
           </AdminState>
         ) : !map.data?.length ? (
           <AdminState title="No events documented yet.">
-            Seeded by `npm run seed`. Until then the site is firing events with
-            nothing to check them against.
+            Run `npm run seed` to add the documented events.
           </AdminState>
         ) : (
           <AdminTable
@@ -75,10 +74,10 @@ export default async function EventMapPage() {
                   <td className="admin-mono" style={{ color: "var(--ink)" }}>
                     {row.event_name}
                   </td>
-                  <td>{row.trigger_description ?? "—"}</td>
-                  <td className="admin-mono">{params.length ? params.join(", ") : "—"}</td>
+                  <td>{row.trigger_description ?? "None"}</td>
+                  <td className="admin-mono">{params.length ? params.join(", ") : "None"}</td>
                   <td className="admin-mono">
-                    {row.destinations.length ? row.destinations.join(", ") : "—"}
+                    {row.destinations.length ? row.destinations.join(", ") : "None"}
                   </td>
                   <td>
                     {/* "Receiving" green, "Documented" neutral. The old pair

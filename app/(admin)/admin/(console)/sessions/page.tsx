@@ -39,8 +39,7 @@ export default async function SessionsPage() {
           </AdminState>
         ) : !data?.length ? (
           <AdminState title="No sessions yet.">
-            A session is only created when a visitor allows analytics storage.
-            Declined visits are counted but never given an identifier.
+            A session starts only when a visitor allows analytics storage.
           </AdminState>
         ) : (
           <AdminTable
@@ -64,7 +63,7 @@ export default async function SessionsPage() {
                       visitor arrived with — machine values, and read down the
                       column against each other. */}
                   <td className="admin-mono" style={{ color: "var(--ink)" }}>
-                    {session.first_touch_source ?? "—"}
+                    {session.first_touch_source ?? "None"}
                     {session.first_touch_medium ? ` / ${session.first_touch_medium}` : ""}
                     {session.first_touch_campaign ? (
                       <div style={{ color: "var(--ink-muted)" }}>
@@ -73,10 +72,10 @@ export default async function SessionsPage() {
                     ) : null}
                   </td>
                   <td className="admin-mono">
-                    {session.last_touch_source ?? "—"}
+                    {session.last_touch_source ?? "None"}
                     {session.last_touch_medium ? ` / ${session.last_touch_medium}` : ""}
                   </td>
-                  <td className="admin-mono">{session.landing_page ?? "—"}</td>
+                  <td className="admin-mono">{session.landing_page ?? "None"}</td>
                   <td>
                     {session.device_type}
                     {session.country ? ` · ${session.country}` : ""}
@@ -87,7 +86,7 @@ export default async function SessionsPage() {
                         {clickId}
                       </span>
                     ) : (
-                      "—"
+                      "None"
                     )}
                   </td>
                 </tr>

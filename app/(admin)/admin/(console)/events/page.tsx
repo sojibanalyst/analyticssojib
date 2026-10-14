@@ -95,13 +95,11 @@ export default async function EventsPage({
         ) : !data?.length ? (
           anyEvents ? (
             <AdminState tone="filtered" title={`No ${filtering} events recorded.`}>
-              Other events have arrived — clear the filter to see them.
+              Other events have arrived. Clear the filter to see them.
             </AdminState>
           ) : (
             <AdminState title="No events recorded yet.">
-              The collector writes here as soon as someone visits a public page
-              and allows analytics. Nothing is stored for a visitor who declines
-              beyond the fact that an event happened.
+              Events appear here as soon as someone visits a public page.
             </AdminState>
           )
         ) : (
@@ -126,7 +124,7 @@ export default async function EventsPage({
                   <td className="admin-mono" style={{ color: "var(--ink)" }}>
                     {row.event_name}
                   </td>
-                  <td className="admin-mono">{row.page_path ?? "—"}</td>
+                  <td className="admin-mono">{row.page_path ?? "None"}</td>
                   <td>
                     <span
                       className="admin-pill"
@@ -141,7 +139,7 @@ export default async function EventsPage({
                     ) : (
                       // Not a gap in the data — consent was denied, so no
                       // identifier was ever created.
-                      <span title="No session: analytics storage was denied">—</span>
+                      <span title="No session: analytics storage was denied">None</span>
                     )}
                   </td>
                   <td>

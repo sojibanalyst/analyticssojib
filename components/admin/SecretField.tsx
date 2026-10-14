@@ -79,7 +79,7 @@ export function SecretField({
               {/* Worth distinguishing: a value set here can be rotated from
                   this screen, one from the environment cannot. */}
               <span>
-                from <code>{envVar}</code> — set one here to override it
+                from <code>{envVar}</code>. Set one here to override it
               </span>
             </>
           )}

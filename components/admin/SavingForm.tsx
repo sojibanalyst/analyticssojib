@@ -24,8 +24,8 @@ export function SavingForm({
   action,
   children,
   className = "admin-form",
-  submitLabel = "Save",
-  pendingLabel = "Saving…",
+  submitLabel = "Save changes",
+  pendingLabel = "Saving...",
   variant,
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;

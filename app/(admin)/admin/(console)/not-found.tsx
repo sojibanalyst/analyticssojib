@@ -18,9 +18,7 @@ export default function ConsoleNotFound() {
       <div className="admin-pagehead">
         <h1>No such page</h1>
         <p>
-          That address is not one of the console&rsquo;s screens. Nothing is
-          broken and nothing was deleted — the URL simply does not resolve to
-          anything. Every screen is in the sidebar, and the dashboard is below.
+          That address is not a console screen. Nothing is broken; every screen is in the sidebar.
         </p>
       </div>
 

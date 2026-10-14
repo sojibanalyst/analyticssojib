@@ -46,7 +46,7 @@ export async function updateSettings(
   // and is not, which is worse than having no container at all.
   const gtm = String(formData.get("gtm_container_id") ?? "").trim().toUpperCase();
   if (gtm && !GTM_ID_PATTERN.test(gtm)) {
-    return fail("Container ID looks like GTM-XXXXXXX — capitals and digits after the hyphen.");
+    return fail("Container ID looks like GTM-XXXXXXX: capitals and digits after the hyphen.");
   }
 
   const { error } = await supabase

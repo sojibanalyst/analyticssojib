@@ -14,7 +14,7 @@ function Submit({ label }: { label: string }) {
       data-variant="danger"
       disabled={pending}
     >
-      {pending ? "Deleting…" : label}
+      {pending ? "Deleting..." : label}
     </button>
   );
 }

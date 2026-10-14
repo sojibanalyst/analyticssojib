@@ -99,7 +99,7 @@ export default async function LeadsPage({
                     </span>
                   </td>
                   <td style={{ color: "var(--ink)" }}>
-                    {row.name || "—"}
+                    {row.name || "None"}
                     {row.email ? (
                       <div>
                         <a href={`mailto:${row.email}`}>{row.email}</a>
@@ -109,7 +109,7 @@ export default async function LeadsPage({
                       <div style={{ color: "var(--ink-muted)" }}>{row.company}</div>
                     ) : null}
                   </td>
-                  <td style={{ maxWidth: "40ch" }}>{answers.problem ?? "—"}</td>
+                  <td style={{ maxWidth: "40ch" }}>{answers.problem ?? "None"}</td>
                   <td>
                     {/* Rescue first: the common mistake here is a real person,
                         and the recovery should be easier than the deletion. */}
@@ -117,7 +117,7 @@ export default async function LeadsPage({
                       action={rescueRejection}
                       className="admin-inline-form"
                       submitLabel="Rescue"
-                      pendingLabel="Moving…"
+                      pendingLabel="Moving..."
                       variant="ghost"
                     >
                       <input type="hidden" name="id" value={row.id} />
@@ -168,8 +168,8 @@ export default async function LeadsPage({
                     <span className="admin-num"> ×{row.affected}</span>
                   ) : null}
                 </td>
-                <td className="admin-mono">{row.subject ?? "—"}</td>
-                <td style={{ maxWidth: "44ch" }}>{row.detail ?? "—"}</td>
+                <td className="admin-mono">{row.subject ?? "None"}</td>
+                <td style={{ maxWidth: "44ch" }}>{row.detail ?? "None"}</td>
               </tr>
             ))}
           </AdminTable>

@@ -48,7 +48,7 @@ export default async function OfflineConversionsPage({
 
       <section className="admin-card">
         <h2>Build a batch</h2>
-        <SavingForm action={buildUpload} className="admin-inline-form" submitLabel="Dry run" pendingLabel="Building…">
+        <SavingForm action={buildUpload} className="admin-inline-form" submitLabel="Run dry run" pendingLabel="Building...">
           <label className="sr-only" htmlFor="destination">
             Destination
           </label>
@@ -75,9 +75,7 @@ export default async function OfflineConversionsPage({
           />
         </SavingForm>
         <p className="admin-note">
-          Dry run is the only mode. Nothing is sent to any platform — that needs
-          API credentials this project does not hold. Export the CSV below and
-          import it by hand.
+          Dry run only: nothing is sent. Export the CSV and import it by hand.
         </p>
       </section>
 
@@ -89,8 +87,7 @@ export default async function OfflineConversionsPage({
           </AdminState>
         ) : !uploads?.length ? (
           <AdminState title="No batches built yet.">
-            Build one above. With no leads in the database it will come back
-            empty, which is itself the correct answer.
+            Build one above with Run dry run.
           </AdminState>
         ) : (
           <AdminTable
@@ -105,7 +102,7 @@ export default async function OfflineConversionsPage({
                   </a>
                 </td>
                 <td className="admin-mono" style={{ color: "var(--ink)" }}>{batch.destination}</td>
-                <td>{batch.conversion_action ?? "—"}</td>
+                <td>{batch.conversion_action ?? "None"}</td>
                 <td className="admin-num">{batch.row_count}</td>
                 <td className="admin-num">{batch.row_count - batch.rejected_count}</td>
                 <td className="admin-num">{batch.rejected_count}</td>
@@ -161,15 +158,15 @@ export default async function OfflineConversionsPage({
                       {row.click_id ? (
                         <code>{row.click_id.slice(0, 14)}</code>
                       ) : (
-                        "—"
+                        "None"
                       )}
                       <div style={{ color: "var(--ink-muted)" }}>{row.click_id_kind}</div>
                     </td>
                     <td>
-                      {row.value === null ? "—" : `${row.value} ${row.currency ?? ""}`}
+                      {row.value === null ? "None" : `${row.value} ${row.currency ?? ""}`}
                     </td>
-                    <td>{row.conversion_time ? <Ago iso={row.conversion_time} /> : "—"}</td>
-                    <td style={{ maxWidth: "44ch" }}>{row.reason ?? "—"}</td>
+                    <td>{row.conversion_time ? <Ago iso={row.conversion_time} /> : "None"}</td>
+                    <td style={{ maxWidth: "44ch" }}>{row.reason ?? "None"}</td>
                   </tr>
                 ))}
               </AdminTable>
