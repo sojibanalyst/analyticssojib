@@ -39,6 +39,10 @@ const ROUTES = [
   ["/case-studies", 200, "Case studies"],
   ["/reviews", 200, "What clients said"],
   ["/about", 200, "About Sojib"],
+  // The tracking lab: a noindex demo store, outside the public nav.
+  ["/lab", 200, "Demo store"],
+  ["/lab/product/demo-tee", 200],
+  ["/lab/product/not-a-product", 404],
   ["/this-route-does-not-exist", 404],
   // An /admin path that does not exist. Signed out it is the middleware that
   // answers, exactly as it does for a real console screen; signed in it now

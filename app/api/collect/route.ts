@@ -6,6 +6,7 @@ import {
   SESSION_MAX_AGE,
   attributionFrom,
   deviceTypeFrom,
+  isLabPath,
   parseEnvelope,
 } from "@/lib/collector";
 
@@ -38,6 +39,12 @@ export async function POST(request: NextRequest) {
     return NO_CONTENT;
   }
   if (!envelope) return NO_CONTENT;
+
+  // The tracking lab is practice only: its events never reach these tables.
+  // It does not call the collector; this catches anything that tries anyway.
+  if (isLabPath(envelope.page_path) || isLabPath(request.headers.get("referer"))) {
+    return NO_CONTENT;
+  }
 
   // No service role key: a local run, or a preview deployment, which is not
   // given one on purpose so it cannot write production tracking data. Answer

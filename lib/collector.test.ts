@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 // The .ts extension is required by Node's own resolver when it strips types.
 // tsconfig sets allowImportingTsExtensions so tsc accepts it too.
-import { attributionFrom, deviceTypeFrom, parseEnvelope } from "./collector.ts";
+import { attributionFrom, deviceTypeFrom, isLabPath, parseEnvelope } from "./collector.ts";
 
 /**
  * Run with `npm test` (node --test). No test framework is installed and none
@@ -190,4 +190,13 @@ test("not_asked is not granted, so the collector creates no session for it", () 
   // The route's own gate, asserted here because it is the line that decides
   // whether a visitor gets an identifier: "granted" and nothing else.
   assert.equal(envelope.consent.analytics_storage === "granted", false);
+});
+
+test("the tracking lab is recognised from a path or a full referrer", () => {
+  assert.equal(isLabPath("/lab"), true);
+  assert.equal(isLabPath("/lab/product/demo-tee?x=1"), true);
+  assert.equal(isLabPath("https://analyticssojib.com/lab/cart"), true);
+  assert.equal(isLabPath("/laboratory"), false);
+  assert.equal(isLabPath("/"), false);
+  assert.equal(isLabPath(null), false);
 });

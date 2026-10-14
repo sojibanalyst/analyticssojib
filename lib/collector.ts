@@ -257,3 +257,20 @@ export function deviceTypeFrom(userAgent: string): DeviceType {
   if (/mobi|iphone|ipod|android|blackberry|iemobile|opera mini/.test(ua)) return "mobile";
   return "desktop";
 }
+
+/**
+ * The tracking lab (/lab) is a demo store for practising tracking. Nothing it
+ * does may reach the real event tables: the lab never calls the collector,
+ * and the collector drops anything that says it came from there anyway.
+ */
+export function isLabPath(path: string | null | undefined): boolean {
+  if (!path) return false;
+  let pathname = path;
+  try {
+    // A Referer is a full URL; a page_path is a path. Read either.
+    pathname = new URL(path, "https://x.invalid").pathname;
+  } catch {
+    return false;
+  }
+  return pathname === "/lab" || pathname.startsWith("/lab/");
+}
