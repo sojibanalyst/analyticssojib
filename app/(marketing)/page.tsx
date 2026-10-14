@@ -8,12 +8,18 @@ import {
   AboutTeaser,
   CasesTeaser,
   ProjectsTeaser,
-  ReviewsTeaser,
   ServicesTeaser,
 } from "@/components/sections/Teasers";
+import { Reviews } from "@/components/sections/Reviews";
 import { Notes } from "@/components/sections/Notes";
 import { Contact } from "@/components/sections/Contact";
-import { getCaseStudies, getPortfolioItems, getPosts, getWrittenReviews } from "@/lib/content";
+import {
+  getCaseStudies,
+  getPortfolioItems,
+  getPosts,
+  getVideoReviews,
+  getWrittenReviews,
+} from "@/lib/content";
 
 /**
  * Prerendered at build time and refreshed hourly — still ○ in the build
@@ -33,15 +39,18 @@ export const metadata: Metadata = { alternates: { canonical: site.url } };
 /**
  * The homepage is a set of teasers, one per page behind the nav, each ending
  * in one link to that page. The full services, case studies, projects,
- * reviews, FAQ, live events and tracking check each live on their own page,
- * once. The contact block is here, at the bottom, and nowhere else; the other
- * pages end in the CTA band.
+ * FAQ, live events and tracking check each live on their own page, once. The
+ * reviews are the exception: the homepage has the video carousel and the
+ * written reviews as moving rows, and /reviews has every one in full. The
+ * contact block is here, at the bottom, and nowhere else; the other pages end
+ * in the CTA band.
  */
 export default async function Home() {
   // One round trip each, in parallel. Sequential awaits here would add a
   // round trip per read to every build.
-  const [cases, writtenReviews, posts, portfolio] = await Promise.all([
+  const [cases, videoReviews, writtenReviews, posts, portfolio] = await Promise.all([
     getCaseStudies(),
+    getVideoReviews(),
     getWrittenReviews(),
     getPosts(),
     getPortfolioItems(),
@@ -57,7 +66,7 @@ export default async function Home() {
         <ServicesTeaser />
         <CasesTeaser cases={cases} />
         <ProjectsTeaser items={portfolio} />
-        <ReviewsTeaser written={writtenReviews} />
+        <Reviews items={videoReviews} written={writtenReviews} home />
         <AboutTeaser />
         <Notes posts={posts} />
         <Contact />

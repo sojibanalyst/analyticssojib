@@ -4522,109 +4522,6 @@ a.wordmark:hover {
   color: var(--muted);
 }
 
-/* Compact case files ------------------------------------------------------- */
-
-.case-compact__grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
-}
-
-@media (min-width: 900px) {
-  .case-compact__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.case-compact__grid > li {
-  display: flex;
-}
-
-.case-compact {
-  box-sizing: border-box;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 22px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--raise-1);
-  color: var(--text);
-  transition: border-color var(--dur-micro) var(--ease-out),
-    background-color var(--dur-micro) var(--ease-out);
-}
-
-.case-compact:hover {
-  border-color: var(--ink);
-  background: var(--raise-2);
-  color: var(--text);
-}
-
-.case-compact__code {
-  font-family: var(--font-data);
-  font-size: var(--text-label);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.case-compact__title {
-  font-family: var(--font-display);
-  font-size: var(--text-h4);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  text-wrap: balance;
-}
-
-.case-compact__body {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
-  overflow: hidden;
-  font-size: var(--text-small);
-  line-height: 1.6;
-  color: var(--muted);
-}
-
-.case-compact__metric {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  font-family: var(--font-data);
-  font-size: var(--text-h4);
-  font-weight: 700;
-}
-
-.case-compact__before {
-  color: var(--faint);
-}
-
-.case-compact__after {
-  color: var(--ok);
-}
-
-.case-compact__caption {
-  flex-basis: 100%;
-  font-size: var(--text-label);
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-
-.case-compact__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: auto;
-}
-
 /* Project pages (/work/<slug>) --------------------------------------------- */
 
 .pf {
@@ -5112,37 +5009,274 @@ a.wordmark:hover {
   }
 }
 
-.svc-teaser__item {
+.svc-teaser > li {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
-@media (min-width: 1100px) {
-  .case-compact__grid--three {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+/* The whole card is the link. The accent rule along the top grows from the
+   left on hover: scaleX, so it is a transform and never a repaint. */
+.svc-teaser__card {
+  position: relative;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 22px 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+  box-shadow: var(--elev-1);
+  color: var(--text);
+  transition: border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.svc-teaser__card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 320ms var(--ease-out);
+}
+
+.svc-teaser__card:hover {
+  border-color: var(--ink);
+  background: var(--raise-2);
+  color: var(--text);
+  transform: translateY(-4px);
+}
+
+.svc-teaser__card:hover::before,
+.svc-teaser__card:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.svc-teaser__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.svc-teaser__body {
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.svc-teaser__foot {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.svc-teaser__foot .svc-price {
+  margin: 0;
+}
+
+.svc-teaser__go {
+  color: var(--ink);
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.svc-teaser__card:hover .svc-teaser__go {
+  transform: translateX(4px);
+}
+
+/* The case studies as a stack ------------------------------------------------
+   On wide screens each card holds below the header and the next one slides up
+   over it. Sticky positioning, so the compositor does it alone. Not on phones:
+   a card taller than the screen would be covered before it was read. */
+
+.case-stack {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.case-stack__card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--raise-1);
+  box-shadow: var(--elev-2);
+  overflow: hidden;
+}
+
+.case-stack__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  padding: clamp(18px, 2.4vw, 30px);
+}
+
+@media (min-width: 900px) {
+  .case-stack__body {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    align-items: center;
   }
 }
 
-.rv-teaser {
+.case-stack__text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.case-stack__title {
+  margin: 0;
+  font-size: var(--text-h3);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.case-stack__desc {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.case-stack__tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (min-width: 900px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  .case-stack {
+    gap: 12vh;
+  }
+
+  .case-stack__item {
+    position: sticky;
+    /* Each card stops a little lower than the one before, so the edges of
+       the earlier cards show above it like a deck. */
+    top: calc(96px + var(--i, 0) * 18px);
+  }
+}
+
+/* The selected projects ------------------------------------------------------ */
+
+.bento {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+  gap: 18px;
 }
 
-@media (min-width: 900px) {
-  .rv-teaser {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (min-width: 640px) {
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.rv-teaser > li {
+@media (min-width: 1100px) {
+  .bento {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  /* The middle column sits lower, so the grid reads as a scatter rather than
+     a table. Layout, set once; nothing animates it. */
+  .bento__item:nth-child(3n + 2) {
+    margin-top: 56px;
+  }
+}
+
+.bento__item {
   display: flex;
 }
 
-.rv-teaser .rv-card {
-  width: 100%;
+.bento .more-card {
+  overflow: hidden;
 }
+
+.bento .more-card__cover {
+  transition: transform 500ms var(--ease-out);
+}
+
+.bento .more-card:hover .more-card__cover {
+  transform: scale(1.05);
+}
+
+/* Scroll-driven entrances ----------------------------------------------------
+   Where the browser can tie an animation to scroll position, each project
+   card flies in as it enters the screen, and each case card rises into place.
+   The animation follows the scroll itself, so it plays back as the visitor
+   scrolls up. Transform and opacity only, which the compositor runs off the
+   main thread. Elsewhere components/Motion.tsx gives these the ordinary
+   reveal, and under reduced motion nothing here applies at all. */
+
+@keyframes fly-in {
+  from {
+    opacity: 0;
+    transform: translateY(90px) scale(0.88) rotate(var(--tilt, 0deg));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0.2;
+    transform: translateY(120px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bento__item {
+      animation: fly-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    .bento__item:nth-child(odd) {
+      --tilt: -3deg;
+    }
+
+    .bento__item:nth-child(even) {
+      --tilt: 3deg;
+    }
+
+    .case-stack__card {
+      animation: rise-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+  }
+}
+

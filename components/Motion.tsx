@@ -61,9 +61,19 @@ export function Motion() {
     // them to targets and demoted the card itself — so the tiles animated
     // inside a card that never moved. A group only counts if no card contains
     // it.
+    /**
+     * Where the browser can tie an animation to scroll position, elements
+     * marked data-scroll-anim animate themselves in CSS (see "Scroll-driven
+     * entrances" in app/components.css) and are left alone here; two
+     * animations on one element fight. Where it cannot, they get the ordinary
+     * reveal like everything else.
+     */
+    const scrollDriven = CSS.supports("animation-timeline: view()");
+    const selfAnimated = (el: HTMLElement) => scrollDriven && el.hasAttribute("data-scroll-anim");
+
     const groups = sections
       .flatMap((s) => [...s.querySelectorAll<HTMLElement>(GROUP)])
-      .filter((g) => !g.closest(".card, .case-card"));
+      .filter((g) => !g.closest(".card, .case-card") && !selfAnimated(g));
 
     for (const group of groups) targets.push(...([...group.children] as HTMLElement[]));
 
@@ -76,7 +86,7 @@ export function Motion() {
 
     for (const section of sections) {
       for (const child of [...section.children] as HTMLElement[]) {
-        if (isGroup.has(child) || containsGroup(child)) continue;
+        if (isGroup.has(child) || containsGroup(child) || selfAnimated(child)) continue;
         targets.push(child);
       }
     }

@@ -27,7 +27,18 @@ import { ReviewCard } from "@/components/ui/ReviewCard";
  * A placeholder row from the console is never rendered as a review. With no
  * real reviews at all, the whole block renders nothing.
  */
-export function WrittenReviews({ items, all = false }: { items: WrittenReview[]; all?: boolean }) {
+export function WrittenReviews({
+  items,
+  all = false,
+  moving = false,
+}: {
+  items: WrittenReview[];
+  /** Every review in full, as a grid: /reviews. */
+  all?: boolean;
+  /** Only the moving rows, with no "read all" toggle: the homepage, which
+   *  links to /reviews instead. */
+  moving?: boolean;
+}) {
   const real = items.filter((item) => !item.placeholder && item.quote.trim() !== "");
   const [open, setOpen] = useState(false);
   const gridId = useId();
@@ -124,6 +135,7 @@ export function WrittenReviews({ items, all = false }: { items: WrittenReview[];
         ))}
       </div>
 
+      {moving ? null : (
       <div className="rv__more">
         <button
           type="button"
@@ -135,7 +147,9 @@ export function WrittenReviews({ items, all = false }: { items: WrittenReview[];
           {open ? reviews.hideAll : `${reviews.readAll} (${real.length})`}
         </button>
       </div>
+      )}
 
+      {moving ? null : (
       <div id={gridId} className="rv-grid" hidden={!open}>
         {open
           ? real.map((item) => (
@@ -145,6 +159,7 @@ export function WrittenReviews({ items, all = false }: { items: WrittenReview[];
             ))
           : null}
       </div>
+      )}
     </div>
   );
 }

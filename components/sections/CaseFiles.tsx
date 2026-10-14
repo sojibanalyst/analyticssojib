@@ -19,37 +19,6 @@ function Screenshot({ item }: { item: CaseStudy }) {
   return <CaseGallery shots={item.screenshots} label={item.title} />;
 }
 
-/**
- * A case study as a compact card: what the homepage teaser shows. The full
- * treatment, with the gallery, is CaseFile on /case-studies.
- */
-export function CompactCase({ item }: { item: CaseStudy }) {
-  return (
-    <Link href={`/case-studies/${item.slug}`} className="case-compact">
-      <span className="case-compact__code">{item.code}</span>
-      <span className="case-compact__title">{item.title}</span>
-      <span className="case-compact__body">{item.body}</span>
-      {hasMetric(item.metric) ? (
-        <span className="case-compact__metric">
-          <span className="case-compact__before">{item.metric.before}</span>
-          <span aria-hidden="true">→</span>
-          <span className="sr-only"> to </span>
-          <span className="case-compact__after">{item.metric.after}</span>
-          <span className="case-compact__caption">{item.metric.caption}</span>
-        </span>
-      ) : null}
-      <span className="case-compact__tags">
-        {item.tags.map((tag) => (
-          <span key={tag} className="tag">
-            {tag}
-          </span>
-        ))}
-      </span>
-      <span className="more-card__go">{work.readMore}</span>
-    </Link>
-  );
-}
-
 /** A case study at full size: the figures, the stats, the gallery. */
 export function CaseFile({ item }: { item: CaseStudy }) {
   return (

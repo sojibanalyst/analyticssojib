@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
+  pages,
   reviews,
   upworkReviewCount,
   upworkUrl,
@@ -15,11 +17,15 @@ export function Reviews({
   items,
   written,
   all = false,
+  home = false,
 }: {
   items: Testimonial[];
   written: WrittenReview[];
   /** Every written review in full, as on /reviews. */
   all?: boolean;
+  /** The homepage: the written reviews only as moving rows, and a link to
+   *  /reviews for the rest. */
+  home?: boolean;
 }) {
   const N = items.length;
   const [index, setIndex] = useState(0);
@@ -199,7 +205,15 @@ export function Reviews({
         </div>
       </div>
 
-      <WrittenReviews items={written} all={all} />
+      <WrittenReviews items={written} all={all} moving={home} />
+
+      {home ? (
+        <div className="teaser__foot">
+          <Link href="/reviews" className="btn btn-ghost">
+            {pages.reviews.teaserLink}
+          </Link>
+        </div>
+      ) : null}
 
       <p
         style={{

@@ -1,18 +1,10 @@
 import Link from "next/link";
 
 import { ProjectCard } from "@/components/ProjectCard";
-import { CompactCase } from "@/components/sections/CaseFiles";
-import { ReviewCard } from "@/components/ui/ReviewCard";
+import { BeforeAfter } from "@/components/sections/BeforeAfter";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import {
-  about,
-  pages,
-  reviews,
-  services,
-  work,
-  type CaseStudy,
-  type WrittenReview,
-} from "@/content/site";
+import { about, pages, services, work, type CaseStudy } from "@/content/site";
+import { hasMetric } from "@/lib/case-study";
 import type { PortfolioItem } from "@/lib/content";
 
 /**
@@ -24,6 +16,8 @@ import type { PortfolioItem } from "@/lib/content";
  *
  * The section ids are the old anchors (#services, #work, #reviews, #about),
  * so a link to /#work from before the split still lands on the right topic.
+ * The reviews are not here: the homepage uses the Reviews section itself, in
+ * its moving form, and /reviews has the full list.
  */
 
 function TeaserLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -36,6 +30,9 @@ function TeaserLink({ href, children }: { href: string; children: React.ReactNod
   );
 }
 
+/** The first sentence of a service description: enough for a teaser. */
+const firstSentence = (text: string) => text.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? text;
+
 export function ServicesTeaser() {
   return (
     <section id="services" className="section section--raised" aria-labelledby="services-title">
@@ -43,13 +40,21 @@ export function ServicesTeaser() {
 
       <ul className="svc-teaser" data-stagger>
         {services.items.map((item) => (
-          <li key={item.code} className="card svc-teaser__item">
-            <div className="svc-meta">
-              <span>{item.code}</span>
-              <span>{item.duration}</span>
-            </div>
-            <h3 className="svc-title">{item.title}</h3>
-            <p className="svc-price">{item.price}</p>
+          <li key={item.code}>
+            <Link href="/services" className="svc-teaser__card">
+              <span className="svc-meta">
+                <span>{item.code}</span>
+                <span>{item.duration}</span>
+              </span>
+              <span className="svc-teaser__title">{item.title}</span>
+              <span className="svc-teaser__body">{firstSentence(item.body)}</span>
+              <span className="svc-teaser__foot">
+                <span className="svc-price">{item.price}</span>
+                <span className="svc-teaser__go" aria-hidden="true">
+                  →
+                </span>
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
@@ -62,6 +67,53 @@ export function ServicesTeaser() {
 /** How many case studies the homepage shows. The rest are on /case-studies. */
 const CASES_SHOWN = 3;
 
+/**
+ * One case study as a card in the stack: the problem, the before and after,
+ * and a link to the page with the rest.
+ */
+function StackCase({ item }: { item: CaseStudy }) {
+  return (
+    <article className="case-stack__card">
+      <div className="case-card__bar">
+        <span>{item.code}</span>
+        <span className="status-pill">
+          <span className="status-dot" aria-hidden="true" />
+          {item.status}
+        </span>
+      </div>
+      <div className="case-stack__body">
+        <div className="case-stack__text">
+          <h3 className="case-stack__title">{item.title}</h3>
+          <p className="case-stack__desc">{item.body}</p>
+          <ul className="case-stack__tags">
+            {item.tags.map((tag) => (
+              <li key={tag} className="tag">
+                {tag}
+              </li>
+            ))}
+          </ul>
+        </div>
+        {hasMetric(item.metric) ? (
+          <div className="case-stack__metric">
+            <BeforeAfter metric={item.metric} />
+          </div>
+        ) : null}
+      </div>
+      <Link href={`/case-studies/${item.slug}`} className="case-card__more">
+        {work.readMore}
+      </Link>
+    </article>
+  );
+}
+
+/**
+ * The case studies as a stack: each card holds at the top of the screen and
+ * the next one slides up over it, so they arrive one at a time. Sticky
+ * positioning does the holding, which the compositor handles on its own; where
+ * the browser can tie an animation to scroll, the card underneath also eases
+ * back a little (transform and opacity only). Under reduced motion they are a
+ * plain list.
+ */
 export function CasesTeaser({ cases }: { cases: CaseStudy[] }) {
   const shown = cases.slice(0, CASES_SHOWN);
   if (!shown.length) return null;
@@ -69,14 +121,10 @@ export function CasesTeaser({ cases }: { cases: CaseStudy[] }) {
     <section id="work" className="section section--major section--ink" aria-labelledby="work-title">
       <SectionHeading eyebrow={work.eyebrow} title={pages.caseStudies.teaserTitle} titleId="work-title" />
 
-      {/* Three columns only when there are three; two sit side by side. */}
-      <ul
-        className={`case-compact__grid${shown.length > 2 ? " case-compact__grid--three" : ""}`}
-        data-stagger
-      >
-        {shown.map((item) => (
-          <li key={item.slug}>
-            <CompactCase item={item} />
+      <ul className="case-stack" data-scroll-anim>
+        {shown.map((item, i) => (
+          <li key={item.slug} className="case-stack__item" style={{ ["--i" as string]: i }}>
+            <StackCase item={item} />
           </li>
         ))}
       </ul>
@@ -96,9 +144,11 @@ export function ProjectsTeaser({ items }: { items: PortfolioItem[] }) {
     <section id="projects" className="section" aria-labelledby="projects-title">
       <SectionHeading title={pages.work.teaserTitle} titleId="projects-title" />
 
-      <ul className="more-work__grid more-work__grid--featured" data-stagger>
+      {/* Each card flies in on its own as it scrolls into view; see
+          "Scroll-driven entrances" in app/components.css. */}
+      <ul className="bento" data-stagger data-scroll-anim>
         {shown.map((item) => (
-          <li key={item.slug}>
+          <li key={item.slug} className="bento__item">
             <ProjectCard item={item} />
           </li>
         ))}
@@ -107,34 +157,6 @@ export function ProjectsTeaser({ items }: { items: PortfolioItem[] }) {
       <TeaserLink href="/work">
         {pages.work.teaserLink.replace(" →", ` (${items.length}) →`)}
       </TeaserLink>
-    </section>
-  );
-}
-
-/** Written reviews on the homepage. Every one, and the videos, are on /reviews. */
-const REVIEWS_SHOWN = 3;
-
-export function ReviewsTeaser({ written }: { written: WrittenReview[] }) {
-  const real = written.filter((item) => !item.placeholder && item.quote.trim() !== "");
-  if (!real.length) return null;
-  return (
-    <section id="reviews" className="section section--raised" aria-labelledby="reviews-title">
-      <SectionHeading eyebrow={pages.reviews.eyebrow} title={pages.reviews.teaserTitle} titleId="reviews-title" />
-
-      <ul className="rv-teaser" data-stagger>
-        {real.slice(0, REVIEWS_SHOWN).map((item) => (
-          <li key={item.attribution + item.quote.slice(0, 24)}>
-            <ReviewCard
-              quote={item.quote}
-              attribution={item.attribution}
-              verifiedLabel={reviews.verified}
-              clamp
-            />
-          </li>
-        ))}
-      </ul>
-
-      <TeaserLink href="/reviews">{pages.reviews.teaserLink}</TeaserLink>
     </section>
   );
 }
