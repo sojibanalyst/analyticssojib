@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Switch, type Status } from "@/components/admin/ui/Basics";
 import { ChipInput } from "@/components/admin/ui/ChipInput";
 import { Group, Row, Segmented, TextArea, TextField } from "@/components/admin/content/fields";
+import { MediaManager } from "@/components/admin/content/MediaManager";
 import { BeforeAfter } from "@/components/sections/BeforeAfter";
 import {
   QUOTE_SOFT_LIMIT,
@@ -41,7 +42,13 @@ export type CaseRow = {
   metric_after_pct: number | null;
   detail_sections: unknown;
   updated_at: string;
-  case_study_shots: { storage_path: string; alt_text: string; sort_order: number }[];
+  case_study_shots: {
+    storage_path: string;
+    alt_text: string;
+    caption: string;
+    section: string | null;
+    sort_order: number;
+  }[];
 };
 
 export type ProjectRow = {
@@ -469,7 +476,19 @@ function caseTabs({ draft, set, errors, raw }: EditorProps<CaseStudyDraft>): Tab
       key: "media",
       label: "Media",
       badge: String(shots.length),
-      content: <ShotGrid images={shots.map((s) => ({ src: s.storage_path, alt: s.alt_text }))} />,
+      content: (
+        <MediaManager
+          kind="case-studies"
+          id={raw?.id ?? null}
+          initial={shots.map((s) => ({
+            src: s.storage_path,
+            alt: s.alt_text,
+            caption: s.caption,
+            section: s.section ?? "",
+          }))}
+          sections={draft.detail_sections.map((section) => section.heading).filter(Boolean)}
+        />
+      ),
     },
     {
       key: "settings",
@@ -614,7 +633,7 @@ function projectTabs({ draft, set, errors, raw }: EditorProps<ProjectDraft>): Ta
           {videoId ? (
             <Image className="ax-ytthumb" src={ytThumb(videoId)} alt="Video thumbnail" width={320} height={180} />
           ) : null}
-          <ShotGrid images={images} />
+          <MediaManager kind="portfolio" id={raw?.id ?? null} initial={images} />
         </>
       ),
     },
@@ -797,18 +816,4 @@ function faqTabs({ draft, set, errors }: EditorProps<FaqDraft>): Tabs {
       ),
     },
   ];
-}
-
-/** The screenshots an item has. Upload, reorder and alt text come with the gallery manager. */
-function ShotGrid({ images }: { images: { src: string; alt: string }[] }) {
-  if (!images.length) return <p className="ax-field__hint">No screenshots yet.</p>;
-  return (
-    <ul className="ax-shots">
-      {images.map((image) => (
-        <li key={image.src} className="ax-shots__item">
-          <Image src={image.src} alt={image.alt} width={240} height={150} sizes="240px" />
-        </li>
-      ))}
-    </ul>
-  );
 }

@@ -15,6 +15,7 @@ export function ConfirmDialog({
   busy = false,
   onConfirm,
   onCancel,
+  children,
 }: {
   open: boolean;
   title: string;
@@ -24,6 +25,8 @@ export function ConfirmDialog({
   busy?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
+  /** Extra controls between the text and the buttons, such as a checkbox. */
+  children?: React.ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -52,6 +55,7 @@ export function ConfirmDialog({
         {title}
       </h2>
       {body ? <p className="ax-confirm__body">{body}</p> : null}
+      {children}
       <div className="ax-confirm__actions">
         <button ref={cancelRef} type="button" className="ax-btn" onClick={onCancel}>
           Cancel

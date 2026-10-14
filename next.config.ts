@@ -3,6 +3,11 @@ import { site } from "./content/site";
 
 const apex = new URL(site.url).host;
 
+/** The Supabase project host, for screenshots uploaded from the console. */
+const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+  : null;
+
 const nextConfig: NextConfig = {
   // One canonical host. Without this both apex and www answer 200 with
   // identical content, which is duplicate content for crawlers.
@@ -77,6 +82,11 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Screenshot uploads from the console go through a Server Action. Files are
+  // capped at 10 MB in the action; this leaves room for the multipart overhead.
+  experimental: {
+    serverActions: { bodySizeLimit: "11mb" },
+  },
   // A stray package-lock.json in the home directory makes Next guess the wrong
   // workspace root; pin it to this project.
   turbopack: { root: __dirname },
@@ -89,6 +99,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       // YouTube poster frames for the lite testimonial facades.
       { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" },
+      // Screenshots uploaded from the console: the public media bucket only.
+      ...(supabaseHost
+        ? [{ protocol: "https" as const, hostname: supabaseHost, pathname: "/storage/v1/object/public/portfolio/**" }]
+        : []),
     ],
   },
 };

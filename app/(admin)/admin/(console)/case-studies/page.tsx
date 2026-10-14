@@ -18,7 +18,7 @@ export default async function CaseStudiesPage() {
       `id, slug, code, title, intro, body, tags, status, needs_confirmation,
        metric_caption, metric_before, metric_after, metric_before_label, metric_after_label,
        metric_before_pct, metric_after_pct, detail_sections, updated_at,
-       case_study_shots (storage_path, alt_text, sort_order)`,
+       case_study_shots (storage_path, alt_text, caption, section, sort_order)`,
     )
     .order("sort_order", { ascending: true });
 
