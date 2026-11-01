@@ -368,13 +368,12 @@ export const hero = {
   primaryCta: "BOOK A FREE 30-MIN CALL →",
   secondaryCta: "SEE HOW I WORK",
   secondaryHref: "#services",
-  imageAlt:
-    "Sojib, web analytics and tracking specialist, in front of analytics dashboards",
+  imageAlt: "Sojib H., web analytics and tracking specialist, smiling, in a black T-shirt",
   /**
    * The small round photo beside the name. To change it, replace
    * public/avatar.jpg with a square image (192px or larger); nothing else
    * needs to move. The large portrait lives in the About section and is
-   * public/about.jpg, swapped the same way.
+   * public/about-portrait.jpg, swapped the same way.
    */
   avatar: { src: "/avatar.jpg", alt: "Sojib H." },
   /**
@@ -1236,3 +1235,105 @@ export const trackingCheck = {
     rate_limited: "Too many checks in a short time. Give it a minute.",
   },
 } as const;
+
+/* -------------------------------------------------------------------------- */
+/* Tools, grouped                                                              */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The tools section, in four readable groups rather than one long row. Only
+ * tools already on this site or in Sojib's profile. An icon is shown where the
+ * project already carries the official mark; the rest are set as text. None of
+ * this implies a certification or a partnership.
+ */
+export type ToolItem = { label: string; icon?: StackItem["icon"] };
+
+export const toolGroups: { title: string; items: ToolItem[] }[] = [
+  {
+    title: "Analytics and tag management",
+    items: [
+      { label: "GA4", icon: "googleanalytics" },
+      { label: "Google Tag Manager", icon: "googletagmanager" },
+      { label: "Server-side GTM", icon: "googletagmanager" },
+    ],
+  },
+  {
+    title: "Advertising measurement",
+    items: [
+      { label: "Google Ads", icon: "googleads" },
+      { label: "Meta Pixel", icon: "meta" },
+      { label: "Meta Conversions API", icon: "meta" },
+      { label: "Bing UET" },
+      { label: "TikTok Pixel", icon: "tiktok" },
+      { label: "Pinterest" },
+      { label: "Snapchat", icon: "snapchat" },
+      { label: "LinkedIn Insight", icon: "linkedin" },
+    ],
+  },
+  {
+    title: "Reporting and diagnostics",
+    items: [{ label: "Looker Studio", icon: "looker" }, { label: "Microsoft Clarity" }, { label: "Hotjar" }],
+  },
+  {
+    title: "Platforms",
+    items: [
+      { label: "Shopify", icon: "shopify" },
+      { label: "WooCommerce" },
+      { label: "WordPress" },
+      { label: "Wix" },
+      { label: "Webflow" },
+      { label: "Squarespace" },
+      { label: "BigCommerce" },
+      { label: "Magento" },
+      { label: "GoHighLevel" },
+      { label: "ClickFunnels" },
+    ],
+  },
+];
+
+export const toolsCopy = {
+  eyebrow: "Tools",
+  title: "What I work in",
+};
+
+/* -------------------------------------------------------------------------- */
+/* Selected clients & collaborators                                            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Company-level names only, from Sojib's contract history: no people, no
+ * contract ids, dates, fees or project details. Listed as clients and
+ * collaborators, not as endorsements. "Agency" is used only where it is
+ * confirmed: Salt & Fuessel is a Melbourne digital agency on an active
+ * retainer, as Sojib confirmed.
+ */
+export const clientProof = {
+  eyebrow: "Client proof",
+  title: "Selected clients & collaborators",
+  featured: {
+    name: "Salt & Fuessel",
+    label: "Agency retainer",
+    detail: "Melbourne digital agency. Active and ongoing.",
+  },
+  names: [
+    "CareerCapital, Inc.",
+    "Maitea GmbH",
+    "Castinetti Realty Group",
+    "Wendy Combs Studio",
+    "Rogue Raw",
+    "Tropical Fruit Box",
+    "Find Surfaces",
+    "Keller Williams Slovenia",
+    "Formation DayTrader Canada Inc",
+    "Emberly Digital",
+    "LaBante London",
+    "Moneyskope",
+    "RB Marketing Solutions",
+    "Sensors Data Co., Ltd",
+    "Think Insights",
+    "Signal Ocean SMPC",
+    "Aaron Thomas Law",
+    "Prenups.com",
+  ],
+  note: "Companies I have delivered tracking work for, most through Upwork. Listed as clients, not as endorsements.",
+};

@@ -34,8 +34,9 @@ runs in CI.
   contains no hex values.
 - **One theme mechanism.** `lib/theme.ts`, `data-theme` on `<html>`,
   localStorage key `sf-theme-3`. Dark is the default.
-- **One font setup.** `app/fonts.ts`: Space Grotesk for headings, Inter for
-  prose, JetBrains Mono for data and labels. The variables belong on `<html>`,
+- **One font setup.** `app/fonts.ts`: Inter for headings and prose, JetBrains
+  Mono for data and labels. Italic Georgia (`--font-emphasis`, a system font)
+  for one short emphasised phrase in a headline, nothing more. The variables belong on `<html>`,
   because Tailwind's `@theme` resolves them at `:root`.
 - **One motion setup.** `lib/motion.ts` holds the easing, the durations and the
   lazy loaders for GSAP and Lenis. Neither library may be imported statically

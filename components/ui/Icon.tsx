@@ -73,3 +73,9 @@ export function StackIcon({ item }: { item: StackItem }) {
     </span>
   );
 }
+
+/** A tool's official mark in the current text colour, for the grouped tools section. */
+export function ToolIcon({ icon, size = 16 }: { icon: StackItem["icon"]; size?: number }) {
+  const Cmp = STACK[icon];
+  return <Cmp size={size} />;
+}

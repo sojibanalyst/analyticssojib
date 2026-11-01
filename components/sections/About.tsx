@@ -106,13 +106,13 @@ export function About() {
 
       <div className="about-aside">
         {/* The portrait that used to fill the hero. To change it, replace
-            public/about.jpg; the frame crops whatever it is given to 4:5 from
+            public/about-portrait.jpg; the frame crops whatever it is given to 4:5 from
             the top, so a head-and-shoulders photo of any size works. */}
         <Image
-          src="/about.jpg"
+          src="/about-portrait.jpg"
           alt={hero.imageAlt}
-          width={590}
-          height={635}
+          width={800}
+          height={1000}
           sizes="(min-width: 900px) 34vw, 100vw"
           quality={75}
           className="about-photo"

@@ -1,7 +1,9 @@
 import { process } from "@/content/site";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 
 /**
- * The section with no heading. It opens on 01 AUDIT and simply runs.
+ * On /services, the section with no heading: it opens on 01 AUDIT and simply
+ * runs. On the homepage it takes a visible heading (the heading prop).
  *
  * One of three deliberate breaks in the page's template — every section had
  * the same shape, eyebrow then heading then subtitle then grid, eleven times
@@ -14,9 +16,17 @@ import { process } from "@/content/site";
  * a screen reader still announces the section and the landmark list is intact.
  * Breaking a visual template is not a licence to break the semantics under it.
  */
-export function Process() {
+export function Process({ heading = false }: { heading?: boolean }) {
   return (
-    <section id="process" className="section section--sunk" aria-label={process.title}>
+    <section
+      id="process"
+      className="section section--sunk"
+      aria-label={heading ? undefined : process.title}
+      aria-labelledby={heading ? "process-title" : undefined}
+    >
+      {/* On the homepage the steps carry a visible heading; on /services the
+          page head already says what they are. */}
+      {heading ? <SectionHeading eyebrow="Process" title={process.title} titleId="process-title" /> : null}
       <ol
         className="grid4"
         style={{ listStyle: "none", margin: 0, padding: 0 }}

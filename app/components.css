@@ -5822,3 +5822,366 @@ a.wordmark:hover {
 #contact + #check {
   background: var(--tone-sunk);
 }
+
+/* ==========================================================================
+   Forest-green restyle (2026-11): emphasis, motion, tools, clients.
+   Colours are tokens from globals.css. Motion is transform and opacity only,
+   and none of it runs under reduced motion.
+   ========================================================================== */
+
+/* The one serif: a short phrase in italic Georgia, lime, as in "Prove it." */
+.hero-h1__em {
+  font-family: var(--font-emphasis);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+}
+
+/* Headings were Space Grotesk; Inter at the same sizes wants tighter
+   tracking to keep the same weight on the page. */
+.hero-h1,
+.h2,
+.page-head__title,
+.pf__title {
+  letter-spacing: -0.025em;
+}
+
+/* Staggered hero entrance: badge, headline, copy, buttons, name, then the
+   visual. It starts at 0.01 opacity rather than 0, so the browser counts the
+   headline as painted on its first frame and the largest paint is not held
+   back by the animation. Fill mode is backwards so the parallax on the visual
+   takes over the moment its entrance ends. */
+@keyframes hero-in {
+  from {
+    opacity: 0.01;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-visual-in {
+  from {
+    opacity: 0.01;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge,
+  .hero-h1,
+  .hero-lead,
+  .hero-ctas,
+  .hero-id {
+    animation: hero-in 720ms var(--ease-out) backwards;
+  }
+
+  .hero-h1 {
+    animation-delay: 70ms;
+  }
+
+  .hero-lead {
+    animation-delay: 150ms;
+  }
+
+  .hero-ctas {
+    animation-delay: 230ms;
+  }
+
+  .hero-id {
+    animation-delay: 310ms;
+  }
+
+  .hero-visual {
+    animation: hero-visual-in 900ms var(--ease-out) 180ms backwards;
+  }
+}
+
+/* A stronger scroll reveal: further to travel and a touch of scale, so a
+   section arriving is something you notice. */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hover feedback: buttons lift with the lime glow, cards lift and edge in
+   lime, nav links underline from the left. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn {
+    transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-primary:hover {
+    box-shadow: var(--glow);
+  }
+
+  .card:hover,
+  .case-stack__card:hover,
+  .pdeck:hover {
+    border-color: var(--accent);
+  }
+}
+
+.header-nav a {
+  position: relative;
+}
+
+.header-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.header-nav a:hover::after,
+.header-nav a[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* Tools, in groups --------------------------------------------------------- */
+
+.tools__groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .tools__groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tools__group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+}
+
+.tools__title {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tools__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tools__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-small);
+  transition: transform var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out);
+}
+
+.tools__icon {
+  display: inline-flex;
+  color: var(--muted);
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.tools__chip:hover {
+  border-color: var(--accent);
+}
+
+.tools__chip:hover .tools__icon {
+  color: var(--accent);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .tools__chip:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* The chips arrive one after another when the section is reached. Only once
+   Motion.tsx has switched reveals on, so with no script nothing is hidden. */
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-motion="on"] .tools__groups[data-reveal="shown"] .tools__chip {
+    animation: chip-in 420ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 35ms);
+  }
+
+  [data-motion="on"] .tools__groups[data-reveal="pending"] .tools__chip {
+    opacity: 0;
+  }
+}
+
+/* Selected clients & collaborators ------------------------------------------ */
+
+.clients__featured {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: radial-gradient(120% 140% at 0% 0%, var(--status-success-tint), transparent 60%), var(--raise-1);
+  box-shadow: var(--glow);
+}
+
+.clients__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.clients__pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.clients__pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+}
+
+@keyframes clients-pulse {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .clients__pulse::after {
+    animation: clients-pulse 2.4s var(--ease-out) infinite;
+  }
+}
+
+.clients__name {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--text-lead);
+}
+
+.clients__name strong {
+  font-weight: 700;
+}
+
+.clients__detail {
+  margin: 0;
+  color: var(--muted);
+}
+
+.clients__wall {
+  display: grid;
+  /* 2, 3 or 6 across: eighteen names fill every row at each width, so no
+     empty cells show through. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--border);
+}
+
+@media (min-width: 700px) {
+  .clients__wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .clients__wall {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.clients__item {
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  padding: 12px 16px;
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 600;
+  transition: color var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out);
+}
+
+.clients__item:hover {
+  background: var(--raise-1);
+  color: var(--text);
+}
+
+.clients__note {
+  margin: 0;
+  color: var(--faint);
+  font-size: var(--text-label);
+}

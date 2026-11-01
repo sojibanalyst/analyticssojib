@@ -203,10 +203,10 @@ export function AboutTeaser() {
   return (
     <section id="about" className="section about-teaser" aria-labelledby="about-title">
       <Image
-        src="/about.jpg"
+        src="/about-portrait.jpg"
         alt={hero.imageAlt}
-        width={590}
-        height={635}
+        width={800}
+        height={1000}
         sizes="(min-width: 760px) 240px, 160px"
         quality={75}
         className="about-teaser__photo"
