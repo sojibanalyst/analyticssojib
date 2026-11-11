@@ -24,6 +24,10 @@ type Props = {
  */
 export function LiteYouTube({ id, label, orientation, badge, client }: Props) {
   const [playing, setPlaying] = useState(false);
+  // The sharpest poster YouTube has, and the one every video has. maxresdefault
+  // is 1280px wide but only exists for videos uploaded in HD; where it is
+  // missing the request fails and the 480px hqdefault takes its place.
+  const [poster, setPoster] = useState<"maxresdefault" | "hqdefault">("maxresdefault");
   const portrait = orientation === "portrait";
 
   return (
@@ -96,11 +100,12 @@ export function LiteYouTube({ id, label, orientation, badge, client }: Props) {
             screen reader; it changes what the markup admits to.
           */}
           <Image
-            src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+            src={`https://i.ytimg.com/vi/${id}/${poster}.jpg`}
+            onError={() => setPoster("hqdefault")}
             alt=""
             aria-hidden="true"
             fill
-            sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 620px"
+            sizes="(max-width: 767px) 340px, 620px"
             style={{ objectFit: "cover" }}
           />
           <span

@@ -49,24 +49,21 @@
   background: var(--tone-sunk);
 }
 
-/* The one dark section. Its palette comes from globals.css, where the whole
-   dark theme is scoped onto this class for the light theme — so a light-theme
-   visitor gets a genuine island of the dark design rather than a black box
-   with light-theme greens in it.
+/* The case files. In the dark theme this is the deepest tone on the page. In
+   the light theme it is the sunk tone, between two plain sections, so it is
+   set apart the way every other section is and no longer a dark band in a
+   light page.
 
    No bottom hairline: the tone change IS the boundary, and a border as well
    is the belt-and-braces that makes a page look ruled. */
 .section--ink {
   background: var(--tone-ink);
   border-bottom-color: transparent;
-  /* Not optional, and not obvious. Redefining --text on this section changes
-     the token for descendants, but `color` was already RESOLVED on <body> and
-     inherits down as a computed value — so every element that does not set
-     its own colour keeps the light theme's near-black and disappears. The
-     first render of this section lost the h2 and every stat figure exactly
-     that way. Re-resolving color here puts the whole subtree back on the
-     scoped token. */
   color: var(--text);
+}
+
+[data-theme="light"] .section--ink {
+  background-color: var(--tone-sunk);
 }
 
 /* The contact block ends the homepage. The section before it is WRITING
@@ -1228,7 +1225,9 @@ a.wordmark:hover {
 .mobile-menu {
   position: fixed;
   z-index: 49;
-  top: 64px;
+  /* Set by the header when the menu opens: the bottom of the pill, wherever
+     it is. The fallback is the pill at rest with no announcement bar. */
+  top: var(--menu-top, 80px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -1239,12 +1238,6 @@ a.wordmark:hover {
   border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-}
-
-@media (min-width: 768px) {
-  .mobile-menu {
-    top: 72px;
-  }
 }
 
 .mobile-menu a.menu-link {
@@ -3423,7 +3416,7 @@ a.wordmark:hover {
    component makes before it switches to pinned mode. */
 @media (min-width: 1024px) and (min-height: 680px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .story {
-    min-height: 300vh;
+    min-height: 200vh;
     justify-content: flex-start;
   }
 
@@ -5339,7 +5332,7 @@ a.wordmark:hover {
   text-wrap: pretty;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
@@ -6179,5 +6172,30 @@ a.wordmark:hover {
 
   [data-motion="on"] .tools__groups[data-reveal="pending"] .tools__chip {
     opacity: 0;
+  }
+}
+
+/* Tap targets and floating controls =========================================
+   A text link 16px tall is a target nobody hits first time on a phone. The
+   padding makes it 44px; the negative margin gives the space back, so the
+   line it sits in does not move. */
+.tap-pad {
+  display: inline-block;
+  padding-block: 14px;
+  margin-block: -14px;
+}
+
+/* Two controls float over the bottom of a phone screen: the tracking pill on
+   the left and the booking bar on the right. A project card holds at the
+   bottom of the screen while the next one arrives, which left its link under
+   them; and the tracking pill stays to the end of the page, over the legal
+   line. Both get the room the controls take. */
+@media (max-width: 767px) {
+  .pdeck__text {
+    padding-bottom: 76px;
+  }
+
+  footer {
+    --footer-pad-bottom: 84px;
   }
 }

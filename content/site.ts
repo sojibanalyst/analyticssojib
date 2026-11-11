@@ -367,7 +367,7 @@ export const hero = {
   lead: "I’m Sojib, a web analytics and tracking specialist. GA4, Google Tag Manager, server-side tagging, Meta CAPI and Google Ads enhanced conversions. I find where your conversions leak, close it, and hand you a report you can verify yourself.",
   primaryCta: "BOOK A FREE 30-MIN CALL →",
   secondaryCta: "SEE HOW I WORK",
-  secondaryHref: "#services",
+  secondaryHref: "#process",
   imageAlt: "Sojib H., web analytics and tracking specialist, smiling, in a black T-shirt",
   /**
    * The small round photo beside the name. To change it, replace
@@ -381,14 +381,15 @@ export const hero = {
    * browser, reach a server container on a first-party subdomain, and fan out
    * to the platforms, with the purchase deduplicated on Meta.
    *
-   * `server.host` is a PLACEHOLDER until the real server container exists.
-   * It is the conventional name for one on this domain, not a live endpoint.
+   * `server.host` is an EXAMPLE, on the same made-up domain as the browser
+   * box. That is the first-party point: the server container lives on a
+   * subdomain of the STORE's own domain, not on mine.
    */
   pipeline: {
     label:
       "Diagram of a tracking pipeline. Events page_view, add_to_cart and purchase leave the browser, reach a server-side Google Tag Manager container on a first-party subdomain, and are forwarded to GA4, Meta and Google Ads. On Meta the purchase is marked deduplicated.",
     browser: { title: "yourstore.com", caption: "BROWSER" },
-    server: { title: "Server GTM", host: "sgtm.analyticssojib.com", caption: "FIRST-PARTY" },
+    server: { title: "Server GTM", host: "sgtm.yourstore.com", caption: "FIRST-PARTY" },
     events: ["page_view", "add_to_cart", "purchase"],
     platforms: ["GA4", "Meta", "Google Ads"],
     dedupe: "Deduplicated ✓",
@@ -729,6 +730,27 @@ export const work = {
   moreTitle: "More work",
   moreAll: "All of it on Upwork",
   moreGo: "Read the project",
+  /**
+   * One short line per project for the HOMEPAGE cards, keyed by slug. The
+   * description in Supabase is the full write-up and stays whole on
+   * /work/<slug>; on a homepage card it ran to a paragraph. Each line says
+   * only what its description already says. A featured project with no line
+   * here falls back to its description, cut at two lines.
+   */
+  homeSummaries: {
+    "shopify-jewelry-store-gtm-meta-capi-and-ga4-offline-and":
+      "Online and offline tracking for a German jewelry brand.",
+    "lead-attribution-and-crm-automation-gclid-fbclid-and-utm":
+      "Every lead now reaches the CRM with its ad click and campaign attached.",
+    "multi-platform-ga4-google-ads-meta-tiktok-snapchat-tracking":
+      "Purchases and donations verified across six ad and analytics platforms.",
+    "fixing-data-visualization-errors-in-looker-studio":
+      "A broken Looker Studio dashboard, audited and repaired.",
+    "server-side-tracking-using-stape-io":
+      "Server-side GTM on Stape.io for Google Ads, Meta and GA4.",
+    "ga4-custom-event-tracking-for-shopify-via-gtm-motherdenim":
+      "Banner and exit-gate clicks tracked in GA4 on a Shopify store.",
+  } as Record<string, string>,
   /** The link under the grid, to the page with every project. */
   showAll: "See all projects",
   videoMark: "Client video",
@@ -740,7 +762,7 @@ export const work = {
       slug: "shopify-purchase-accuracy-rebuild",
       code: "CASE_007 / SHOPIFY / UK / SKINCARE",
       status: "FIXED",
-      title: "UK Shopify skincare brand",
+      title: "Purchase accuracy from 61% to 90% on a UK Shopify skincare store",
       body: "Purchases fired twice on one checkout path and not at all on another, and a misconfigured consent gate silently dropped a third of the rest. I rebuilt the stream on server-side GTM with deduplicated event IDs, restored consent-blocked purchases, and reconciled events against Shopify order exports daily for 90 days before signing it off.",
       tags: ["SGTM", "META CAPI", "CONSENT MODE V2", "BIGQUERY"],
       metric: {
@@ -939,6 +961,12 @@ export const reviews = {
   /** Headline for a slide whose client has not been named. Neutral and true —
    *  never a fabricated name or an index label that reads like a TODO. */
   unnamed: "Client review",
+  /**
+   * Written reviews left out of the HOMEPAGE rows, matched on the start of the
+   * attribution. They stay on /reviews. Maitea already has the first video
+   * slide on the homepage; the row gives its place to another client.
+   */
+  homeExclude: ["Maitea GmbH"],
   // `name`, `role` and `quote` stay unset until Sojib confirms each client
   // agreed to be named — the components degrade gracefully without them.
   items: [

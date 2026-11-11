@@ -130,7 +130,7 @@ export function CasesTeaser({ cases }: { cases: CaseStudy[] }) {
 }
 
 /** Featured projects on the homepage. Everything else is on /work. */
-const PROJECTS_SHOWN = 6;
+const PROJECTS_SHOWN = 3;
 
 /** One featured project as a deck card: the screenshot large, the story beside it. */
 function ProjectDeckCard({ item, index, total }: { item: PortfolioItem; index: number; total: number }) {
@@ -145,7 +145,7 @@ function ProjectDeckCard({ item, index, total }: { item: PortfolioItem; index: n
             alt=""
             width={cover.width}
             height={cover.height}
-            sizes="(min-width: 900px) 640px, 100vw"
+            sizes="(min-width: 900px) 640px, calc(100vw - 34px)"
             loading="lazy"
           />
         ) : (
@@ -162,7 +162,7 @@ function ProjectDeckCard({ item, index, total }: { item: PortfolioItem; index: n
           {item.videoId ? <span className="more-card__video">{work.videoMark}</span> : null}
         </span>
         <span className="pdeck__title">{item.title}</span>
-        <span className="pdeck__desc">{item.description}</span>
+        <span className="pdeck__desc">{work.homeSummaries[item.slug] ?? item.description}</span>
         <span className="more-card__skills">
           {item.skills.slice(0, 4).map((skill) => (
             <span key={skill} className="more-card__skill">

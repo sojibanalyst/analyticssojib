@@ -81,7 +81,7 @@ export function Contact() {
         }}
       >
         {contact.altBooking}{" "}
-        <a href={CALENDLY_URL} target="_blank" rel="noopener">
+        <a href={CALENDLY_URL} target="_blank" rel="noopener" className="tap-pad">
           calendly.com/sojibh2001/30min
         </a>
       </p>
