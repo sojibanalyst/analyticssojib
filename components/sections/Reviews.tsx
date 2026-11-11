@@ -41,7 +41,10 @@ export function Reviews({
   // every one of them is on /reviews. All twenty in the rows doubled the
   // section and, through the client props, the page payload with it.
   const rows = home
-    ? written.filter((item) => !item.placeholder && item.quote.trim() !== "").slice(0, HOME_WRITTEN)
+    ? written
+        .filter((item) => !item.placeholder && item.quote.trim() !== "")
+        .filter((item) => !reviews.homeExclude.some((name) => item.attribution.startsWith(name)))
+        .slice(0, HOME_WRITTEN)
     : written;
 
   return (
@@ -102,7 +105,7 @@ export function Reviews({
 
       <p className="review-more">
         MORE REVIEWS ·{" "}
-        <a href={upworkUrl} target="_blank" rel="noopener">
+        <a href={upworkUrl} target="_blank" rel="noopener" className="tap-pad">
           {upworkReviewCount} ON UPWORK
         </a>
       </p>

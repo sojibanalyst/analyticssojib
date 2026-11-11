@@ -26,15 +26,14 @@
    per theme. `light dark` would follow the operating system instead of the
    theme the visitor actually chose. */
 
-/* The dark palette, applied to the document, and to ONE SECTION inside the
-   light theme: the case studies (.section--ink) are rendered dark on purpose.
-   One set of declarations, two scopes, so the two cannot drift apart.
+/* The dark palette. It used to be scoped onto the case studies
+   (.section--ink) inside the light theme as well, which left one black band
+   in the middle of a light page. That section now follows the theme like
+   every other; see .section--ink in components.css.
 
-   The tone tokens are deliberately NOT in this block. A light-theme ink
-   section wants its own near-black, not the dark theme's section tones. */
+   The tone tokens are deliberately NOT in this block; they follow it. */
 :root,
-[data-theme="dark"],
-[data-theme="light"] .section--ink {
+[data-theme="dark"] {
   color-scheme: dark;
 
   --bg: #101916;
@@ -118,10 +117,6 @@
 }
 
 /* --- section tones, dark ---------------------------------------------------
-   Separate from the block above because that block is shared with the light
-   theme's one dark section, and these values are the part that must NOT be
-   shared.
-
    The dark palette has little room below the ground, so alternation runs
    upward: --tone-raised lifts above --bg and the cards lift again above that.
    --tone-ink is the deepest value and marks the proof section as the odd one

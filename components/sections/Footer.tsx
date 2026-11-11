@@ -7,7 +7,7 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
   return (
     <footer
       style={{
-        paddingBlock: "24px 40px",
+        paddingBlock: "24px var(--footer-pad-bottom, 40px)",
         paddingInline: "max(clamp(18px, 4vw, 48px), calc((100% - var(--measure)) / 2))",
         display: "flex",
         justifyContent: "space-between",
@@ -79,10 +79,10 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
           they want to check something. */}
       <span style={{ flexBasis: "100%", color: "var(--faint)", fontSize: "var(--text-label)" }}>
         © {year} {site.fullName} · {footer.builtWith} ·{" "}
-        <a href="/privacy" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+        <a href="/privacy" className="tap-pad" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
           PRIVACY
         </a>{" "}·{" "}
-        <a href="/terms" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+        <a href="/terms" className="tap-pad" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
           TERMS
         </a>
       </span>

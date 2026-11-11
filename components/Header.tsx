@@ -20,6 +20,12 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
     pathname === href || pathname.startsWith(`${href}/`) ? ("page" as const) : undefined;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Where the header pill ends, measured when the menu opens. The panel
+  // starts there. A fixed 64px was right for a header flush with the top of
+  // the window; the pill floats 10px down, and sits lower still while the
+  // announcement bar is above it, so the first link was underneath it.
+  const [menuTop, setMenuTop] = useState<number | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const prevOverflow = useRef<string>("");
@@ -99,7 +105,7 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
 
   return (
     <>
-      <header className="site-header" data-scrolled={scrolled}>
+      <header ref={headerRef} className="site-header" data-scrolled={scrolled}>
         {/* The wordmark is the conventional way home, so it is a link, not
             the design's plain span. */}
         <Link href="/" className="wordmark" aria-label={`${site.name}, home`}>
@@ -151,7 +157,13 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
           <button
             type="button"
             ref={burgerRef}
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={() => {
+              // The page cannot scroll while the menu is open, so one
+              // measurement holds for as long as the panel is up.
+              const bottom = headerRef.current?.getBoundingClientRect().bottom;
+              if (bottom !== undefined) setMenuTop(Math.round(bottom) + 8);
+              setMenuOpen((v) => !v);
+            }}
             aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={menuOpen}
             aria-controls="sf-mobile-menu"
@@ -181,6 +193,7 @@ export function Header({ items = nav }: { items?: NavLink[] }) {
             aria-modal="true"
             aria-label="Site navigation"
             className="mobile-menu"
+            style={menuTop !== null ? { ["--menu-top" as string]: `${menuTop}px` } : undefined}
           >
             {items.map((item) => (
               <Link
