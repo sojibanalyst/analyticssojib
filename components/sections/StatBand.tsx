@@ -1,5 +1,29 @@
 import { StatValue } from "@/components/StatValue";
-import { clients, clientsLabel, proof, upworkUrl } from "@/content/site";
+import { clients, clientsLabel, proof, upworkUrl, type ClientMark } from "@/content/site";
+
+/** Two letters for the monogram: "Salt & Fuessel" is SF, "Maitea" is MA. */
+function initials(name: string) {
+  const words = name.replace(/[^A-Za-z0-9 ]/g, " ").split(/\s+/).filter(Boolean);
+  return (words.length > 1 ? words[0][0] + words[1][0] : name.slice(0, 2)).toUpperCase();
+}
+
+function ClientLogo({ client }: { client: ClientMark }) {
+  if (client.mark) {
+    // Plain <img>: the files are already small (see public/clients), and next/image
+    // would need each one's size typed in by hand.
+    return (
+      <span className="clientrow__logo clientrow__logo--img">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={client.mark} alt="" loading="lazy" />
+      </span>
+    );
+  }
+  return (
+    <span className="clientrow__logo clientrow__logo--mono" aria-hidden="true">
+      {initials(client.name)}
+    </span>
+  );
+}
 
 /**
  * The proof line.
@@ -37,19 +61,28 @@ export function StatBand() {
         {proof.verifyLabel}
       </a>
 
-      {/* The client row. Set in the site's own type rather than with fetched
-          artwork — see the note above `clients` in content/site.ts for who is
-          on it and why nobody else is. */}
+      {/* The client row: one line that drifts, each name with its mark. A
+          real logo file shows where `mark` is set; until then a monogram in
+          the site's own type, which claims nothing about anyone's brand. See
+          the note above `clients` in content/site.ts. The second copy only
+          closes the loop and is hidden from assistive tech. */}
       <div className="clientrow">
         <span className="clientrow__label">{clientsLabel}</span>
-        <ul className="clientrow__list">
-          {clients.map((client) => (
-            <li key={client.name} className="clientrow__item">
-              {client.name}
-              {client.note && <span className="clientrow__note">{client.note}</span>}
-            </li>
-          ))}
-        </ul>
+        <div className="clientrow__viewport">
+          <div className="clientrow__track">
+            {[0, 1].map((copy) => (
+              <ul key={copy} className="clientrow__list" aria-hidden={copy === 1 || undefined}>
+                {clients.map((client) => (
+                  <li key={client.name} className="clientrow__item">
+                    <ClientLogo client={client} />
+                    {client.name}
+                    {client.note && <span className="clientrow__note">{client.note}</span>}
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

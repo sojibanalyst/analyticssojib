@@ -31,13 +31,18 @@ export function StackStrip() {
                 <li
                   key={item.label}
                   className="tools__chip"
-                  style={{ "--i": Math.min(OFFSETS[g] + i, 20) } as React.CSSProperties}
+                  style={{ "--i": Math.min(OFFSETS[g] + i, 20), "--brand": item.brand, "--tile": item.tile } as React.CSSProperties}
                 >
-                  {item.icon ? (
-                    <span className="tools__icon" aria-hidden="true">
-                      <ToolIcon icon={item.icon} size={15} />
-                    </span>
-                  ) : null}
+                  <span className="tools__icon" aria-hidden="true">
+                    {item.logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- tiny static logo files
+                      <img src={item.logo} alt="" loading="lazy" />
+                    ) : item.icon ? (
+                      <ToolIcon icon={item.icon} size={14} />
+                    ) : (
+                      item.label.slice(0, 1)
+                    )}
+                  </span>
                   {item.label}
                 </li>
               ))}

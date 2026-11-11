@@ -11,7 +11,6 @@ import {
   ServicesTeaser,
 } from "@/components/sections/Teasers";
 import { Reviews } from "@/components/sections/Reviews";
-import { Clients } from "@/components/sections/Clients";
 import { Process } from "@/components/sections/Process";
 import { Faq } from "@/components/sections/Faq";
 import { Notes } from "@/components/sections/Notes";
@@ -77,7 +76,6 @@ export default async function Home() {
         <CasesTeaser cases={cases} />
         <ProjectsTeaser items={portfolio} />
         {/* Client proof */}
-        <Clients />
         <Reviews items={videoReviews} written={writtenReviews} home />
         {/* Process and FAQ: the four steps, and the first questions with a
             link to the rest on /services, where the FAQPage data lives. */}

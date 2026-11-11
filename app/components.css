@@ -2030,6 +2030,8 @@ a.wordmark:hover {
    artwork — see content/site.ts for who is on it and why. */
 
 .clientrow {
+  align-self: stretch;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2044,21 +2046,108 @@ a.wordmark:hover {
   color: var(--faint);
 }
 
+/* One line. Narrow screens and reduced motion scroll it by hand; elsewhere it
+   drifts, and stops under the pointer. */
+.clientrow__viewport {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.clientrow__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.clientrow__track {
+  display: flex;
+  width: max-content;
+  padding: 4px 0;
+}
+
+/* A right margin on each item, not a gap: the loop moves the track by exactly
+   half its width, and a gap would leave that half one gutter short. */
 .clientrow__list {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px 12px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.clientrow__list[aria-hidden] {
+  display: none;
+}
+
+.clientrow__logo {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+}
+
+/* A real logo: on a light tile, because nearly all of them were drawn for a
+   white page, and a dark wordmark on the forest green would vanish. */
+.clientrow__logo--img {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 32px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--logo-tile);
+}
+
+.clientrow__logo--img img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.clientrow__logo--mono {
+  display: inline-grid;
+  place-items: center;
+  background: var(--status-success-tint);
+  color: var(--accent);
+  font-family: var(--font-data);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+@keyframes clientrow-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .clientrow__viewport {
+    overflow: hidden;
+  }
+
+  .clientrow__list[aria-hidden] {
+    display: flex;
+  }
+
+  .clientrow__track {
+    animation: clientrow-drift 45s linear infinite;
+  }
+
+  .clientrow__viewport:hover .clientrow__track {
+    animation-play-state: paused;
+  }
+}
+
 .clientrow__item {
   display: inline-flex;
-  align-items: baseline;
-  gap: 7px;
+  align-items: center;
+  gap: 9px;
+  margin-right: 12px;
+  padding-left: 6px;
   box-sizing: border-box;
   padding: 8px 14px;
   border: 1px solid var(--border);
@@ -5964,26 +6053,40 @@ a.wordmark:hover {
 
 /* Tools, in groups --------------------------------------------------------- */
 
+/* One card, a row per group, hairlines between: four separate boxes made
+   the section a screen tall. */
 .tools__groups {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
-}
-
-@media (min-width: 900px) {
-  .tools__groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
 }
 
 .tools__group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 18px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--raise-1);
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.tools__group + .tools__group {
+  border-top: 1px solid var(--border);
+}
+
+/* Wide screens: the group's name on the left and its tools beside it. */
+@media (min-width: 900px) {
+  .tools__group {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+  }
+
+  .tools__title {
+    flex: 0 0 190px;
+  }
 }
 
 .tools__title {
@@ -5999,7 +6102,7 @@ a.wordmark:hover {
 .tools__list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -6009,8 +6112,8 @@ a.wordmark:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 36px;
+  padding: 0 13px 0 5px;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   background: var(--surface);
@@ -6020,18 +6123,33 @@ a.wordmark:hover {
     color var(--dur-micro) var(--ease-out);
 }
 
+/* The mark in its brand's own colour (--brand, set per chip) on a light
+   tile, the ground those colours were drawn for. A chip with no mark shows
+   its initial there instead. */
 .tools__icon {
-  display: inline-flex;
-  color: var(--muted);
-  transition: color var(--dur-micro) var(--ease-out);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--tile, var(--logo-tile));
+  color: var(--brand, var(--on-accent-strong));
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tools__icon img {
+  display: block;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
 }
 
 .tools__chip:hover {
   border-color: var(--accent);
-}
-
-.tools__chip:hover .tools__icon {
-  color: var(--accent);
 }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
@@ -6062,126 +6180,4 @@ a.wordmark:hover {
   [data-motion="on"] .tools__groups[data-reveal="pending"] .tools__chip {
     opacity: 0;
   }
-}
-
-/* Selected clients & collaborators ------------------------------------------ */
-
-.clients__featured {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 20px 22px;
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-md);
-  background: radial-gradient(120% 140% at 0% 0%, var(--status-success-tint), transparent 60%), var(--raise-1);
-  box-shadow: var(--glow);
-}
-
-.clients__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--accent);
-  font-family: var(--font-data);
-  font-size: var(--text-label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.clients__pulse {
-  position: relative;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.clients__pulse::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0;
-}
-
-@keyframes clients-pulse {
-  0% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(2.6);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .clients__pulse::after {
-    animation: clients-pulse 2.4s var(--ease-out) infinite;
-  }
-}
-
-.clients__name {
-  margin: 0;
-  color: var(--text);
-  font-size: var(--text-lead);
-}
-
-.clients__name strong {
-  font-weight: 700;
-}
-
-.clients__detail {
-  margin: 0;
-  color: var(--muted);
-}
-
-.clients__wall {
-  display: grid;
-  /* 2, 3 or 6 across: eighteen names fill every row at each width, so no
-     empty cells show through. */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  list-style: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--border);
-}
-
-@media (min-width: 700px) {
-  .clients__wall {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1100px) {
-  .clients__wall {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-}
-
-.clients__item {
-  display: flex;
-  align-items: center;
-  min-height: 64px;
-  padding: 12px 16px;
-  background: var(--surface);
-  color: var(--muted);
-  font-weight: 600;
-  transition: color var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out);
-}
-
-.clients__item:hover {
-  background: var(--raise-1);
-  color: var(--text);
-}
-
-.clients__note {
-  margin: 0;
-  color: var(--faint);
-  font-size: var(--text-label);
 }

@@ -49,6 +49,8 @@
   --accent: #c7f36b;
   --ink: #c7f36b;
   --on-accent: #101916;
+  /* Client logos are drawn for white pages; they sit on this tile. */
+  --logo-tile: #f3f3ec;
   --accent-2: #8fe3c0;
   --danger: #f87171;
   --ok: #c7f36b;
@@ -151,6 +153,7 @@
   --accent: #3f6212;
   --ink: #3f6212;
   --on-accent: #ffffff;
+  --logo-tile: #ffffff;
   --accent-2: #0b67c2;
   --danger: #c0271f;
   --ok: #3f6212;

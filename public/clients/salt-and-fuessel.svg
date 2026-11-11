@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="171" height="170" viewBox="0 0 171 170">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Clip_4" data-name="Clip 4" d="M0,0H171V170H0Z" transform="translate(0.712)" fill="none"></path>
+    </clipPath>
+  </defs>
+  <g id="Group_2" data-name="Group 2" transform="translate(-0.712)">
+    <path id="Fill_1" data-name="Fill 1" d="M73.423,47.906,57.067,63.854l-28.9-28.179a12.159,12.159,0,0,1,0-17.483,12.919,12.919,0,0,1,17.929,0L54.718,26.6,65.3,16.287,56.675,7.875a28.184,28.184,0,0,0-39.085,0,26.5,26.5,0,0,0,0,38.111l28.9,28.18-9.885,9.638a12.929,12.929,0,0,1-17.933,0,12.144,12.144,0,0,1,0-17.483L24.029,61.1,13.449,50.784,8.1,56.007a26.476,26.476,0,0,0,0,38.112,28.173,28.173,0,0,0,39.087,0l9.885-9.638,16.355,15.947L84,90.115,67.645,74.167,84,58.219Z" transform="translate(44.712 35)" fill="#ff5157"></path>
+    <path id="Clip_4-2" data-name="Clip 4" d="M0,0H171V170H0Z" transform="translate(0.712)" fill="none"></path>
+    <g id="Group_2-2" data-name="Group 2" clip-path="url(#clip-path)">
+      <path id="Fill_3" data-name="Fill 3" d="M85.5,170C38.354,170,0,131.869,0,85S38.354,0,85.5,0,171,38.131,171,85,132.644,170,85.5,170Zm0-155.535c-39.122,0-70.95,31.642-70.95,70.535s31.828,70.537,70.95,70.537S156.451,123.894,156.451,85,124.621,14.465,85.5,14.465Z" transform="translate(0.712)" fill="#ff5157"></path>
+      <ellipse id="Oval_Copy" data-name="Oval Copy" cx="302.408" cy="302.499" rx="302.408" ry="302.499" transform="translate(610.104 510.914) rotate(131)" fill="none" stroke="rgba(255,255,255,0.7)" stroke-miterlimit="10" stroke-width="1"></ellipse>
+    </g>
+  </g>
+</svg>
