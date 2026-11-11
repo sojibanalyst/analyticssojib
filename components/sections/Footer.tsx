@@ -22,17 +22,7 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
     >
       <span>{site.footerTagline}</span>
 
-      <span
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          gap: "8px",
-          marginLeft: "auto",
-          order: 3,
-        }}
-      >
+      <span className="site-foot__social">
         {socials.map((social) => (
           <a
             key={social.label}
@@ -77,7 +67,7 @@ export function Footer({ links = footerNav }: { links?: NavLink[] }) {
       {/* Privacy sits on the legal line rather than in the footer nav: it is
           not somewhere a visitor is being sent, it is where they look when
           they want to check something. */}
-      <span style={{ flexBasis: "100%", color: "var(--faint)", fontSize: "var(--text-label)" }}>
+      <span className="site-foot__legal" style={{ color: "var(--faint)", fontSize: "var(--text-label)" }}>
         © {year} {site.fullName} · {footer.builtWith} ·{" "}
         <a href="/privacy" className="tap-pad" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: "3px" }}>
           PRIVACY

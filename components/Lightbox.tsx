@@ -110,7 +110,8 @@ export function Lightbox({ children, label }: { children: React.ReactNode; label
               alt={shot.alt}
               width={shot.width}
               height={shot.height}
-              sizes="100vw"
+              sizes="(min-width: 1300px) 1200px, 100vw"
+              style={{ ["--shot-ratio" as string]: String(shot.width / shot.height) }}
               draggable={false}
             />
             <figcaption className="lightbox__caption">

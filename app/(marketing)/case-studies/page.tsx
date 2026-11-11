@@ -1,11 +1,10 @@
-import { FilterList } from "@/components/FilterList";
-import { CaseFile, DefectTable, MetricNote } from "@/components/sections/CaseFiles";
+import { DefectTable, MetricNote } from "@/components/sections/CaseFiles";
+import { CaseIndex } from "@/components/sections/CaseIndex";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { PageHead } from "@/components/ui/PageHead";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { pages, work } from "@/content/site";
 import { getCaseStudies } from "@/lib/content";
-import { CASE_FILTERS, groupsOf } from "@/lib/filters";
 import { pageMetadata } from "@/lib/page-metadata";
 
 /** Static, like every other public page: built once, refreshed hourly. */
@@ -16,8 +15,8 @@ const copy = pages.caseStudies;
 export const metadata = pageMetadata("/case-studies", copy.title, copy.description);
 
 /**
- * Every case study at full size, filterable by platform and setup, then the
- * defects that come up again and again. Each case still has its own page at /case-studies/<slug>.
+ * Every case study as a card, the first one large, then the defects that
+ * come up again and again. Each case has its own page at /case-studies/<slug>.
  */
 export default async function CaseStudiesPage() {
   const cases = await getCaseStudies();
@@ -27,18 +26,7 @@ export default async function CaseStudiesPage() {
 
       <section className="section section--major section--ink" aria-labelledby="cases-title">
         <SectionHeading title={work.title} titleId="cases-title" />
-        <FilterList
-          entries={cases.map((item) => ({
-            key: item.slug,
-            groups: groupsOf([item.code, item.title, ...item.tags].join(" "), CASE_FILTERS),
-            node: <CaseFile item={item} />,
-          }))}
-          order={CASE_FILTERS.map((rule) => rule.label)}
-          label={copy.filterLabel}
-          allLabel={copy.filterAll}
-          showingLabel={copy.filterShowing}
-          listClassName="case-list"
-        />
+        <CaseIndex cases={cases} />
         <MetricNote cases={cases} />
         <DefectTable />
       </section>
