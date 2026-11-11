@@ -11,11 +11,14 @@ import {
   ServicesTeaser,
 } from "@/components/sections/Teasers";
 import { Reviews } from "@/components/sections/Reviews";
+import { Process } from "@/components/sections/Process";
+import { Faq } from "@/components/sections/Faq";
 import { Notes } from "@/components/sections/Notes";
 import { Contact } from "@/components/sections/Contact";
 import { TrackingCheck } from "@/components/TrackingCheck";
 import {
   getCaseStudies,
+  getFaqs,
   getPortfolioItems,
   getPosts,
   getVideoReviews,
@@ -49,27 +52,37 @@ export const metadata: Metadata = { alternates: { canonical: site.url } };
 export default async function Home() {
   // One round trip each, in parallel. Sequential awaits here would add a
   // round trip per read to every build.
-  const [cases, videoReviews, writtenReviews, posts, portfolio] = await Promise.all([
+  const [cases, videoReviews, writtenReviews, posts, portfolio, faqs] = await Promise.all([
     getCaseStudies(),
     getVideoReviews(),
     getWrittenReviews(),
     getPosts(),
     getPortfolioItems(),
+    getFaqs(),
   ]);
 
   return (
     <>
       <main id="main">
+        {/* Introduction */}
         <Hero />
         <StatBand />
-        <StackStrip />
+        <AboutTeaser />
         <Symptoms />
+        {/* Services */}
         <ServicesTeaser />
+        <StackStrip />
+        {/* Selected work */}
         <CasesTeaser cases={cases} />
         <ProjectsTeaser items={portfolio} />
+        {/* Client proof */}
         <Reviews items={videoReviews} written={writtenReviews} home />
-        <AboutTeaser />
+        {/* Process and FAQ: the four steps, and the first questions with a
+            link to the rest on /services, where the FAQPage data lives. */}
+        <Process heading />
+        <Faq items={faqs} limit={4} moreHref="/services#faq" structuredData={false} />
         <Notes posts={posts} />
+        {/* Contact */}
         <Contact />
         {/* The free tracking check, last before the footer: a visitor who
             reads to the end can try it here without leaving. It is on /about

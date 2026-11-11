@@ -1,56 +1,53 @@
-import { integrations, integrationsLabel, stack } from "@/content/site";
-import { StackIcon } from "@/components/ui/Icon";
+import { toolGroups, toolsCopy } from "@/content/site";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { ToolIcon } from "@/components/ui/Icon";
+
+/** Where each group starts in the overall arrival order. */
+const OFFSETS = toolGroups.map((_, g) => toolGroups.slice(0, g).reduce((n, group) => n + group.items.length, 0));
 
 /**
- * The tools band.
+ * The tools section, in four groups: analytics and tag management, advertising
+ * measurement, reporting and diagnostics, platforms.
  *
- * This was a full-bleed marquee and the marquee was a mistake. A loop needs
- * two copies of the set to run seamlessly, and with only twelve tools the set
- * is narrower than a desktop viewport — so both copies were on screen at once
- * and every tool appeared twice. Sojib spotted it before I did.
+ * It was one long row of every tool, which read as a list to skim past. In
+ * groups a visitor finds their own stack in a glance. The official mark shows
+ * where the project already carries it, in the text colour so the set reads
+ * as one; everything else is a clean text label. Nothing here claims a
+ * certification or a partnership.
  *
- * So: one set, centred inside the page measure, wrapping instead of running.
- * The movement it lost comes back as an arrival — each tool fades and scales
- * up in sequence when the band is scrolled to, which reads as the row
- * assembling itself rather than sliding past.
- *
- * The index goes to CSS as a custom property so the cascade can run across all
- * twelve. The shared stagger in Motion.tsx caps at four steps, which is right
- * for a four-card grid and wrong for a list this long.
+ * Each chip arrives in sequence when the section is scrolled to (the index is
+ * a CSS custom property), and lifts with a lime edge on hover.
  */
 export function StackStrip() {
   return (
-    <section
-      aria-label="Tools and platforms"
-      className="section section--band section--raised stack-strip"
-    >
-      <div className="stack-strip__row">
-        {stack.map((item, i) => (
-          <span
-            key={item.label}
-            className="stack-strip__item"
-            style={{ "--i": i } as React.CSSProperties}
-          >
-            <StackIcon item={item} />
-            <span className="stack-strip__label">{item.label}</span>
-          </span>
-        ))}
-      </div>
-
-      {/* CRMs and automation, as text. No marks: I do not have official
-          artwork for any of them, and a logo drawn from memory is worse than a
-          name set properly — it is a claim about somebody's brand made in the
-          wrong shape. */}
-      <div className="stack-strip__row stack-strip__row--text">
-        <span className="stack-strip__group">{integrationsLabel}</span>
-        {integrations.map((name, i) => (
-          <span
-            key={name}
-            className="stack-strip__chip"
-            style={{ "--i": i + stack.length } as React.CSSProperties}
-          >
-            {name}
-          </span>
+    <section id="tools" aria-labelledby="tools-title" className="section tools">
+      <SectionHeading eyebrow={toolsCopy.eyebrow} title={toolsCopy.title} titleId="tools-title" />
+      <div className="tools__groups">
+        {toolGroups.map((group, g) => (
+          <div key={group.title} className="tools__group">
+            <h3 className="tools__title">{group.title}</h3>
+            <ul className="tools__list">
+              {group.items.map((item, i) => (
+                <li
+                  key={item.label}
+                  className="tools__chip"
+                  style={{ "--i": Math.min(OFFSETS[g] + i, 20), "--brand": item.brand, "--tile": item.tile } as React.CSSProperties}
+                >
+                  <span className="tools__icon" aria-hidden="true">
+                    {item.logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- tiny static logo files
+                      <img src={item.logo} alt="" loading="lazy" />
+                    ) : item.icon ? (
+                      <ToolIcon icon={item.icon} size={14} />
+                    ) : (
+                      item.label.slice(0, 1)
+                    )}
+                  </span>
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
       </div>
     </section>

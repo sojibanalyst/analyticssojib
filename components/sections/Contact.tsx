@@ -27,7 +27,8 @@ export function Contact() {
 
       <p
         style={{
-          margin: 0,
+          margin: "0 auto",
+          textAlign: "center",
           maxWidth: "58ch",
           fontSize: "var(--text-body)",
           lineHeight: 1.65,

@@ -27,7 +27,8 @@ export function Hero() {
           <h1 id="hero-title" className="hero-h1">
             {hero.headline.a} <span className="hero-h1__accent">{hero.headline.accent1}</span>{" "}
             {hero.headline.b} {hero.headline.c}{" "}
-            <span className="hero-h1__accent">{hero.headline.accent2}</span>
+            {/* The one serif on the site: a short phrase in italic Georgia. */}
+            <em className="hero-h1__accent hero-h1__em">{hero.headline.accent2}</em>
           </h1>
 
           <p className="hero-lead">{hero.lead}</p>

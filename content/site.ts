@@ -368,13 +368,12 @@ export const hero = {
   primaryCta: "BOOK A FREE 30-MIN CALL →",
   secondaryCta: "SEE HOW I WORK",
   secondaryHref: "#services",
-  imageAlt:
-    "Sojib, web analytics and tracking specialist, in front of analytics dashboards",
+  imageAlt: "Sojib H., web analytics and tracking specialist, smiling, in a black T-shirt",
   /**
    * The small round photo beside the name. To change it, replace
    * public/avatar.jpg with a square image (192px or larger); nothing else
    * needs to move. The large portrait lives in the About section and is
-   * public/about.jpg, swapped the same way.
+   * public/about-portrait.jpg, swapped the same way.
    */
   avatar: { src: "/avatar.jpg", alt: "Sojib H." },
   /**
@@ -458,10 +457,36 @@ export const upworkJobSuccess = "100%";
 export type ClientMark = { name: string; note?: string; mark?: string };
 
 export const clients: ClientMark[] = [
-  { name: "Maitea" },
+  { name: "Salt & Fuessel", mark: "/clients/salt-and-fuessel.svg" },
+  { name: "Maitea", mark: "/clients/maitea.webp" },
+  // Profibeauty.cz's terms ask for written permission before its logo is used: name only.
   { name: "Profibeauty.cz" },
-  { name: "CareerCapital" },
-  { name: "Stape", note: "PARTNER" },
+  { name: "CareerCapital", mark: "/clients/careercapital.webp" },
+  { name: "Castinetti Realty Group", mark: "/clients/castinetti-realty-group.webp" },
+  { name: "Wendy Combs Studio", mark: "/clients/wendy-combs-studio.webp" },
+  { name: "Rogue Raw", mark: "/clients/rogue-raw.webp" },
+  { name: "Tropical Fruit Box", mark: "/clients/tropical-fruit-box.webp" },
+  { name: "Find Surfaces", mark: "/clients/find-surfaces.webp" },
+  { name: "Aaron Thomas Law", mark: "/clients/aaron-thomas-law.webp" },
+  { name: "Keller Williams Slovenia" },
+  { name: "Emberly Digital", mark: "/clients/emberly-digital.svg" },
+  { name: "LaBante London", mark: "/clients/labante-london.webp" },
+  { name: "Moneyskope", mark: "/clients/moneyskope.webp" },
+  { name: "Sensors Data", mark: "/clients/sensors-data.webp" },
+  { name: "DayTrader Canada", mark: "/clients/daytrader-canada.webp" },
+  { name: "100% Digital", mark: "/clients/100-digital.webp" },
+  { name: "Employsome", mark: "/clients/employsome.webp" },
+  { name: "Travel Tractions", mark: "/clients/travel-tractions.webp" },
+  { name: "VOIR Creatives", mark: "/clients/voir-creatives.webp" },
+  { name: "RB Marketing Solutions", mark: "/clients/rb-marketing-solutions.webp" },
+  { name: "Advantage College Planning", mark: "/clients/advantage-college-planning.webp" },
+  { name: "VanPimps", mark: "/clients/vanpimps.webp" },
+  { name: "Vee Dub Transporters", mark: "/clients/vee-dub-transporters.webp" },
+  // The only logo found is the parent SIGNAL group's, which is not this client's mark.
+  { name: "Signal Ocean" },
+  { name: "Think Insights", mark: "/clients/think-insights.webp" },
+  { name: "Prenups.com" },
+  { name: "Stape", note: "PARTNER", mark: "/clients/stape.svg" },
 ];
 
 export const clientsLabel = "WORKED WITH";
@@ -723,9 +748,9 @@ export const work = {
         beforeLabel: "BEFORE",
         afterLabel: "AFTER",
         before: "61%",
-        after: "98%",
+        after: "90%",
         beforePct: 61,
-        afterPct: 98,
+        afterPct: 90,
       },
       stats: [
         { value: "+37", unit: "pts", label: "ACCURACY" },
@@ -1236,3 +1261,96 @@ export const trackingCheck = {
     rate_limited: "Too many checks in a short time. Give it a minute.",
   },
 } as const;
+
+/* -------------------------------------------------------------------------- */
+/* Tools, grouped                                                              */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The tools section, in four readable groups rather than one long row. Only
+ * tools already on this site or in Sojib's profile. An icon is shown where the
+ * project already carries the official mark; the rest are set as text. None of
+ * this implies a certification or a partnership.
+ */
+export type ToolIconName =
+  | StackItem["icon"]
+  | "pinterest"
+  | "hotjar"
+  | "woocommerce"
+  | "wordpress"
+  | "wix"
+  | "webflow"
+  | "squarespace"
+  | "bigcommerce"
+  | "magento"
+  | "mixpanel";
+
+/**
+ * `brand` is the mark's own colour. Every mark sits on a light tile, so the
+ * black ones (TikTok, Wix, Squarespace, BigCommerce) read as well as the
+ * rest; `tile` replaces that tile where the brand's own ground is part of
+ * the mark, as with Snapchat's yellow. No `icon` means no openly licensed
+ * mark was available, and the chip shows the tool's initial.
+ *
+ * `logo` is a full-colour file in public/tools, used where the official mark
+ * has more than one colour (Google's, Meta's, TikTok's) or came from the
+ * tool's own site. It wins over `icon`.
+ */
+export type ToolItem = { label: string; icon?: ToolIconName; brand?: string; tile?: string; logo?: string };
+
+export const toolGroups: { title: string; items: ToolItem[] }[] = [
+  {
+    title: "Analytics and tag management",
+    items: [
+      { label: "GA4", logo: "/tools/google-analytics.svg" },
+      { label: "Google Tag Manager", logo: "/tools/google-tag-manager.svg" },
+      { label: "Server-side GTM", logo: "/tools/google-tag-manager.svg" },
+      { label: "Mixpanel", icon: "mixpanel", brand: "#7856FF" },
+    ],
+  },
+  {
+    title: "Advertising measurement",
+    items: [
+      { label: "Google Ads", logo: "/tools/google-ads.svg" },
+      { label: "Meta Pixel", logo: "/tools/meta.svg" },
+      { label: "Meta Conversions API", logo: "/tools/meta.svg" },
+      { label: "Bing UET", logo: "/tools/bing.svg" },
+      { label: "TikTok Pixel", logo: "/tools/tiktok.svg" },
+      { label: "Pinterest", logo: "/tools/pinterest.svg" },
+      { label: "Snapchat", icon: "snapchat", brand: "#000000", tile: "#FFFC00" },
+      { label: "LinkedIn Insight", logo: "/tools/linkedin.svg" },
+    ],
+  },
+  {
+    title: "Reporting and diagnostics",
+    items: [
+      { label: "Looker Studio", logo: "/tools/looker-studio.svg" },
+      { label: "Microsoft Clarity", logo: "/tools/microsoft-clarity.svg" },
+      { label: "Hotjar", logo: "/tools/hotjar.svg" },
+    ],
+  },
+  {
+    title: "Platforms",
+    items: [
+      { label: "Shopify", logo: "/tools/shopify.svg" },
+      { label: "WooCommerce", logo: "/tools/woocommerce.svg" },
+      { label: "WordPress", logo: "/tools/wordpress.svg" },
+      { label: "Wix", icon: "wix", brand: "#000000" },
+      { label: "Webflow", icon: "webflow", brand: "#146EF5" },
+      { label: "Squarespace", icon: "squarespace", brand: "#000000" },
+      { label: "BigCommerce", icon: "bigcommerce", brand: "#121118" },
+      { label: "Magento", icon: "magento", brand: "#EE672F" },
+      { label: "GoHighLevel", logo: "/tools/gohighlevel.png" },
+      { label: "ClickFunnels", logo: "/tools/clickfunnels.webp" },
+    ],
+  },
+];
+
+export const toolsCopy = {
+  eyebrow: "Tools",
+  title: "What I work in",
+};
+
+/* -------------------------------------------------------------------------- */
+/* Selected clients & collaborators                                            */
+/* -------------------------------------------------------------------------- */

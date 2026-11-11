@@ -2030,6 +2030,8 @@ a.wordmark:hover {
    artwork — see content/site.ts for who is on it and why. */
 
 .clientrow {
+  align-self: stretch;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2044,21 +2046,108 @@ a.wordmark:hover {
   color: var(--faint);
 }
 
+/* One line. Narrow screens and reduced motion scroll it by hand; elsewhere it
+   drifts, and stops under the pointer. */
+.clientrow__viewport {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.clientrow__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.clientrow__track {
+  display: flex;
+  width: max-content;
+  padding: 4px 0;
+}
+
+/* A right margin on each item, not a gap: the loop moves the track by exactly
+   half its width, and a gap would leave that half one gutter short. */
 .clientrow__list {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px 12px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.clientrow__list[aria-hidden] {
+  display: none;
+}
+
+.clientrow__logo {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+}
+
+/* A real logo: on a light tile, because nearly all of them were drawn for a
+   white page, and a dark wordmark on the forest green would vanish. */
+.clientrow__logo--img {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 32px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--logo-tile);
+}
+
+.clientrow__logo--img img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.clientrow__logo--mono {
+  display: inline-grid;
+  place-items: center;
+  background: var(--status-success-tint);
+  color: var(--accent);
+  font-family: var(--font-data);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+@keyframes clientrow-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .clientrow__viewport {
+    overflow: hidden;
+  }
+
+  .clientrow__list[aria-hidden] {
+    display: flex;
+  }
+
+  .clientrow__track {
+    animation: clientrow-drift 45s linear infinite;
+  }
+
+  .clientrow__viewport:hover .clientrow__track {
+    animation-play-state: paused;
+  }
+}
+
 .clientrow__item {
   display: inline-flex;
-  align-items: baseline;
-  gap: 7px;
+  align-items: center;
+  gap: 9px;
+  margin-right: 12px;
+  padding-left: 6px;
   box-sizing: border-box;
   padding: 8px 14px;
   border: 1px solid var(--border);
@@ -5821,4 +5910,274 @@ a.wordmark:hover {
    raised too, so it takes the sunk tone to keep the two apart. */
 #contact + #check {
   background: var(--tone-sunk);
+}
+
+/* ==========================================================================
+   Forest-green restyle (2026-11): emphasis, motion, tools, clients.
+   Colours are tokens from globals.css. Motion is transform and opacity only,
+   and none of it runs under reduced motion.
+   ========================================================================== */
+
+/* The one serif: a short phrase in italic Georgia, lime, as in "Prove it." */
+.hero-h1__em {
+  font-family: var(--font-emphasis);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+}
+
+/* Headings were Space Grotesk; Inter at the same sizes wants tighter
+   tracking to keep the same weight on the page. */
+.hero-h1,
+.h2,
+.page-head__title,
+.pf__title {
+  letter-spacing: -0.025em;
+}
+
+/* Staggered hero entrance: badge, headline, copy, buttons, name, then the
+   visual. It starts at 0.01 opacity rather than 0, so the browser counts the
+   headline as painted on its first frame and the largest paint is not held
+   back by the animation. Fill mode is backwards so the parallax on the visual
+   takes over the moment its entrance ends. */
+@keyframes hero-in {
+  from {
+    opacity: 0.01;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-visual-in {
+  from {
+    opacity: 0.01;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge,
+  .hero-h1,
+  .hero-lead,
+  .hero-ctas,
+  .hero-id {
+    animation: hero-in 720ms var(--ease-out) backwards;
+  }
+
+  .hero-h1 {
+    animation-delay: 70ms;
+  }
+
+  .hero-lead {
+    animation-delay: 150ms;
+  }
+
+  .hero-ctas {
+    animation-delay: 230ms;
+  }
+
+  .hero-id {
+    animation-delay: 310ms;
+  }
+
+  .hero-visual {
+    animation: hero-visual-in 900ms var(--ease-out) 180ms backwards;
+  }
+}
+
+/* A stronger scroll reveal: further to travel and a touch of scale, so a
+   section arriving is something you notice. */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hover feedback: buttons lift with the lime glow, cards lift and edge in
+   lime, nav links underline from the left. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn {
+    transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-primary:hover {
+    box-shadow: var(--glow);
+  }
+
+  .card:hover,
+  .case-stack__card:hover,
+  .pdeck:hover {
+    border-color: var(--accent);
+  }
+}
+
+.header-nav a {
+  position: relative;
+}
+
+.header-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.header-nav a:hover::after,
+.header-nav a[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* Tools, in groups --------------------------------------------------------- */
+
+/* One card, a row per group, hairlines between: four separate boxes made
+   the section a screen tall. */
+.tools__groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--raise-1);
+}
+
+.tools__group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.tools__group + .tools__group {
+  border-top: 1px solid var(--border);
+}
+
+/* Wide screens: the group's name on the left and its tools beside it. */
+@media (min-width: 900px) {
+  .tools__group {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+  }
+
+  .tools__title {
+    flex: 0 0 190px;
+  }
+}
+
+.tools__title {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tools__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tools__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 13px 0 5px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-small);
+  transition: transform var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out);
+}
+
+/* The mark in its brand's own colour (--brand, set per chip) on a light
+   tile, the ground those colours were drawn for. A chip with no mark shows
+   its initial there instead. */
+.tools__icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--tile, var(--logo-tile));
+  color: var(--brand, var(--on-accent-strong));
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tools__icon img {
+  display: block;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.tools__chip:hover {
+  border-color: var(--accent);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .tools__chip:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* The chips arrive one after another when the section is reached. Only once
+   Motion.tsx has switched reveals on, so with no script nothing is hidden. */
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-motion="on"] .tools__groups[data-reveal="shown"] .tools__chip {
+    animation: chip-in 420ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 35ms);
+  }
+
+  [data-motion="on"] .tools__groups[data-reveal="pending"] .tools__chip {
+    opacity: 0;
+  }
 }
