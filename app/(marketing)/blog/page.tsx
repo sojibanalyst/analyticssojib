@@ -47,6 +47,7 @@ export default async function BlogIndex() {
           eyebrow={blog.eyebrow}
           title={blog.title}
           titleId="blog-index-title"
+          as="h1"
         />
 
         {/* This page is reachable directly and from the foot of every post, so

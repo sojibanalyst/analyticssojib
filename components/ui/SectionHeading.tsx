@@ -10,16 +10,22 @@ type Props = {
   title: string;
   /** id for the <h2>, referenced by the section's aria-labelledby */
   titleId: string;
+  /**
+   * "h1" where this heading is the page's own title and nothing sits above
+   * it (the blog index). It looks the same; a page with no h1 has no title
+   * as far as a screen reader or a crawler can tell.
+   */
+  as?: "h1" | "h2";
 };
 
-export function SectionHeading({ eyebrow, kicker, title, titleId }: Props) {
+export function SectionHeading({ eyebrow, kicker, title, titleId, as: Tag = "h2" }: Props) {
   return (
     <div className="section-head">
       {eyebrow && <span className="eyebrow">{eyebrow}</span>}
       {kicker && <span className="eyebrow eyebrow--muted">{kicker}</span>}
-      <h2 id={titleId} className="h2">
+      <Tag id={titleId} className="h2">
         {title}
-      </h2>
+      </Tag>
     </div>
   );
 }

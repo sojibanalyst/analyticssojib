@@ -10,6 +10,7 @@ import {
 import { LiteYouTube } from "@/components/LiteYouTube";
 import { WrittenReviews } from "@/components/sections/WrittenReviews";
 import { Deck } from "@/components/ui/Deck";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 
 /** Written reviews in the homepage rows. */
 const HOME_WRITTEN = 10;
@@ -49,13 +50,7 @@ export function Reviews({
 
   return (
     <section id="reviews" className="section section--raised" aria-labelledby="reviews-title">
-      <div className="section-head">
-        <span className="eyebrow eyebrow--muted">{reviews.kicker}</span>
-      </div>
-
-      <h2 id="reviews-title" className="h2" style={{ maxWidth: "26ch", margin: 0 }}>
-        {reviews.title}
-      </h2>
+      <SectionHeading kicker={reviews.kicker} title={reviews.title} titleId="reviews-title" />
 
       {N > 0 ? (
         <Deck label="Video reviews">
