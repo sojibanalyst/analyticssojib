@@ -6480,3 +6480,38 @@ footer {
   }
 }
 
+
+/* Narrow phones ----------------------------------------------------------------
+   Two things pushed the page sideways below about 420px.
+
+   A legal page's section took the width of the widest thing inside it, and
+   the cookie table is wider than a phone, so the whole page scrolled instead
+   of the table. The section is the page's width now and the table scrolls
+   inside it, which is what .table-scroll was for.
+
+   A button never wraps, so a long label was wider than a 320px screen. On a
+   narrow phone it may take a second line. */
+.doc__section {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 420px) {
+  .btn {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    padding-block: 10px;
+  }
+}
+
+
+/* A label is one line by design, but a long one (a case code, a role with its
+   tools) is wider than a small phone and pushed the page sideways. */
+@media (max-width: 480px) {
+  .eyebrow {
+    white-space: normal;
+  }
+}
+
