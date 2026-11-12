@@ -110,8 +110,17 @@ export function Lightbox({ children, label }: { children: React.ReactNode; label
               alt={shot.alt}
               width={shot.width}
               height={shot.height}
-              sizes="(min-width: 1300px) 1200px, 100vw"
+              sizes="100vw"
               style={{ ["--shot-ratio" as string]: String(shot.width / shot.height) }}
+              // The size passed in is a guess where the page did not know it
+              // (the case-study screenshots). Once the file has loaded its real
+              // shape is known, and the image is sized from that instead.
+              onLoad={(event) => {
+                const img = event.currentTarget;
+                if (img.naturalWidth && img.naturalHeight) {
+                  img.style.setProperty("--shot-ratio", String(img.naturalWidth / img.naturalHeight));
+                }
+              }}
               draggable={false}
             />
             <figcaption className="lightbox__caption">
