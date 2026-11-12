@@ -6518,3 +6518,22 @@ footer {
 }
 
 
+
+/* Every content image opens large ------------------------------------------------
+   components/Lightbox.tsx with \`auto\`, mounted once in the marketing layout.
+   The wrapper takes no box of its own, so nothing about the page's layout
+   knows it is there. The cursor says which pictures open; the exclusions
+   match the ones the component leaves alone. */
+.lightbox-root--auto {
+  display: contents;
+}
+
+.lightbox-root--auto img {
+  cursor: zoom-in;
+}
+
+.lightbox-root--auto :is(.clientrow, .tools, .hero-id, .lightbox, [data-no-zoom]) img,
+.lightbox-root--auto img[aria-hidden="true"] {
+  cursor: inherit;
+}
+

@@ -2,6 +2,7 @@ import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { CaseScroll } from "@/components/CaseScroll";
 import { ContactDock } from "@/components/ContactDock";
 import { Header } from "@/components/Header";
+import { Lightbox } from "@/components/Lightbox";
 import { Motion } from "@/components/Motion";
 import { Parallax } from "@/components/Parallax";
 import { ScrollProgress } from "@/components/ScrollProgress";
@@ -51,7 +52,10 @@ export default async function MarketingLayout({
         SKIP TO CONTENT
       </a>
       <Header items={headerNav} />
-      {children}
+      {/* Every content image on every public page opens large on a click. */}
+      <Lightbox auto label="Image, full size">
+        {children}
+      </Lightbox>
       <Footer links={footerLinks} />
 
       {/* Public pages only. The console must not appear in the analytics it
