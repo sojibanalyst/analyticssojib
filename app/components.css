@@ -6537,3 +6537,23 @@ footer {
   cursor: inherit;
 }
 
+
+/* Phone tap targets, second pass ------------------------------------------------
+   Three links measured under 44px on a 390px phone: the "verified on Upwork"
+   line under the rating (21px), the contact pills (35px) and the line under
+   the project grid (38px). Same treatment as .tap-pad: the padding grows the
+   target, the negative margin gives the space back, so nothing moves. The
+   pills are a row of their own, so they simply get the height. */
+@media (pointer: coarse), (max-width: 767px) {
+  .proofline__verify,
+  .work-more a {
+    display: inline-block;
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+
+  a.pill {
+    min-height: 44px;
+  }
+}
+
