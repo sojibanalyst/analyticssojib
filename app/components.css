@@ -3431,6 +3431,67 @@ a.wordmark:hover {
   }
 }
 
+/* The pin on a tall phone. Same idea as above, in one column: a compact
+   dashboard on top, and under it the four cards in ONE place, each replacing
+   the last as the section scrolls. The query is the phone half of the one the
+   component tests. On a short phone the panel would not fit, and the story
+   stays in flow. */
+@media (max-width: 1023px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+  .story {
+    min-height: 260vh;
+    justify-content: flex-start;
+  }
+
+  .story__pin {
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+    min-height: 100svh;
+    /* Room for the floating header pill above the panel. */
+    padding-block: 84px 16px;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .story[data-mode="pinned"] .story__layout {
+    gap: 14px;
+  }
+
+  .story[data-mode="pinned"] .dash {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .story[data-mode="pinned"] .dash__tiles {
+    gap: 8px;
+  }
+
+  .story[data-mode="pinned"] .dash__tile {
+    padding: 10px 12px;
+  }
+
+  .story[data-mode="pinned"] .story__cards {
+    display: grid;
+  }
+
+  .story[data-mode="pinned"] .story__card {
+    grid-area: 1 / 1;
+  }
+
+  /* A card that has been replaced leaves upwards; the next arrives from
+     below (the shared rule above). Transform and opacity only. */
+  .story[data-mode="pinned"] .story__card[data-on="true"]:not([data-current="true"]) {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+
+  /* The dashboard is on screen the whole time, so the repeat of its ending
+     under the cards is not needed. */
+  .story[data-mode="pinned"] .story__end {
+    display: none;
+  }
+}
+
 /* The dashboard ------------------------------------------------------------ */
 
 .dash {
@@ -5583,9 +5644,18 @@ a.wordmark:hover {
   }
 }
 
-/* A deck of cards taller than a phone screen holds on wide screens only, and
-   a card that is never covered is never tipped back. */
+/* The case files stack on phones as well now, with the description cut to
+   three lines so a card (about 470px) fits under the header with room to
+   spare. On a SHORT phone it still would not: a card held at the top would
+   run off the bottom, and the next one would slide over its link before it
+   could be read. There, and only there, the deck stays a plain list. */
 @media (max-width: 899px) {
+  .deck--wide .case-stack__desc {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-width: 899px) and (max-height: 719px) {
   .deck--wide {
     gap: 24px;
   }
@@ -5597,6 +5667,26 @@ a.wordmark:hover {
   .deck--wide .deck__card,
   .deck--wide .deck__card::after {
     animation: none !important;
+  }
+}
+
+/* Press ----------------------------------------------------------------------
+   On a touch screen nothing hovers, so the lift that says "this goes
+   somewhere" never shows. Pressing does instead: a link or a button gives a
+   little under the finger and springs back. Only things that are links or
+   buttons, and transform only. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  :is(.btn, a.pill, .chip, .header-cta, .menu-cta, .dock__action, .pdeck, .cs__card, .more-card, .svc-teaser__card, .note-card, .case-card__more) {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 160ms var(--ease-out);
+  }
+
+  :is(.btn, a.pill, .chip, .header-cta, .menu-cta, .dock__action):active {
+    transform: scale(0.96);
+  }
+
+  :is(.pdeck, .cs__card, .more-card, .svc-teaser__card, .note-card):active {
+    transform: scale(0.985);
   }
 }
 

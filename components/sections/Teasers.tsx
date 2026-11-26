@@ -108,8 +108,9 @@ function StackCase({ item }: { item: CaseStudy }) {
 }
 
 /**
- * The case studies as a deck (see Deck): wide screens only, because a case
- * card on a phone is taller than the screen and would be covered unread.
+ * The case studies as a deck (see Deck). On a short phone it is a plain list,
+ * because a card there is taller than the screen would be covered unread; the
+ * CSS for that is under "A deck of cards" in app/components.css.
  */
 export function CasesTeaser({ cases }: { cases: CaseStudy[] }) {
   const shown = cases.slice(0, CASES_SHOWN);
