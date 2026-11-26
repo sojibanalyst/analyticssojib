@@ -3466,9 +3466,10 @@ a.wordmark:hover {
 /* The pin on a tall phone. Same idea as above, in one column: a compact
    dashboard on top, and under it the four cards in ONE place, each replacing
    the last as the section scrolls. The query is the phone half of the one the
-   component tests. On a short phone the panel would not fit, and the story
-   stays in flow. */
-@media (max-width: 1023px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+   component tests. 620px, not more: Android Chrome with its address bar
+   showing leaves most phones between 620 and 700. Below that the panel would
+   not fit, and the story stays in flow. */
+@media (max-width: 1023px) and (min-height: 620px) and (prefers-reduced-motion: no-preference) {
   .story {
     min-height: 260vh;
     justify-content: flex-start;
@@ -3480,13 +3481,13 @@ a.wordmark:hover {
     box-sizing: border-box;
     min-height: 100svh;
     /* Room for the floating header pill above the panel. */
-    padding-block: 84px 16px;
+    padding-block: 78px 8px;
     justify-content: center;
-    gap: 16px;
+    gap: 12px;
   }
 
   .story[data-mode="pinned"] .story__layout {
-    gap: 14px;
+    gap: 10px;
   }
 
   .story[data-mode="pinned"] .dash {
@@ -3494,12 +3495,46 @@ a.wordmark:hover {
     gap: 10px;
   }
 
+  /* The three sources side by side instead of stacked: name, figure, and
+     how far it is from the orders, one small column each. This is what lets
+     the panel fit a 620px screen. */
   .story[data-mode="pinned"] .dash__tiles {
-    gap: 8px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .story[data-mode="pinned"] .dash__tile {
-    padding: 10px 12px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "source"
+      "value"
+      "drift";
+    row-gap: 2px;
+    padding: 9px 9px 10px;
+  }
+
+  .story[data-mode="pinned"] .dash__metric {
+    display: none;
+  }
+
+  .story[data-mode="pinned"] :is(.dash__value, .dash__drift) {
+    justify-self: start;
+  }
+
+  .story[data-mode="pinned"] .dash__value {
+    font-size: var(--text-body);
+  }
+
+  .story[data-mode="pinned"] .dash__drift {
+    line-height: 1.35;
+  }
+
+  /* The narrowest phones: the line under "Reconciled" wraps to three lines
+     there and pushes the last card off the bottom. The label says it alone. */
+  @media (max-width: 379px) {
+    .story[data-mode="pinned"] .dash__status-note {
+      display: none;
+    }
   }
 
   .story[data-mode="pinned"] .story__cards {
@@ -5686,17 +5721,16 @@ a.wordmark:hover {
 }
 
 /* The case files stack on phones as well now, with the description cut to
-   three lines so a card (about 470px) fits under the header with room to
-   spare. On a SHORT phone it still would not: a card held at the top would
+   two lines so a card (about 515px) fits under the header on a 620px screen. On a SHORT phone it still would not: a card held at the top would
    run off the bottom, and the next one would slide over its link before it
    could be read. There, and only there, the deck stays a plain list. */
 @media (max-width: 899px) {
   .deck--wide .case-stack__desc {
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
   }
 }
 
-@media (max-width: 899px) and (max-height: 719px) {
+@media (max-width: 899px) and (max-height: 619px) {
   .deck--wide {
     gap: 24px;
   }
