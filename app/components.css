@@ -2948,6 +2948,38 @@ a.wordmark:hover {
   max-width: 100%;
 }
 
+/* On a touch screen, depth from the scroll. The glow rises faster than the
+   diagram as the hero leaves, which reads as the same layering the mouse
+   gives on a desktop. Scroll-driven, so the compositor runs it with no
+   script; a browser without scroll timelines simply keeps them still. */
+@keyframes hero-depth-glow {
+  to {
+    transform: translateY(-46px);
+  }
+}
+
+@keyframes hero-depth-pipe {
+  to {
+    transform: translateY(18px);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (hover: none) and (prefers-reduced-motion: no-preference) {
+    .hero-visual__glow {
+      animation: hero-depth-glow linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+
+    .hero-visual .pipe {
+      animation: hero-depth-pipe linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+  }
+}
+
 /* Pipeline -----------------------------------------------------------------
    The diagram in components/hero/PipelineSvg.tsx: a static SVG, and a layer of
    plain elements on top of it that carries all the motion.
@@ -3428,6 +3460,67 @@ a.wordmark:hover {
     /* Room for the floating header, which sits over the top of the panel. */
     padding-block: 96px 32px;
     justify-content: center;
+  }
+}
+
+/* The pin on a tall phone. Same idea as above, in one column: a compact
+   dashboard on top, and under it the four cards in ONE place, each replacing
+   the last as the section scrolls. The query is the phone half of the one the
+   component tests. On a short phone the panel would not fit, and the story
+   stays in flow. */
+@media (max-width: 1023px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+  .story {
+    min-height: 260vh;
+    justify-content: flex-start;
+  }
+
+  .story__pin {
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+    min-height: 100svh;
+    /* Room for the floating header pill above the panel. */
+    padding-block: 84px 16px;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .story[data-mode="pinned"] .story__layout {
+    gap: 14px;
+  }
+
+  .story[data-mode="pinned"] .dash {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .story[data-mode="pinned"] .dash__tiles {
+    gap: 8px;
+  }
+
+  .story[data-mode="pinned"] .dash__tile {
+    padding: 10px 12px;
+  }
+
+  .story[data-mode="pinned"] .story__cards {
+    display: grid;
+  }
+
+  .story[data-mode="pinned"] .story__card {
+    grid-area: 1 / 1;
+  }
+
+  /* A card that has been replaced leaves upwards; the next arrives from
+     below (the shared rule above). Transform and opacity only. */
+  .story[data-mode="pinned"] .story__card[data-on="true"]:not([data-current="true"]) {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+
+  /* The dashboard is on screen the whole time, so the repeat of its ending
+     under the cards is not needed. */
+  .story[data-mode="pinned"] .story__end {
+    display: none;
   }
 }
 
@@ -4024,9 +4117,10 @@ a.wordmark:hover {
   display: none;
 }
 
-/* Wide screens: two rows that drift --------------------------------------- */
+/* Two rows that drift: every wide screen, and a phone too unless motion is
+   reduced. A phone that has asked for less motion keeps the swiped row above. */
 
-@media (min-width: 768px) {
+@media (min-width: 768px), (prefers-reduced-motion: no-preference) {
   .rv-rows {
     flex-direction: column;
     gap: 14px;
@@ -4063,13 +4157,20 @@ a.wordmark:hover {
   }
 }
 
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .rv-item {
+    flex-basis: min(300px, 78vw);
+    margin-right: 12px;
+  }
+}
+
 @keyframes rv-drift {
   to {
     transform: translateX(-50%);
   }
 }
 
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   .rv-row {
     overflow: hidden;
   }
@@ -4091,6 +4192,7 @@ a.wordmark:hover {
 
   /* Anything that moves on its own stops for a pointer and for focus. */
   .rv-rows:hover .rv-track,
+  .rv-rows:active .rv-track,
   .rv-rows:focus-within .rv-track {
     animation-play-state: paused;
   }
@@ -5583,9 +5685,18 @@ a.wordmark:hover {
   }
 }
 
-/* A deck of cards taller than a phone screen holds on wide screens only, and
-   a card that is never covered is never tipped back. */
+/* The case files stack on phones as well now, with the description cut to
+   three lines so a card (about 470px) fits under the header with room to
+   spare. On a SHORT phone it still would not: a card held at the top would
+   run off the bottom, and the next one would slide over its link before it
+   could be read. There, and only there, the deck stays a plain list. */
 @media (max-width: 899px) {
+  .deck--wide .case-stack__desc {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-width: 899px) and (max-height: 719px) {
   .deck--wide {
     gap: 24px;
   }
@@ -5597,6 +5708,26 @@ a.wordmark:hover {
   .deck--wide .deck__card,
   .deck--wide .deck__card::after {
     animation: none !important;
+  }
+}
+
+/* Press ----------------------------------------------------------------------
+   On a touch screen nothing hovers, so the lift that says "this goes
+   somewhere" never shows. Pressing does instead: a link or a button gives a
+   little under the finger and springs back. Only things that are links or
+   buttons, and transform only. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  :is(.btn, a.pill, .chip, .header-cta, .menu-cta, .dock__action, .pdeck, .cs__card, .more-card, .svc-teaser__card, .note-card, .case-card__more) {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 160ms var(--ease-out);
+  }
+
+  :is(.btn, a.pill, .chip, .header-cta, .menu-cta, .dock__action):active {
+    transform: scale(0.96);
+  }
+
+  :is(.pdeck, .cs__card, .more-card, .svc-teaser__card, .note-card):active {
+    transform: scale(0.985);
   }
 }
 
@@ -6535,5 +6666,25 @@ footer {
 .lightbox-root--auto :is(.clientrow, .tools, .hero-id, .lightbox, [data-no-zoom]) img,
 .lightbox-root--auto img[aria-hidden="true"] {
   cursor: inherit;
+}
+
+
+/* Phone tap targets, second pass ------------------------------------------------
+   Three links measured under 44px on a 390px phone: the "verified on Upwork"
+   line under the rating (21px), the contact pills (35px) and the line under
+   the project grid (38px). Same treatment as .tap-pad: the padding grows the
+   target, the negative margin gives the space back, so nothing moves. The
+   pills are a row of their own, so they simply get the height. */
+@media (pointer: coarse), (max-width: 767px) {
+  .proofline__verify,
+  .work-more a {
+    display: inline-block;
+    padding-block: 12px;
+    margin-block: -12px;
+  }
+
+  a.pill {
+    min-height: 44px;
+  }
 }
 

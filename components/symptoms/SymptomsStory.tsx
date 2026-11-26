@@ -62,8 +62,12 @@ export function SymptomsStory() {
       return;
     }
 
+    // Two screens can hold the panel: a desktop, with the dashboard beside
+    // the cards, and a tall phone, with one card at a time under a compact
+    // dashboard. Both queries are copied from the stylesheet, which sets the
+    // section's height for the same two cases; they must stay identical.
     const pinnable = window.matchMedia(
-      "(min-width: 1024px) and (min-height: 680px) and (pointer: fine)",
+      "(min-width: 1024px) and (min-height: 680px) and (pointer: fine), (max-width: 1023px) and (min-height: 700px)",
     );
 
     if (!pinnable.matches) {
@@ -158,6 +162,9 @@ export function SymptomsStory() {
                 key={item.title}
                 className="card story__card"
                 data-on={i < shown}
+                // The newest card. On a phone the cards share one place and
+                // only this one is showing; a desktop shows them all.
+                data-current={i === shown - 1}
               >
                 <span className="story__tag">{item.tag}</span>
                 <h3 className="story__title">{item.title}</h3>

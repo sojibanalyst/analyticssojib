@@ -16,11 +16,11 @@ import { ReviewCard } from "@/components/ui/ReviewCard";
  * pointer is over them or while anything inside has focus, which is the rule
  * for content that moves on its own.
  *
- * PHONES: the same cards become one row you swipe. No second copy, no motion
- * of its own; scroll snapping does the settling.
+ * PHONES: the same two drifting rows, with narrower cards. A finger on a row
+ * stops it, as a pointer does on a desktop.
  *
- * REDUCED MOTION: the rows do not drift at any width. They scroll sideways by
- * hand instead.
+ * REDUCED MOTION: the rows do not drift at any width. On a phone they become
+ * one row you swipe; on a wide screen they scroll sideways by hand.
  *
  * EVERYWHERE: "Read all reviews" opens every review in full, in columns. The
  * moving rows clamp long quotes so the cards stay one height; the grid is
@@ -55,12 +55,13 @@ export function WrittenReviews({
    */
   const [loop, setLoop] = useState(false);
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 768px) and (prefers-reduced-motion: no-preference)");
+    const query = window.matchMedia("(prefers-reduced-motion: no-preference)");
     const sync = () => setLoop(query.matches);
     sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
   }, []);
+
 
   if (!real.length) return null;
 
