@@ -67,7 +67,7 @@ export function SymptomsStory() {
     // dashboard. Both queries are copied from the stylesheet, which sets the
     // section's height for the same two cases; they must stay identical.
     const pinnable = window.matchMedia(
-      "(min-width: 1024px) and (min-height: 680px) and (pointer: fine), (max-width: 1023px) and (min-height: 700px)",
+      "(min-width: 1024px) and (min-height: 680px) and (pointer: fine), (max-width: 1023px) and (min-height: 620px)",
     );
 
     if (!pinnable.matches) {
