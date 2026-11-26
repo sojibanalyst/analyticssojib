@@ -2948,6 +2948,38 @@ a.wordmark:hover {
   max-width: 100%;
 }
 
+/* On a touch screen, depth from the scroll. The glow rises faster than the
+   diagram as the hero leaves, which reads as the same layering the mouse
+   gives on a desktop. Scroll-driven, so the compositor runs it with no
+   script; a browser without scroll timelines simply keeps them still. */
+@keyframes hero-depth-glow {
+  to {
+    transform: translateY(-46px);
+  }
+}
+
+@keyframes hero-depth-pipe {
+  to {
+    transform: translateY(18px);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (hover: none) and (prefers-reduced-motion: no-preference) {
+    .hero-visual__glow {
+      animation: hero-depth-glow linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+
+    .hero-visual .pipe {
+      animation: hero-depth-pipe linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+  }
+}
+
 /* Pipeline -----------------------------------------------------------------
    The diagram in components/hero/PipelineSvg.tsx: a static SVG, and a layer of
    plain elements on top of it that carries all the motion.
@@ -4085,9 +4117,10 @@ a.wordmark:hover {
   display: none;
 }
 
-/* Wide screens: two rows that drift --------------------------------------- */
+/* Two rows that drift: every wide screen, and a phone too unless motion is
+   reduced. A phone that has asked for less motion keeps the swiped row above. */
 
-@media (min-width: 768px) {
+@media (min-width: 768px), (prefers-reduced-motion: no-preference) {
   .rv-rows {
     flex-direction: column;
     gap: 14px;
@@ -4124,13 +4157,20 @@ a.wordmark:hover {
   }
 }
 
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .rv-item {
+    flex-basis: min(300px, 78vw);
+    margin-right: 12px;
+  }
+}
+
 @keyframes rv-drift {
   to {
     transform: translateX(-50%);
   }
 }
 
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   .rv-row {
     overflow: hidden;
   }
@@ -4152,6 +4192,7 @@ a.wordmark:hover {
 
   /* Anything that moves on its own stops for a pointer and for focus. */
   .rv-rows:hover .rv-track,
+  .rv-rows:active .rv-track,
   .rv-rows:focus-within .rv-track {
     animation-play-state: paused;
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { FilterList } from "@/components/FilterList";
 import { pages, reviews, type WrittenReview } from "@/content/site";
@@ -16,11 +16,11 @@ import { ReviewCard } from "@/components/ui/ReviewCard";
  * pointer is over them or while anything inside has focus, which is the rule
  * for content that moves on its own.
  *
- * PHONES: the same cards become one row you swipe. No second copy, no motion
- * of its own; scroll snapping does the settling.
+ * PHONES: the same two drifting rows, with narrower cards. A finger on a row
+ * stops it, as a pointer does on a desktop.
  *
- * REDUCED MOTION: the rows do not drift at any width. They scroll sideways by
- * hand instead.
+ * REDUCED MOTION: the rows do not drift at any width. On a phone they become
+ * one row you swipe; on a wide screen they scroll sideways by hand.
  *
  * EVERYWHERE: "Read all reviews" opens every review in full, in columns. The
  * moving rows clamp long quotes so the cards stay one height; the grid is
@@ -55,63 +55,13 @@ export function WrittenReviews({
    */
   const [loop, setLoop] = useState(false);
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 768px) and (prefers-reduced-motion: no-preference)");
+    const query = window.matchMedia("(prefers-reduced-motion: no-preference)");
     const sync = () => setLoop(query.matches);
     sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
   }, []);
 
-  /**
-   * PHONES: the one swiped row turns its own pages. Every few seconds it
-   * scrolls to the next card, and from the last back to the first. It is the
-   * same row a finger swipes, moved by the browser's own smooth scroll, so
-   * nothing about swiping changes. A touch, a swipe or keyboard focus inside
-   * stops it for a while; it also waits while the row is off screen, and
-   * never starts under reduced motion.
-   */
-  const rowsRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const rows = rowsRef.current;
-    const query = window.matchMedia("(max-width: 767px) and (prefers-reduced-motion: no-preference)");
-    if (!rows || all || !query.matches) return;
-
-    const EVERY_MS = 3800;
-    const RESUME_MS = 7000;
-    let pausedUntil = 0;
-    let onScreen = false;
-    const hold = () => {
-      pausedUntil = Date.now() + RESUME_MS;
-    };
-
-    const seen = new IntersectionObserver(([entry]) => {
-      onScreen = entry.isIntersecting;
-    }, { threshold: 0.4 });
-    seen.observe(rows);
-
-    const timer = window.setInterval(() => {
-      if (!onScreen || Date.now() < pausedUntil || document.hidden) return;
-      if (rows.contains(document.activeElement)) return;
-      const card = rows.querySelector<HTMLElement>(".rv-item");
-      if (!card) return;
-      const step = card.getBoundingClientRect().width + 12;
-      const atEnd = rows.scrollLeft + rows.clientWidth >= rows.scrollWidth - 4;
-      rows.scrollTo({ left: atEnd ? 0 : rows.scrollLeft + step, behavior: "smooth" });
-    }, EVERY_MS);
-
-    rows.addEventListener("touchstart", hold, { passive: true });
-    rows.addEventListener("pointerdown", hold);
-    rows.addEventListener("wheel", hold, { passive: true });
-    rows.addEventListener("focusin", hold);
-    return () => {
-      window.clearInterval(timer);
-      seen.disconnect();
-      rows.removeEventListener("touchstart", hold);
-      rows.removeEventListener("pointerdown", hold);
-      rows.removeEventListener("wheel", hold);
-      rows.removeEventListener("focusin", hold);
-    };
-  }, [all]);
 
   if (!real.length) return null;
 
@@ -165,7 +115,6 @@ export function WrittenReviews({
       <h3 className="rv__title">{reviews.writtenTitle}</h3>
 
       <div
-        ref={rowsRef}
         className="rv-rows"
         role="group"
         aria-label={reviews.writtenTitle}
